@@ -14,11 +14,11 @@ let mainWindow
 function createWindow () {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1280,
+        height: 720,
         center: true,
-        minWidth: 640,
-        minHeight: 480,
+        minWidth: 800,
+        minHeight: 600,
         title: 'Webby',
         icon: 'back/icon.ico'
     });
