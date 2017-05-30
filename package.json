@@ -1,0 +1,24 @@
+{
+  "name": "webby",
+  "version": "1.0.0",
+  "description": "Un assistant de création de Sites Web.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron back/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/HeySora/webby.git"
+  },
+  "keywords": [
+    "Webby",
+    "Web"
+  ],
+  "author": "Tiago de Sousa Pereira & Louis Zwahlen",
+  "license": "AGPL-3.0+",
+  "devDependencies": {
+    "electron": "~1.6.2"
+  },
+  "homepage": "https://webby.heysora.net",
+  "dependencies": {}
+}
