@@ -17,7 +17,66 @@ hr {
 #page {
 	width: 100%;
 	height: 100%;
+	position: relative;
+}
+
+#sidebar {
+	min-width: 320px;
+	padding: 1rem;
+	background: #ddd;
+	box-shadow: 0 0 16px rgba(0, 0, 0, 0.6);
+}
+
+#sidebar h2 {
+	font-size: 2rem;
+}
+#sidebar .fa-plus {
+	font-size: 1.75rem;
+}
+
+#elements {
+	height: 100%;
+	overflow-y: auto;
+	background-color: #ccc;
+	border: 1px solid #aaa;
+	border-radius: 3px;
+}
+
+#elements {
+	width: 100%;
+}
+
+.element {
+	padding: 4px;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+	margin-bottom: 1rem;
+}
+
+.element .fa {
+	font-size: 1.5rem;
+}
+
+.element .column:not(.shrink), .element .columns:not(.shrink) {
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+}
+
+.element .column:not(.shrink) > *, .element .columns:not(.shrink) > * {
+	display: block;
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#overlay {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
 	background: #000;
+	display: none;
 }
 
 #home {
