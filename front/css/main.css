@@ -18,6 +18,10 @@ ol, ul {
 	margin-bottom: 0;
 }
 
+input.button {
+	width: 100%;
+}
+
 .dropdown-pane {
 	background: rgba(255, 255, 255, 0.8);
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);

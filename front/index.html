@@ -33,7 +33,7 @@
                         <h2>Éléments</h2>
                     </div>
                     <div class="shrink columns" data-toggle="dropdown-elements">
-                        <i id="add-element" class="fa fa-plus"></i>
+                        <i id="add-element" class="fa fa-plus" onclick="newProject()"></i>
                         <div class="dropdown-pane" id="dropdown-elements" data-dropdown data-auto-focus="true">
                             <ul>
                                 <li>Coucou</li>
@@ -92,6 +92,141 @@
                     <h3>Projets récents</h3>
                 </section>
 
+            </div>
+
+            <div class="large reveal" id="new-project-modal" data-reveal>
+                <h2>Créer un projet</h2>
+                <form>
+                    <div class="row">
+                        <div class="small-12 columns">
+                            <label>Nom du projet
+                                <input type="text" name="project-name" required="required" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="small-6 columns">
+                            <label>Description
+                                <input type="text" name="project-metadatas-description"required="required" />
+                            </label>
+                        </div>
+                        <div class="small-6 columns">
+                            <label>Langue du site
+                                <select name="project-metadatas-lang" required="required">
+                                    <option value="da-DK">Danois</option>
+                                    <option value="de-CH">Allemand (Suisse)</option>
+                                    <option value="de-DE">Allemand (Allemagne)</option>
+                                    <option value="de-LU">Allemand (Luxembourg)</option>
+                                    <option value="en-GB">Anglais (Grande-Bretagne)</option>
+                                    <option value="en-US">Anglais (États-Unis)</option>
+                                    <option value="es-ES">Espagnol</option>
+                                    <option value="fr-BE">Français (Belgique)</option>
+                                    <option value="fr-CA">Français (Canada)</option>
+                                    <option value="fr-CH">Français (Suisse)</option>
+                                    <option value="fr-FR">Français (France)</option>
+                                    <option value="fr-LU">Français (Luxembourg)</option>
+                                    <option value="fr-MC">Français (Monaco)</option>
+                                    <option value="it-CH">Italien (Suisse)</option>
+                                    <option value="it-IT">Italien (Italie)</option>
+                                    <option value="ja-JP">Japonais</option>
+                                    <option value="pt-PT">Portugais</option>
+                                    <option value="rm-CH">Romanche (Suisse)</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row align-center">
+                        <div class="small-4 column">
+                            <input type="submit" class="button" value="Modifier !" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="large reveal" id="project-properties-modal" data-reveal>
+                <h2>Propriétés du projet</h2>
+                <form>
+                    <div class="row">
+                        <div class="small-12 columns">
+                            <label>Nom du projet
+                                <input type="text" name="project-name" required="required" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="small-6 columns">
+                            <label>Description
+                                <input type="text" name="project-metadatas-description" required="required" />
+                            </label>
+                        </div>
+                        <div class="small-6 columns">
+                            <label>Langue du site
+                                <select name="project-metadatas-lang" required="required">
+                                    <option value="da-DK">Danois</option>
+                                    <option value="de-CH">Allemand (Suisse)</option>
+                                    <option value="de-DE">Allemand (Allemagne)</option>
+                                    <option value="de-LU">Allemand (Luxembourg)</option>
+                                    <option value="en-GB">Anglais (Grande-Bretagne)</option>
+                                    <option value="en-US">Anglais (États-Unis)</option>
+                                    <option value="es-ES">Espagnol</option>
+                                    <option value="fr-BE">Français (Belgique)</option>
+                                    <option value="fr-CA">Français (Canada)</option>
+                                    <option value="fr-CH">Français (Suisse)</option>
+                                    <option value="fr-FR">Français (France)</option>
+                                    <option value="fr-LU">Français (Luxembourg)</option>
+                                    <option value="fr-MC">Français (Monaco)</option>
+                                    <option value="it-CH">Italien (Suisse)</option>
+                                    <option value="it-IT">Italien (Italie)</option>
+                                    <option value="ja-JP">Japonais</option>
+                                    <option value="pt-PT">Portugais</option>
+                                    <option value="rm-CH">Romanche (Suisse)</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="small-6 columns">
+                            <label>Titre du site
+                                <input type="text" name="project-metadatas-title" />
+                            </label>
+                        </div>
+                        <div class="small-6 columns">
+                            <label>URL du site
+                                <input type="text" name="project-metadatas-url" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="small-6 columns">
+                            <label>Type de page
+                                <select name="project-metadatas-ogType">
+                                    <option value="website">Site Internet</option>
+                                    <option value="music.song">Chanson (musique)</option>
+                                    <option value="music.album">Album (musique)</option>
+                                    <option value="music.radio_station">Web radio</option>
+                                    <option value="video.movie">Film (vidéo)</option>
+                                    <option value="video.episode">Épisode de série (vidéo)</option>
+                                    <option value="video.tv_show">Série (vidéo)</option>
+                                    <option value="video.other">Autre (vidéo)</option>
+                                    <option value="article">Article</option>
+                                    <option value="book">Livre</option>
+                                    <option value="profile">Profil</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="small-6 columns">
+                            <label>URL de l'image de présentation
+                                <input type="text" name="project-metadatas-img" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row align-center">
+                        <div class="small-4 column">
+                            <input type="submit" class="button" value="Créer !" />
+                        </div>
+                    </div>
+                </form>
             </div>
 
         </div>

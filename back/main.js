@@ -1,26 +1,42 @@
 const electron = require('electron')
-const app = electron.app;
-const Menu = electron.Menu
-const BrowserWindow = electron.BrowserWindow;
-
+const {app, Menu, BrowserWindow, dialog, ipcMain} = electron;
 const path = require('path');
 const url = require('url');
-let mainWindow;
+const fs = require('fs');
+
+global.webbyData = {projectInfos: null};
 
 const template = [
     {
         label: 'Fichier',
         submenu: [
             {
-                label: 'Nouveau',
+                label: 'Nouveau projet',
                 click() {
-
+                    mwContents.executeJavaScript('newProject();', true).catch(error => {
+                        console.log(error);
+                    });
                 }
             },
             {
                 label: 'Ouvrir',
                 click() {
+                    let fileNames = dialog.showOpenDialog(mainWindow, {
+                        title: 'Ouvrir un projet',
+                        filters: [
+                            {
+                                name: 'Projet Webby',
+                                extensions: ['json']
+                            }
+                        ],
+                        properties: ['openFile']
+                    });
 
+                    fs.readFile(fileNames[0], (err, data) => {
+                        if (err) throw err;
+                        global.webbyData.projectInfos = JSON.parse(data);
+                        mwContents.send('project-loaded', global.webbyData.projectInfos);
+                    });
                 }
             },
             {
@@ -32,13 +48,29 @@ const template = [
             {
                 label: 'Enregistrer sous...',
                 click() {
+                    let fileName = dialog.showSaveDialog(mainWindow, {
+                        title: 'Sauvegarder le projet',
+                        filters: [
+                            {
+                                name: 'Projet Webby',
+                                extensions: ['json']
+                            }
+                        ]
+                    });
 
+                    fs.writeFile(fileName, JSON.stringify(global.webbyData.projectInfos), {
+                        flag: fs.constants.O_WRONLY + fs.constants.O_CREAT + fs.constants.O_TRUNC
+                    }, err => {
+                        if (err) throw err;
+                    });
                 }
             },
             {
                 label: 'Propriétés',
                 click() {
-
+                    mwContents.executeJavaScript('showProjectProperties();', true).catch(error => {
+                        console.log(error);
+                    });
                 }
             },
             {
@@ -77,6 +109,9 @@ const template = [
 const webbyMenu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(webbyMenu);
 
+
+let mainWindow, mwContents, newProjectWindow;
+
 function createWindow () {
     mainWindow = new BrowserWindow({
         width: 1280,
@@ -93,6 +128,10 @@ function createWindow () {
         protocol: 'file:',
         slashes: true
     }));
+
+    mwContents = mainWindow.webContents;
+
+    mwContents.openDevTools();
 
     mainWindow.on('closed', () => {
         mainWindow = null;
