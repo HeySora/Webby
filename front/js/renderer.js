@@ -1,4 +1,4 @@
-$(document).foundation()
+$(document).foundation();
 
 function resize() {
 	$('#elements').height( $('#sidebar').innerHeight() - $('#sidebar-title').outerHeight() - 32 );

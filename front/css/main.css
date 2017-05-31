@@ -14,6 +14,15 @@ hr {
 	border-bottom-width: 2px;
 }
 
+ol, ul {
+	margin-bottom: 0;
+}
+
+.dropdown-pane {
+	background: rgba(255, 255, 255, 0.8);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
 #page {
 	width: 100%;
 	height: 100%;
@@ -22,9 +31,18 @@ hr {
 
 #sidebar {
 	min-width: 320px;
+	max-width: 640px;
 	padding: 1rem;
 	background: #ddd;
 	box-shadow: 0 0 16px rgba(0, 0, 0, 0.6);
+}
+
+#sidebar .fa {
+	transform: scale(1.0);
+	transition: transform 0.2s;
+}
+#sidebar .fa:hover {
+	transform: scale(1.2);
 }
 
 #sidebar h2 {
@@ -49,7 +67,10 @@ hr {
 .element {
 	padding: 4px;
 	box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-	margin-bottom: 1rem;
+	margin-bottom: 0.5rem;
+}
+.element:last-child {
+	margin-bottom: 0.125rem;
 }
 
 .element .fa {
