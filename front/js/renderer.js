@@ -29,7 +29,6 @@ remote.getGlobal('webbyData').projectInfos = projectInfos;
 function resize() {
 	$elems.height( $s.innerHeight() - $('#sidebar-title').outerHeight() - 32 );
 }
-
 $w.resize(resize);
 resize();
 
