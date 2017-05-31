@@ -18,6 +18,10 @@ ol, ul {
 	margin-bottom: 0;
 }
 
+[id^='template-'] {
+	display: none;
+}
+
 input.button {
 	width: 100%;
 }
