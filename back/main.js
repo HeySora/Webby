@@ -120,7 +120,8 @@ function createWindow () {
         minWidth: 800,
         minHeight: 600,
         title: 'Webby',
-        icon: 'back/icon.ico'
+        icon: 'back/icon.ico',
+        show: false
     });
 
     mainWindow.loadURL(url.format({
@@ -132,6 +133,10 @@ function createWindow () {
     mwContents = mainWindow.webContents;
 
     mwContents.openDevTools();
+
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show()
+    })
 
     mainWindow.on('closed', () => {
         mainWindow = null;
