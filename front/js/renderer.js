@@ -8,8 +8,6 @@ let $d = $(document),
 	$npModal = $('#new-project-modal'),
 	$ppModal = $('#project-properties-modal');
 
-$(document).foundation();
-
 let projectInfos = {
 	name: '',
 	metadatas: {
@@ -102,3 +100,5 @@ $ppModal.children('form').submit(ev => {
 ipcRenderer.on('project-loaded', (ev, infos) => {
 	projectInfos = infos;
 });
+
+$(document).foundation();
