@@ -102,14 +102,23 @@ class Element {
 		addElement(this);
 	}
 
-	delete() {
-		projectInfos.elements.splice(this._position, 1);
-		for (let i = this._position; i < projectInfos.elements.length; i++) {
-			projectInfos.elements[i].position--;
+	delete(update = true, deleteElement = true) {
+		if (deleteElement) {
+			projectInfos.elements.splice(this._position, 1);
+		}
+
+		$(`#elem-${this._position}`).remove();
+		for (let i = this._position; i <= projectInfos.elements.length; i++) {
+			if (i < projectInfos.elements.length) {
+				projectInfos.elements[i].position--;
+			}
+			$(`#elem-${i}`).attr('id', `elem-${i-1}`);
 		}
 		remote.getGlobal('webbyData').projectInfos = projectInfos;
 
-		updateElements();
+		if (update) {
+			updateElements();
+		}
 	}
 
 	get type() {
@@ -197,6 +206,8 @@ showProjectProperties = () => {
 $npModal.children('form').submit(ev => {
 	$npModal.foundation('close');
 
+	clearElements(true);
+
 	projectInfos = {
 		name: '',
 		metadatas: {
@@ -210,8 +221,6 @@ $npModal.children('form').submit(ev => {
 		},
 		elements: []
 	};
-
-	clearElements();
 
 	$npModal.find('input[type!="submit"],select').each((i, v) => {
 		let $v = $(v);
@@ -260,7 +269,7 @@ function typeToLocale(type, lang = 'fr') {
 	return Locales.Fr.Elements[type];
 }
 
-function addElement(elem) {
+function addElement(elem, addTags = true) {
 	let $newElem = $('#template-element').clone(true);
 	$newElem.attr('id', `element-${elem.position}`);
 
@@ -275,27 +284,30 @@ function addElement(elem) {
 		$newElem.find('em').html(typeToLocale(elem.type));
 	}
 
-	let $newTag = $(`<${Tags[elem.type]}>`).attr('id', `elem-${elem.position}`).text(elem.text);
+	if (addTags) {
+		let $newTag = $(`<${Tags[elem.type]}>`).attr('id', `elem-${elem.position}`).text(elem.text);
+		$newTag.appendTo('#preview');
+	}
 	$newElem.appendTo('#elements');
-	$newTag.appendTo('#preview');
-
 }
 
 function updateElements() {
 	clearElements();
 	$.each(projectInfos.elements, (i,v) => {
-		addElement(v);
+		addElement(v, false);
 	});
 }
 
-function clearElements() {
+function clearElements(trueDelete = false) {
+	if (trueDelete) {
+		$.each(projectInfos.elements, (i,v) => {
+			v.delete(false, false);
+		});
+		projectInfos.elements = [];
+		remote.getGlobal('webbyData').projectInfos = projectInfos;
+	}
 	$('#elements > *').remove();
 }
-
-$('#add-paragraph').click(ev => {
-	new Element(ElementType.P, 'Nom');
-	ev.preventDefault();
-});
 
 $('.delete-element').click(function(ev) {
 	let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
@@ -305,6 +317,13 @@ $('.delete-element').click(function(ev) {
 $('[data-toggle]').click(function() {
 	$('#' + $(this).attr('data-toggle')).toggleClass('visible');
 });
+
+$s.find('[id^="add-"]').click(function(ev) {
+	let newTag = $(this).attr('id').substr(4);
+	new Element(ElementType[newTag.toUpperCase()], 'Nom', 'CXOUCOUTEXTE');
+	ev.preventDefault();
+});
+
 
 
 $(() => {
