@@ -108,6 +108,10 @@ input.button {
 	text-overflow: ellipsis;
 }
 
+#preview {
+	overflow: auto;
+}
+
 #overlay {
 	width: 100%;
 	height: 100%;
