@@ -6,6 +6,8 @@ const fs = require('fs');
 
 global.webbyData = {projectInfos: null};
 
+let lastFileName = '';
+
 const template = [
     {
         label: 'Fichier',
@@ -44,7 +46,23 @@ const template = [
             {
                 label: 'Enregistrer',
                 click() {
+                    if (lastFileName == '') {
+                        lastFileName = dialog.showSaveDialog(mainWindow, {
+                            title: 'Sauvegarder le projet',
+                            filters: [
+                                {
+                                    name: 'Projet Webby',
+                                    extensions: ['json']
+                                }
+                            ]
+                        });
+                    }
 
+                    fs.writeFile(lastFileName, JSON.stringify(global.webbyData.projectInfos), {
+                        flag: fs.constants.O_WRONLY + fs.constants.O_CREAT + fs.constants.O_TRUNC
+                    }, err => {
+                        if (err) throw err;
+                    });
                 }
             },
             {
@@ -61,6 +79,7 @@ const template = [
                     });
 
                     if (fileName != null && fileName !== '') {
+                        lastFileName = fileName;
                         fs.writeFile(fileName, JSON.stringify(global.webbyData.projectInfos), {
                             flag: fs.constants.O_WRONLY + fs.constants.O_CREAT + fs.constants.O_TRUNC
                         }, err => {
