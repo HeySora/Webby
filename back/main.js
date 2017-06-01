@@ -32,11 +32,13 @@ const template = [
                         properties: ['openFile']
                     });
 
-                    fs.readFile(fileNames[0], (err, data) => {
-                        if (err) throw err;
-                        global.webbyData.projectInfos = JSON.parse(data);
-                        mwContents.send('project-loaded', global.webbyData.projectInfos);
-                    });
+                    if (fileNames != null && fileNames.length > 0) {
+                        fs.readFile(fileNames[0], (err, data) => {
+                            if (err) throw err;
+                            global.webbyData.projectInfos = JSON.parse(data);
+                            mwContents.send('project-loaded', global.webbyData.projectInfos);
+                        });
+                    }
                 }
             },
             {
@@ -58,11 +60,13 @@ const template = [
                         ]
                     });
 
-                    fs.writeFile(fileName, JSON.stringify(global.webbyData.projectInfos), {
-                        flag: fs.constants.O_WRONLY + fs.constants.O_CREAT + fs.constants.O_TRUNC
-                    }, err => {
-                        if (err) throw err;
-                    });
+                    if (fileName != null && fileName !== '') {
+                        fs.writeFile(fileName, JSON.stringify(global.webbyData.projectInfos), {
+                            flag: fs.constants.O_WRONLY + fs.constants.O_CREAT + fs.constants.O_TRUNC
+                        }, err => {
+                            if (err) throw err;
+                        });
+                    }
                 }
             },
             {
