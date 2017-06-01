@@ -20,15 +20,69 @@ let $d = $(document),
 	$ppModal = $('#project-properties-modal');
 
 const ElementType = {
-	PARAGRAPH: 0,
-	DIV: 1
+	// todo img ul ol li hr
+	P: 0,
+	DIV: 1,
+	A: 2,
+	ADDRESS: 3,
+	ARTICLE: 4,
+	ASIDE: 5,
+	BLOCKQUOTE: 6,
+	FOOTER: 7,
+	H1: 8,
+	H2: 9,
+	H3: 10,
+	H4: 11,
+	H5: 12,
+	H6: 13,
+	HEADER: 14,
+	MAIN: 15,
+	NAV: 16,
+	SECTION: 17,
 };
+
+const Tags = [
+	'p',
+	'div',
+	'a',
+	'address',
+	'article',
+	'aside',
+	'blockquote',
+	'footer',
+	'h1',
+	'h2',
+	'h3',
+	'h4',
+	'h5',
+	'h6',
+	'header',
+	'main',
+	'nav',
+	'section',
+];
 
 const Locales = {
 	Fr: {
 		Elements: [
 			'Paragraphe',
-			'Bloc'
+			'Bloc',
+			'Hyperlien',
+			'Adresse',
+			'Article',
+			'Contenu annexe',
+			'Citation',
+			'Pied de page',
+			'Titre',
+			'Sous-titre',
+			'Titre 3',
+			'Titre 4',
+			'Titre 5',
+			'Titre 6',
+			'En-tête',
+			'Contenu principal',
+			'Navigation',
+			'Section'
 		]
 	}
 }
@@ -220,7 +274,11 @@ function addElement(elem) {
 		$newElem.find('strong').html(elem.name);
 		$newElem.find('em').html(typeToLocale(elem.type));
 	}
+
+	let $newTag = $(`<${Tags[elem.type]}>`).attr('id', `elem-${elem.position}`).text(elem.text);
 	$newElem.appendTo('#elements');
+	$newTag.appendTo('#preview');
+
 }
 
 function updateElements() {
@@ -235,7 +293,7 @@ function clearElements() {
 }
 
 $('#add-paragraph').click(ev => {
-	new Element(ElementType.PARAGRAPH, 'Nom');
+	new Element(ElementType.P, 'Nom');
 	ev.preventDefault();
 });
 
@@ -250,11 +308,24 @@ $('[data-toggle]').click(function() {
 
 
 $(() => {
-	new Element(ElementType.PARAGRAPH, 'Nom');
-	new Element(ElementType.DIV, 'Test', 'coucou');
-	new Element(ElementType.DIV, 'Test', 'coucou');
-	new Element(ElementType.DIV, 'Test', 'coucou');
-	new Element(ElementType.DIV, 'Test', 'coucou');
+	new Element(ElementType.P, 'Nom', 'bb');
+	new Element(ElementType.DIV, 'Nom', 'bb');
+	new Element(ElementType.A, 'Nom', 'bb');
+	new Element(ElementType.ADDRESS, 'Nom', 'bb');
+	new Element(ElementType.ARTICLE, 'Nom', 'bb');
+	new Element(ElementType.ASIDE, 'Nom', 'bb');
+	new Element(ElementType.BLOCKQUOTE, 'Nom', 'bb');
+	new Element(ElementType.FOOTER, 'Nom', 'bb');
+	new Element(ElementType.H1, 'Nom', 'bb');
+	new Element(ElementType.H2, 'Nom', 'bb');
+	new Element(ElementType.H3, 'Nom', 'bb');
+	new Element(ElementType.H4, 'Nom', 'bb');
+	new Element(ElementType.H5, 'Nom', 'bb');
+	new Element(ElementType.H6, 'Nom', 'bb');
+	new Element(ElementType.HEADER, 'Nom', 'bb');
+	new Element(ElementType.MAIN, 'Nom', 'bb');
+	new Element(ElementType.NAV, 'Nom', 'bb');
+	new Element(ElementType.SECTION, 'Nom', 'bb');
 
 	Sortable.create(document.getElementById('elements'), {
 		handle: '.fa-arrows-v',
@@ -272,10 +343,22 @@ $(() => {
 				for (let i = ev.newIndex - 1; i >= 0; i--) {
 					projectInfos.elements[i].position--;
 				}
+
+				let $movedElem = $(`#elem-${ev.oldIndex}`).insertAfter(`#elem-${ev.newIndex}`).attr('id', `elem-${ev.newIndex}-a`);
+				for (let i = ev.oldIndex + 1; i <= ev.newIndex; i++) {
+					$(`#elem-${i}`).attr('id', `elem-${i-1}`);
+				}
+				$movedElem.attr('id', `elem-${ev.newIndex}`);
 			} else {
 				for (let i = ev.newIndex + 1; i <= ev.oldIndex; i++) {
 					projectInfos.elements[i].position++;
 				}
+
+				let $movedElem = $(`#elem-${ev.oldIndex}`).insertBefore(`#elem-${ev.newIndex}`).attr('id', `elem-${ev.newIndex}-a`);
+				for (let i = ev.oldIndex - 1; i >= ev.newIndex; i--) {
+					$(`#elem-${i}`).attr('id', `elem-${i+1}`);
+				}
+				$movedElem.attr('id', `elem-${ev.newIndex}`);
 			}
 
 			remote.getGlobal('webbyData').projectInfos = projectInfos;
