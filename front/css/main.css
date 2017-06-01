@@ -7,7 +7,9 @@
 body {
 	width: 100vw;
 	height: 100vh;
+	overflow: hidden;
 }
+
 
 hr {
 	width: 75%;
@@ -29,6 +31,9 @@ input.button {
 .dropdown-pane {
 	background: rgba(255, 255, 255, 0.8);
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.dropdown-pane.visible {
+	visibility: visible;
 }
 
 #page {
@@ -62,20 +67,25 @@ input.button {
 
 #elements {
 	height: 100%;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: hidden;
 	overflow-y: auto;
 	background-color: #ccc;
 	border: 1px solid #aaa;
 	border-radius: 3px;
-}
 
-#elements {
-	width: 100%;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
 }
 
 .element {
+	width: 100%;
 	padding: 4px;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-	margin-bottom: 0.5rem;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 .element:last-child {
 	margin-bottom: 0.125rem;
