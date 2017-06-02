@@ -324,10 +324,12 @@ $ppModal.children('form').submit(ev => {
 $epModal.children('form').submit(ev => {
 	$epModal.foundation('close');
 
+	let id = $epModal.find('[type="hidden"]').val();
+
 	$epModal.find('input[type!="submit"][type!="hidden"],select,textarea').each((i,v) => {
 		let $v = $(v);
 		let indexes = $v.attr('name').substr(8).split('-');
-		let varToFill = `projectInfos.elements[${$epModal.find('[type="hidden"]').val()}]`;
+		let varToFill = `projectInfos.elements[${id}]`;
 		for (let i = 0; i < indexes.length; i++) {
 			let v = indexes[i];
 			if (isNaN(parseInt(v))) {
@@ -336,10 +338,23 @@ $epModal.children('form').submit(ev => {
 				varToFill += `[${v}]`
 			}
 		}
-		eval(varToFill + ' = "' + $v.val() + '"');
-		$v.val('');
+		switch ($v.tagName()) {
+			case 'input':
+				eval(varToFill + ' = "' + $v.val() + '"');
+				$v.val('');
+				break;
+			case 'select':
+				eval(varToFill + ' = "' + $v.find(":selected").val() + '"');
+				$v.find(":selected").prop('selected', false);
+				break;
+			case 'textarea':
+				eval(varToFill + ' = "' + $v.text() + '"');
+				$v.text('');
+				break;
+		}
 	});
 	updateElements();
+	updateHTMLElement(projectInfos.elements[id]);
 	remote.getGlobal('webbyData').projectInfos = projectInfos;
 
 	ev.preventDefault();
@@ -379,6 +394,11 @@ function addElement(elem, addTags = true) {
 		$newTag.appendTo('#preview');
 	}
 	$newElem.appendTo('#elements');
+}
+
+function updateHTMLElement(element) {
+	let $elem = $(`#elem-${element.position}`);
+	$elem.html(element.text);
 }
 
 function updateElements() {
