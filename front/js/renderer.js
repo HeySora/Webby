@@ -9,6 +9,10 @@ Array.prototype.move = function (old_index, new_index) {
     return this;
 };
 
+jQuery.fn.tagName = function() {
+	return this.prop('tagName').toLowerCase();
+}
+
 const {remote, ipcRenderer} = require('electron');
 
 let $d = $(document),
@@ -17,7 +21,8 @@ let $d = $(document),
 	$elems = $('#elements'),
 	$p = $('#preview'),
 	$npModal = $('#new-project-modal'),
-	$ppModal = $('#project-properties-modal');
+	$ppModal = $('#project-properties-modal'),
+	$epModal = $('#element-properties-modal');
 
 const ElementType = {
 	// todo img ul ol li hr
@@ -195,13 +200,64 @@ showProjectProperties = () => {
 
 	$.each(projectInfos.metadatas, (i, v) => {
 		let element = $ppModal.find(`[name="project-metadatas-${i}"]`);
-		if (element != null) {
-			element.val(v);
+		if (element != null && element.length > 0) {
+			switch (element.tagName()) {
+				case 'input':
+					element.val(v);
+					break;
+				case 'select':
+					element.children(`[value="${v}"]`).prop('selected', true);
+					break;
+				case 'textarea':
+					element.text(v);
+					break;
+			}
 		}
 	});
 
 	$ppModal.foundation('open');
 }
+
+$('.element-properties').click(function() {
+	let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
+	$epModal.find('[type="hidden"]').val(id);
+
+	$.each(projectInfos.elements[id], (i,v) => {
+		let element = $epModal.find(`[name="element-${i.substr(1)}"]`);
+		if (element != null && element.length > 0) {
+			switch (element.tagName()) {
+				case 'input':
+					element.val(v);
+					break;
+				case 'select':
+					element.children(`[value="${v}"]`).prop('selected', true);
+					break;
+				case 'textarea':
+					element.text(v);
+					break;
+			}
+		} else if (typeof v === 'object' && Array.isArray(v)) {
+			$.each(v, (i2,v2) => {
+				let element2 = $epModal.find(`[name="element-${i.substr(1)}-${i2}"]`);
+				if (element2 != null && element2.length > 0) {
+					switch (element2.tagName()) {
+						case 'input':
+							element2.val(v2);
+							break;
+						case 'select':
+							element2.children(`[value="${v2}"]`).prop('selected', true)
+							break;
+						case 'textarea':
+							element2.text(v2);
+							break;
+					}
+				}
+			});
+		}
+	});
+
+	$epModal.foundation('open');
+});
 
 $npModal.children('form').submit(ev => {
 	$npModal.foundation('close');
@@ -226,8 +282,13 @@ $npModal.children('form').submit(ev => {
 		let $v = $(v);
 		let indexes = $v.attr('name').substr(8).split('-');
 		let varToFill = 'projectInfos';
-		for (var i = 0; i < indexes.length; i++) {
-			varToFill += '.' + indexes[i];
+		for (let i = 0; i < indexes.length; i++) {
+			let v = indexes[i];
+			if (isNaN(parseInt(v))) {
+				varToFill += `.${v}`;
+			} else {
+				varToFill += `[${v}]`
+			}
 		}
 		eval(varToFill + ' = "' + $v.val() + '"');
 		$v.val('');
@@ -244,8 +305,13 @@ $ppModal.children('form').submit(ev => {
 		let $v = $(v);
 		let indexes = $v.attr('name').substr(8).split('-');
 		let varToFill = 'projectInfos';
-		for (var i = 0; i < indexes.length; i++) {
-			varToFill += '.' + indexes[i];
+		for (let i = 0; i < indexes.length; i++) {
+			let v = indexes[i];
+			if (isNaN(parseInt(v))) {
+				varToFill += `.${v}`;
+			} else {
+				varToFill += `[${v}]`
+			}
 		}
 		eval(varToFill + ' = "' + $v.val() + '"');
 		$v.val('');
@@ -255,11 +321,35 @@ $ppModal.children('form').submit(ev => {
 	ev.preventDefault();
 });
 
+$epModal.children('form').submit(ev => {
+	$epModal.foundation('close');
+
+	$epModal.find('input[type!="submit"][type!="hidden"],select,textarea').each((i,v) => {
+		let $v = $(v);
+		let indexes = $v.attr('name').substr(8).split('-');
+		let varToFill = `projectInfos.elements[${$epModal.find('[type="hidden"]').val()}]`;
+		for (let i = 0; i < indexes.length; i++) {
+			let v = indexes[i];
+			if (isNaN(parseInt(v))) {
+				varToFill += `.${v}`;
+			} else {
+				varToFill += `[${v}]`
+			}
+		}
+		eval(varToFill + ' = "' + $v.val() + '"');
+		$v.val('');
+	});
+	updateElements();
+	remote.getGlobal('webbyData').projectInfos = projectInfos;
+
+	ev.preventDefault();
+});
+
 ipcRenderer.on('project-loaded', (ev, infos) => {
+	clearElements(true, false);
 	projectInfos = infos;
 	let jsonElements = projectInfos.elements;
 	projectInfos.elements = [];
-	clearElements();
 	$.each(jsonElements, (i,v) => {
 		new Element(v._type, v._name, v._text, v._sizes, v._properties);
 	});
@@ -298,13 +388,15 @@ function updateElements() {
 	});
 }
 
-function clearElements(trueDelete = false) {
+function clearElements(trueDelete = false, updateGlobal = true) {
 	if (trueDelete) {
 		$.each(projectInfos.elements, (i,v) => {
 			v.delete(false, false);
 		});
 		projectInfos.elements = [];
-		remote.getGlobal('webbyData').projectInfos = projectInfos;
+		if (updateGlobal) {
+			remote.getGlobal('webbyData').projectInfos = projectInfos;
+		}
 	}
 	$('#elements > *').remove();
 }
@@ -324,7 +416,11 @@ $s.find('[id^="add-"]').click(function(ev) {
 	ev.preventDefault();
 });
 
-
+$elems.scroll(() => {
+	$elems.find('[id$="dropdown-properties"]').css('margin-top', -$elems.scrollTop());
+	let $lastDropdown = $elems.children(':last-child').find('[id$="dropdown-properties"]')
+	$lastDropdown.css('margin-top', -($elems.scrollTop() + $lastDropdown.outerHeight() + 28));
+});
 
 $(() => {
 	new Element(ElementType.P, 'Nom', 'bb');
@@ -381,6 +477,8 @@ $(() => {
 			}
 
 			remote.getGlobal('webbyData').projectInfos = projectInfos;
+
+			updateElements();
 		}
 	});
 

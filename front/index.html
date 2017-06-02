@@ -227,6 +227,80 @@
                 </form>
             </div>
 
+            <div class="large reveal" id="element-properties-modal" data-reveal>
+                <h2>Propriétés de l'élément</h2>
+                <form>
+                    <input type="hidden" name="element-id" value="" />
+                    <div class="row">
+                        <div class="small-6 columns">
+                            <label>Nom de l'élément
+                                <input type="text" name="element-name" required="required" />
+                            </label>
+                        </div>
+                        <div class="small-6 columns">
+                            <label>Tailles (Mobile / Tablette / Ordinateur)
+                                <div class="input-group">
+                                    <select name="element-sizes-0" required="required" class="input-group-field">
+                                        <option value="1">8.3% (1/12)</option>
+                                        <option value="2">16.7% (1/6)</option>
+                                        <option value="3">25% (1/4)</option>
+                                        <option value="4">33.3% (1/3)</option>
+                                        <option value="5">41.7% (5/12)</option>
+                                        <option value="6">50% (1/2)</option>
+                                        <option value="7">58.3% (7/12)</option>
+                                        <option value="8">66.7% (2/3)</option>
+                                        <option value="9">75% (3/4)</option>
+                                        <option value="10">83.3% (5/6)</option>
+                                        <option value="11">91.7% (11/12)</option>
+                                        <option value="12">100%</option>
+                                    </select>
+                                    <select name="element-sizes-1" required="required" class="input-group-field">
+                                        <option value="1">8.3% (1/12)</option>
+                                        <option value="2">16.7% (1/6)</option>
+                                        <option value="3">25% (1/4)</option>
+                                        <option value="4">33.3% (1/3)</option>
+                                        <option value="5">41.7% (5/12)</option>
+                                        <option value="6">50% (1/2)</option>
+                                        <option value="7">58.3% (7/12)</option>
+                                        <option value="8">66.7% (2/3)</option>
+                                        <option value="9">75% (3/4)</option>
+                                        <option value="10">83.3% (5/6)</option>
+                                        <option value="11">91.7% (11/12)</option>
+                                        <option value="12">100%</option>
+                                    </select>
+                                    <select name="element-sizes-2" required="required" class="input-group-field">
+                                        <option value="1">8.3% (1/12)</option>
+                                        <option value="2">16.7% (1/6)</option>
+                                        <option value="3">25% (1/4)</option>
+                                        <option value="4">33.3% (1/3)</option>
+                                        <option value="5">41.7% (5/12)</option>
+                                        <option value="6">50% (1/2)</option>
+                                        <option value="7">58.3% (7/12)</option>
+                                        <option value="8">66.7% (2/3)</option>
+                                        <option value="9">75% (3/4)</option>
+                                        <option value="10">83.3% (5/6)</option>
+                                        <option value="11">91.7% (11/12)</option>
+                                        <option value="12">100%</option>
+                                    </select>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="small-12 column">
+                            <label>Contenu de l'élément
+                                <textarea name="element-text" required="required"></textarea>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row align-center">
+                        <div class="small-4 column">
+                            <input type="submit" class="button" value="Modifier !" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
             <!-- Elements
                 =========================================== -->
             <div id="template-element" class="element row collapse align-middle">
@@ -241,10 +315,8 @@
                     <i class="fa fa-chevron-down"></i>
                     <div class="dropdown-pane" id="dropdown-properties" data-auto-focus="true">
                         <ul>
-                            <li><a href="#" class="delete-element button">Coucou</a></li>
-                            <li>Coucou</li>
-                            <li>Coucou</li>
-                            <li>Coucou</li>
+                            <li><a href="#" class="delete-element button">Supprimer</a></li>
+                            <li><a href="#" class="element-properties button">Propriétés</a></li>
                         </ul>
                     </div>
                 </div>

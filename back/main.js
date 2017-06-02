@@ -46,7 +46,7 @@ const template = [
             {
                 label: 'Enregistrer',
                 click() {
-                    if (lastFileName == '') {
+                    if (lastFileName == null || lastFileName == '') {
                         lastFileName = dialog.showSaveDialog(mainWindow, {
                             title: 'Sauvegarder le projet',
                             filters: [
@@ -57,12 +57,13 @@ const template = [
                             ]
                         });
                     }
-
-                    fs.writeFile(lastFileName, JSON.stringify(global.webbyData.projectInfos), {
-                        flag: fs.constants.O_WRONLY + fs.constants.O_CREAT + fs.constants.O_TRUNC
-                    }, err => {
-                        if (err) throw err;
-                    });
+                    if (lastFileName != null && lastFileName !== '') {
+                        fs.writeFile(lastFileName, JSON.stringify(global.webbyData.projectInfos), {
+                            flag: fs.constants.O_WRONLY + fs.constants.O_CREAT + fs.constants.O_TRUNC
+                        }, err => {
+                            if (err) throw err;
+                        });
+                    }
                 }
             },
             {
