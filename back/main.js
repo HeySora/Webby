@@ -1,13 +1,17 @@
+// Importation des modules
 const electron = require('electron')
 const {app, Menu, BrowserWindow, dialog, ipcMain} = electron;
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
 
+// Variable globale partagée entre les deux processus
 global.webbyData = {projectInfos: null};
 
+// Utilisé pour le menu "Fichier > Enregistrer"
 let lastFileName = '';
 
+// Toolbar
 const template = [
     {
         label: 'Fichier',
@@ -129,14 +133,14 @@ const template = [
         ]
     }
 ];
-
 const webbyMenu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(webbyMenu);
 
-
+// Déclaration des fenêtres
 let mainWindow, mwContents, newProjectWindow;
 
 function createWindow () {
+    // Création de la fenêtre
     mainWindow = new BrowserWindow({
         width: 1280,
         height: 720,
@@ -148,20 +152,23 @@ function createWindow () {
         show: false
     });
 
+    // Chargement de la page
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, '../front/index.html'),
         protocol: 'file:',
         slashes: true
     }));
 
+    // Enregistrement de mwContents
     mwContents = mainWindow.webContents;
-
     mwContents.openDevTools();
 
+    // Affichage de la page lorsque tout est prêt
     mainWindow.once('ready-to-show', () => {
         mainWindow.show()
     })
 
+    // Suppression de la variable lorsque la fenêtre est fermée, pour éviter les fuites de RAM
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
@@ -169,12 +176,14 @@ function createWindow () {
 
 app.on('ready', createWindow);
 
+// Fermeture de l'application lorsque toutes les fenêtres sont fermées
 app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') {
+    if (process.platform !== 'darwin') { // Mac OS
         app.quit();
     }
 });
 
+// Mac OS
 app.on('activate', function () {
     if (mainWindow === null) {
         createWindow();

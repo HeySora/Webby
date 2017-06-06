@@ -25,8 +25,12 @@
     </head>
     <body>
         
+        <!-- Page principale
+            =========================================== -->
         <div id="page" class="expanded row">
 
+            <!-- Sidebar
+                =========================================== -->
             <aside id="sidebar" class="medium-3 columns">
                 <div id="sidebar-title" class="row align-justify align-middle">
                     <div class="columns">
@@ -68,6 +72,8 @@
 
             </aside>
 
+            <!-- Aperçu de la page résultante
+                =========================================== -->
             <main id="preview" class="columns">
 
             </main>
@@ -92,6 +98,7 @@
 
             <!-- Reveals / Modals
                 =========================================== -->
+            <!-- Assistant "Créer un projet" -->
             <div class="large reveal" id="new-project-modal" data-reveal>
                 <h2>Créer un projet</h2>
                 <form>
@@ -141,6 +148,7 @@
                 </form>
             </div>
 
+            <!-- Assistant "Propriétés du projet" -->
             <div class="large reveal" id="project-properties-modal" data-reveal>
                 <h2>Propriétés du projet</h2>
                 <form>
@@ -227,6 +235,7 @@
                 </form>
             </div>
 
+            <!-- Assistant "Propriétés de l'élément" -->
             <div class="large reveal" id="element-properties-modal" data-reveal>
                 <h2>Propriétés de l'élément</h2>
                 <form>
@@ -379,8 +388,9 @@
                 </form>
             </div>
 
-            <!-- Elements
+            <!-- Templates
                 =========================================== -->
+            <!-- Élément (représenté dans la sidebar) -->
             <div id="template-element" class="element row collapse align-middle">
                 <div class="shrink columns">
                     <i class="fa fa-arrows-v"></i>
@@ -407,6 +417,7 @@
 
         <!-- Compatibilités librairies JS navigateur -->
         <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
         
         <!-- Sortable JS -->
         <script src="js/vendor/sortable.js"></script>
@@ -417,14 +428,15 @@
         <!-- jQuery UI 1.12.1 -->
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU= sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX sha512-4DaiBX8rsgOoBSNLceQ/IixDF+uUDV0hJrQX/MJ9RwJZCDqbEp0EjIQodGxszPtTpwlenJznR2jkgDWqj4Hs+A==" crossorigin="anonymous"></script>
 
+        <!-- Foundation 6.2.3 -->
         <script src="js/vendor/what-input.js"></script>
         <script src="js/vendor/foundation.js"></script>
-
 
 
         <!-- Retour au comportement normal -->
         <script>if (window.module) module = window.module;</script>
 
+        <!-- Script Webby -->
         <script>
             require('./js/renderer.js');
         </script>

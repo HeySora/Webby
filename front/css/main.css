@@ -1,5 +1,7 @@
 @charset "UTF-8";
 
+/* Propriétés de base */
+
 *, body, h1, h2, h3, h4, h5, h6 {
 	font-family: "Roboto", sans-serif;
 }
@@ -49,6 +51,9 @@ input.button {
 	height: 100%;
 	position: relative;
 }
+
+
+/* Sidebar */
 
 #sidebar {
 	min-width: 320px;
@@ -143,6 +148,9 @@ input.button {
 	color: #555;
 }
 
+
+/* Aperçu de la page résultante */
+
 #preview {
 	overflow: auto;
 }
@@ -156,6 +164,8 @@ input.button {
 	background: #000;
 	display: none;
 }
+
+/* Page d'accueil */
 
 #home {
 	margin: auto;

@@ -1,3 +1,4 @@
+// Implémentation de méthodes supplémentaires
 Array.prototype.move = function (old_index, new_index) {
     if (new_index >= this.length) {
         let k = new_index - this.length;
@@ -13,12 +14,18 @@ String.prototype.replaceAll = function(search, replacement) {
     return this.replace(new RegExp(search, 'g'), replacement);
 };
 
+String.prototype.capitalizeFirstLetter = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
 jQuery.fn.tagName = function() {
 	return this.prop('tagName').toLowerCase();
 }
 
+// Importation des modules
 const {remote, ipcRenderer} = require('electron');
 
+// Déclaration des variables globales
 let $d = $(document),
 	$w = $(window),
 	$s = $('#sidebar'),
@@ -28,6 +35,7 @@ let $d = $(document),
 	$ppModal = $('#project-properties-modal'),
 	$epModal = $('#element-properties-modal');
 
+// Déclaration des enums
 const ElementType = {
 	// todo img ul ol li hr
 	P: 0,
@@ -96,8 +104,10 @@ const Locales = {
 	}
 }
 
+// Classe Element, au centre de tout
 class Element {
 	constructor(type, name, text, sizes, properties) {
+		// Déclaration des propriétés
 		this._type = type;
 		this._name = name;
 		this._text = text != null ? text : '';
@@ -110,30 +120,38 @@ class Element {
 		};
 
 		projectInfos.elements.push(this);
+		// Mise à jour de la variable globale à chaque modification de projectInfos
 		remote.getGlobal('webbyData').projectInfos = projectInfos;
 
+		// Création de l'élément HTML dans l'aperçu
 		addElement(this);
 	}
 
+	// Suppression d'un élément
 	delete(update = true, deleteElement = true) {
-		if (deleteElement) {
+		if (deleteElement) { // Retirer l'instance du tableau projectInfos.elements
 			projectInfos.elements.splice(this._position, 1);
 		}
 
+		// Supprimer l'élément HTML de l'aperçu
 		$(`#elem-${this._position}`).remove();
+
+		// Mettre à jour toutes les positions des éléments situés après celui-ci
 		for (let i = this._position; i <= projectInfos.elements.length; i++) {
 			if (i < projectInfos.elements.length) {
 				projectInfos.elements[i].position--;
 			}
 			$(`#elem-${i}`).attr('id', `elem-${i-1}`);
 		}
+
 		remote.getGlobal('webbyData').projectInfos = projectInfos;
 
-		if (update) {
+		if (update) { // Mettre à jour la liste des éléments dans la sidebar
 			updateElements();
 		}
 	}
 
+	// Getters & Setters
 	get type() {
 		return this._type;
 	}
@@ -177,6 +195,7 @@ class Element {
 	}
 }
 
+// Informations du projet en cours
 let projectInfos = {
 	name: '',
 	metadatas: {
@@ -193,19 +212,22 @@ let projectInfos = {
 
 remote.getGlobal('webbyData').projectInfos = projectInfos;
 
+// Mise à jour de la hauteur de la div des éléments (dans la sidebar) pour concorder avec la hauteur de l'écran
 function resize() {
 	$elems.height( $s.innerHeight() - $('#sidebar-title').outerHeight() - 32 );
 }
 $w.resize(resize);
 resize();
 
-newProject = () => {
+// Ouvertures d'assistants
+newProject = () => { // Assistant nouveau projet
 	$npModal.foundation('open');
 }
 
-showProjectProperties = () => {
+showProjectProperties = () => { // Assistant propriétés du projet
 	$ppModal.find('[name="project-name"]').val(projectInfos.name);
 
+	// Mise à jour des champs dynamiquement
 	$.each(projectInfos.metadatas, (i, v) => {
 		let element = $ppModal.find(`[name="project-metadatas-${i}"]`);
 		if (element != null && element.length > 0) {
@@ -224,15 +246,17 @@ showProjectProperties = () => {
 	$ppModal.foundation('open');
 }
 
-$('.element-properties').click(function() {
+$('.element-properties').click(function() { // Propriétés de l'élément
+	// Définition d'un input caché, utilisé pour appliquer les propriétés au bon élément
 	let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
 	$epModal.find('[type="hidden"]').val(id);
 
+	// Application des propriétés dans les champs de texte
 	$.each(projectInfos.elements[id], (i,v) => {
 		let element = $epModal.find(`[name="element-${i.substr(1)}"]`);
 
 		if (element != null && element.length > 0) {
-			switch (element.tagName()) {
+			switch (element.tagName()) { // Comportement différent selon le type de champ
 				case 'textarea':
 					element.val(v.replaceAll('<br />', '\n'));
 					break;
@@ -265,11 +289,14 @@ $('.element-properties').click(function() {
 	$epModal.foundation('open');
 });
 
-$npModal.children('form').submit(ev => {
+// Validation des assistants
+$npModal.children('form').submit(ev => { // Nouveau projet
 	$npModal.foundation('close');
 
+	// Suppression forcée de tous les éléments
 	clearElements(true);
 
+	// Réinitialisation des informations
 	projectInfos = {
 		name: '',
 		metadatas: {
@@ -284,6 +311,7 @@ $npModal.children('form').submit(ev => {
 		elements: []
 	};
 
+	// Remplissage des informations avec les nouvelles
 	$npModal.find('input[type!="submit"],select').each((i, v) => {
 		let $v = $(v);
 		let indexes = $v.attr('name').substr(8).split('-');
@@ -301,12 +329,14 @@ $npModal.children('form').submit(ev => {
 	});
 	remote.getGlobal('webbyData').projectInfos = projectInfos;
 
+	// Annuler le rechargement de la page, dû au bouton submit
 	ev.preventDefault();
 });
 
-$ppModal.children('form').submit(ev => {
+$ppModal.children('form').submit(ev => { // Enregistrement des propriétés du projet
 	$ppModal.foundation('close');
 
+	// Rempliissage des informations par les nouvelles
 	$ppModal.find('input[type!="submit"],select').each((i, v) => {
 		let $v = $(v);
 		let indexes = $v.attr('name').substr(8).split('-');
@@ -327,11 +357,13 @@ $ppModal.children('form').submit(ev => {
 	ev.preventDefault();
 });
 
-$epModal.children('form').submit(ev => {
+$epModal.children('form').submit(ev => { // Modification des propriétés de l'élément
 	$epModal.foundation('close');
 
+	// Récupération de l'ID, pour savoir quel élément modifier.
 	let id = $epModal.find('[type="hidden"]').val();
 
+	// Remplissage des informations par les nouvelles
 	$epModal.find('input[type!="submit"][type!="hidden"],select,textarea').each((i,v) => {
 		let $v = $(v);
 		let indexes = $v.attr('name').substr(8).split('-');
@@ -357,15 +389,23 @@ $epModal.children('form').submit(ev => {
 				break;
 		}
 	});
-	updateElements();
-	updateHTMLElement(projectInfos.elements[id]);
-	remote.getGlobal('webbyData').projectInfos = projectInfos;
 
+	// Mise à jour de l'affichage dans la sidebar
+	updateElements();
+
+	// Mise à jour de l'élément de l'aperçu
+	updateHTMLElement(projectInfos.elements[id]);
+
+	remote.getGlobal('webbyData').projectInfos = projectInfos;
 	ev.preventDefault();
 });
 
+// Lors de l'importation d'un projet
 ipcRenderer.on('project-loaded', (ev, infos) => {
+	// Effacement des éléments, sans changer la variable globale (sa valeur est déjà correcte)
 	clearElements(true, false);
+
+	// Remplacement du JSON par des vraies instances d'Element
 	projectInfos = infos;
 	let jsonElements = projectInfos.elements;
 	projectInfos.elements = [];
@@ -374,17 +414,22 @@ ipcRenderer.on('project-loaded', (ev, infos) => {
 	});
 });
 
+// Convertit un élément interne en élément lisible par l'utilisateur
 function typeToLocale(type, lang = 'fr') {
-	return Locales.Fr.Elements[type];
+	return Locales[lang.capitalizeFirstLetter()].Elements[type];
 }
 
+// Ajout d'un élément
 function addElement(elem, addTags = true) {
+	// Clonage de la template d'élément de sidebar
 	let $newElem = $('#template-element').clone(true);
-	$newElem.attr('id', `element-${elem.position}`);
 
+	// Changement des IDs/Classes
+	$newElem.attr('id', `element-${elem.position}`);
 	$newElem.find('.dropdown-pane').attr('id', elem.position + '-dropdown-properties');
 	$newElem.find('[data-toggle]').attr('data-toggle', elem.position + '-dropdown-properties');
 
+	// Contenu de l'élément
 	if (elem.text !== '') {
 		$newElem.find('strong').html(elem.name + ' &middot; ' + typeToLocale(elem.type));
 		$newElem.find('em').html(elem.text.replaceAll('<br />', ' '));
@@ -393,6 +438,7 @@ function addElement(elem, addTags = true) {
 		$newElem.find('em').html(typeToLocale(elem.type));
 	}
 
+	// Ajout d'éléments dans l'aperçu
 	if (addTags) {
 		let $newTag = $(`<${Tags[elem.type]}>`).attr('id', `elem-${elem.position}`).html(elem.text);
 		$.each(elem.properties, (i,v) => {
@@ -403,9 +449,11 @@ function addElement(elem, addTags = true) {
 		});
 		$newTag.appendTo('#preview');
 	}
+
 	$newElem.appendTo('#elements');
 }
 
+// Mise à jour de l'élément de l'aperçu
 function updateHTMLElement(element) {
 	let $elem = $(`#elem-${element.position}`);
 	$elem.html(element.text);
@@ -418,6 +466,7 @@ function updateHTMLElement(element) {
 	});
 }
 
+// Mise à jour de l'affichage de tous les éléments de la sidebar
 function updateElements() {
 	clearElements();
 	$.each(projectInfos.elements, (i,v) => {
@@ -425,6 +474,7 @@ function updateElements() {
 	});
 }
 
+// Suppression des éléments
 function clearElements(trueDelete = false, updateGlobal = true) {
 	if (trueDelete) {
 		$.each(projectInfos.elements, (i,v) => {
@@ -438,27 +488,32 @@ function clearElements(trueDelete = false, updateGlobal = true) {
 	$('#elements > *').remove();
 }
 
+// Lors du clic sur le bouton "Supprimer l'élément"
 $('.delete-element').click(function(ev) {
 	let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
 	projectInfos.elements[id].delete();
 });
 
+// Dropdown personnalisés
 $('[data-toggle]').click(function() {
 	$('#' + $(this).attr('data-toggle')).toggleClass('visible');
 });
 
+// Lors du clic sur le bouton "+"
 $s.find('[id^="add-"]').click(function(ev) {
 	let newTag = $(this).attr('id').substr(4);
-	new Element(ElementType[newTag.toUpperCase()], 'Nom', 'CXOUCOUTEXTE');
+	new Element(ElementType[newTag.toUpperCase()], 'Nom', 'Texte');
 	ev.preventDefault();
 });
 
+// Lors du scroll sur la liste d'éléments, mise à jour de la position des fenêtres flottantes
 $elems.scroll(() => {
 	$elems.find('[id$="dropdown-properties"]').css('margin-top', -$elems.scrollTop());
 	let $lastDropdown = $elems.children(':last-child').find('[id$="dropdown-properties"]')
 	$lastDropdown.css('margin-top', -($elems.scrollTop() + $lastDropdown.outerHeight() + 28));
 });
 
+// Lorsque la page est prête
 $(() => {
 	new Element(ElementType.P, 'Nom', 'bb');
 	new Element(ElementType.DIV, 'Nom', 'bb');
@@ -479,6 +534,7 @@ $(() => {
 	new Element(ElementType.NAV, 'Nom', 'bb');
 	new Element(ElementType.SECTION, 'Nom', 'bb');
 
+	// Création d'une liste réordrable
 	Sortable.create(document.getElementById('elements'), {
 		handle: '.fa-arrows-v',
 		animation: 150,
@@ -519,5 +575,6 @@ $(() => {
 		}
 	});
 
+	// Initialisation de foundation
 	$(document).foundation();
 });
