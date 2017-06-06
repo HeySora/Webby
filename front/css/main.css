@@ -40,6 +40,9 @@ input.button {
 .dropdown-pane.visible {
 	visibility: visible;
 }
+.accordion-title, .accordion-title:focus, .accordion-title:hover {
+	color: #000;
+}
 
 #page {
 	width: 100%;
@@ -130,6 +133,14 @@ input.button {
 
 .element:last-child [id$="dropdown-properties"] {
 	margin-top:  !important;
+}
+
+[name='element-properties-color'] > option {
+	background-color: #999;
+}
+
+[name='element-properties-backgroundColor'] > option {
+	color: #555;
 }
 
 #preview {

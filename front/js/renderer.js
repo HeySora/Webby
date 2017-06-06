@@ -1,12 +1,16 @@
 Array.prototype.move = function (old_index, new_index) {
     if (new_index >= this.length) {
-        var k = new_index - this.length;
+        let k = new_index - this.length;
         while ((k--) + 1) {
             this.push(undefined);
         }
     }
     this.splice(new_index, 0, this.splice(old_index, 1)[0]);
     return this;
+};
+
+String.prototype.replaceAll = function(search, replacement) {
+    return this.replace(new RegExp(search, 'g'), replacement);
 };
 
 jQuery.fn.tagName = function() {
@@ -99,7 +103,11 @@ class Element {
 		this._text = text != null ? text : '';
 		this._position = projectInfos.elements.length;
 		this._sizes = sizes != null ? sizes : [12, 12, 12];
-		this._properties = properties != null ? properties : {};
+		this._properties = properties != null ? properties : {
+			color: 'default',
+			backgroundColor: 'transparent',
+			fontFamily: 'sans-serif'
+		};
 
 		projectInfos.elements.push(this);
 		remote.getGlobal('webbyData').projectInfos = projectInfos;
@@ -203,13 +211,11 @@ showProjectProperties = () => {
 		if (element != null && element.length > 0) {
 			switch (element.tagName()) {
 				case 'input':
+				case 'textarea':
 					element.val(v);
 					break;
 				case 'select':
 					element.children(`[value="${v}"]`).prop('selected', true);
-					break;
-				case 'textarea':
-					element.text(v);
 					break;
 			}
 		}
@@ -224,31 +230,31 @@ $('.element-properties').click(function() {
 
 	$.each(projectInfos.elements[id], (i,v) => {
 		let element = $epModal.find(`[name="element-${i.substr(1)}"]`);
+
 		if (element != null && element.length > 0) {
 			switch (element.tagName()) {
+				case 'textarea':
+					element.val(v.replaceAll('<br />', '\n'));
+					break;
 				case 'input':
 					element.val(v);
 					break;
 				case 'select':
 					element.children(`[value="${v}"]`).prop('selected', true);
 					break;
-				case 'textarea':
-					element.text(v);
-					break;
 			}
-		} else if (typeof v === 'object' && Array.isArray(v)) {
+		} else if (typeof v === 'object') {
 			$.each(v, (i2,v2) => {
 				let element2 = $epModal.find(`[name="element-${i.substr(1)}-${i2}"]`);
+
 				if (element2 != null && element2.length > 0) {
 					switch (element2.tagName()) {
 						case 'input':
+						case 'textarea':
 							element2.val(v2);
 							break;
 						case 'select':
 							element2.children(`[value="${v2}"]`).prop('selected', true)
-							break;
-						case 'textarea':
-							element2.text(v2);
 							break;
 					}
 				}
@@ -339,17 +345,15 @@ $epModal.children('form').submit(ev => {
 			}
 		}
 		switch ($v.tagName()) {
+			case 'textarea':
+				$v.val($v.val().replaceAll('\r\n', '<br />').replaceAll('\n', '<br />'));
 			case 'input':
-				eval(varToFill + ' = "' + $v.val() + '"');
+				eval(varToFill + ' = `' + $v.val().replace('`', '\\`') + '`');
 				$v.val('');
 				break;
 			case 'select':
 				eval(varToFill + ' = "' + $v.find(":selected").val() + '"');
 				$v.find(":selected").prop('selected', false);
-				break;
-			case 'textarea':
-				eval(varToFill + ' = "' + $v.text() + '"');
-				$v.text('');
 				break;
 		}
 	});
@@ -383,14 +387,20 @@ function addElement(elem, addTags = true) {
 
 	if (elem.text !== '') {
 		$newElem.find('strong').html(elem.name + ' &middot; ' + typeToLocale(elem.type));
-		$newElem.find('em').html(elem.text);
+		$newElem.find('em').html(elem.text.replaceAll('<br />', ' '));
 	} else {
 		$newElem.find('strong').html(elem.name);
 		$newElem.find('em').html(typeToLocale(elem.type));
 	}
 
 	if (addTags) {
-		let $newTag = $(`<${Tags[elem.type]}>`).attr('id', `elem-${elem.position}`).text(elem.text);
+		let $newTag = $(`<${Tags[elem.type]}>`).attr('id', `elem-${elem.position}`).html(elem.text);
+		$.each(elem.properties, (i,v) => {
+			if (v === 'default') {
+				return;
+			}
+			$newTag.css(i, v);
+		});
 		$newTag.appendTo('#preview');
 	}
 	$newElem.appendTo('#elements');
@@ -399,6 +409,13 @@ function addElement(elem, addTags = true) {
 function updateHTMLElement(element) {
 	let $elem = $(`#elem-${element.position}`);
 	$elem.html(element.text);
+	$.each(element.properties, (i,v) => {
+		if (v === 'default') {
+			$elem.css(i, '');
+		} else {
+			$elem.css(i, v);
+		}
+	});
 }
 
 function updateElements() {
