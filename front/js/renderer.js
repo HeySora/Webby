@@ -125,6 +125,46 @@ class Element {
 
 		// Création de l'élément HTML dans l'aperçu
 		addElement(this);
+
+		// Affichage de l'assistant afin de directement modifier les propriétés de l'élément
+
+		$epModal.find('[type="hidden"]').val(this._position);
+
+		$.each(projectInfos.elements[this._position], (i,v) => {
+			let element = $epModal.find(`[name="element-${i.substr(1)}"]`);
+
+			if (element != null && element.length > 0) {
+				switch (element.tagName()) {
+					case 'textarea':
+						element.val(v.replaceAll('<br />', '\n'));
+						break;
+					case 'input':
+						element.val(v);
+						break;
+					case 'select':
+						element.children(`[value="${v}"]`).prop('selected', true);
+						break;
+				}
+			} else if (typeof v === 'object') {
+				$.each(v, (i2,v2) => {
+					let element2 = $epModal.find(`[name="element-${i.substr(1)}-${i2}"]`);
+
+					if (element2 != null && element2.length > 0) {
+						switch (element2.tagName()) {
+							case 'input':
+							case 'textarea':
+								element2.val(v2);
+								break;
+							case 'select':
+								element2.children(`[value="${v2}"]`).prop('selected', true)
+								break;
+						}
+					}
+				});
+			}
+		});
+
+		$epModal.foundation('open');
 	}
 
 	// Suppression d'un élément
@@ -515,24 +555,6 @@ $elems.scroll(() => {
 
 // Lorsque la page est prête
 $(() => {
-	new Element(ElementType.P, 'Nom', 'bb');
-	new Element(ElementType.DIV, 'Nom', 'bb');
-	new Element(ElementType.A, 'Nom', 'bb');
-	new Element(ElementType.ADDRESS, 'Nom', 'bb');
-	new Element(ElementType.ARTICLE, 'Nom', 'bb');
-	new Element(ElementType.ASIDE, 'Nom', 'bb');
-	new Element(ElementType.BLOCKQUOTE, 'Nom', 'bb');
-	new Element(ElementType.FOOTER, 'Nom', 'bb');
-	new Element(ElementType.H1, 'Nom', 'bb');
-	new Element(ElementType.H2, 'Nom', 'bb');
-	new Element(ElementType.H3, 'Nom', 'bb');
-	new Element(ElementType.H4, 'Nom', 'bb');
-	new Element(ElementType.H5, 'Nom', 'bb');
-	new Element(ElementType.H6, 'Nom', 'bb');
-	new Element(ElementType.HEADER, 'Nom', 'bb');
-	new Element(ElementType.MAIN, 'Nom', 'bb');
-	new Element(ElementType.NAV, 'Nom', 'bb');
-	new Element(ElementType.SECTION, 'Nom', 'bb');
 
 	// Création d'une liste réordrable
 	Sortable.create(document.getElementById('elements'), {
