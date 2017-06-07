@@ -136,13 +136,17 @@ class Element {
 			if (element != null && element.length > 0) {
 				switch (element.tagName()) {
 					case 'textarea':
-						element.val(v
-							.replaceAll('<br />', '\n')
-							.replaceAll(/<strong>{1}(.*)<\/strong>{1}/,'**$1**')
-							.replaceAll(/<em>{1}(.*)<\/em>{1}/,'*$1*')
-							.replaceAll(/<u>{1}(.*)<\/u>{1}/,'__$1__')
-							.replaceAll(/<s>{1}(.*)<\/s>{1}/,'~$1~'));
-							break;
+					element.val(v
+					.replaceAll('<br />', '\n')
+					.replaceAll(/\*{1}(.*)\*{1}/,'\\*$1*')
+					.replaceAll(/<em>{1}(.*)<\/em>{1}/,'*$1*')
+					.replaceAll(/_{2}(.*)_{2}/,'\\__$1__')
+					.replaceAll(/<u>{1}(.*)<\/u>{1}/,'__$1__')
+					.replaceAll(/~{1}(.*)~{1}/,'\\~$1~')
+					.replaceAll(/<s>{1}(.*)<\/s>{1}/,'~$1~')
+					.replaceAll(/\*{2}(.*)\*{2}/,'\\**$1**')
+					.replaceAll(/<strong>{1}(.*)<\/strong>{1}/,'**$1**'));
+					break;
 					case 'input':
 						element.val(v);
 						break;
@@ -304,11 +308,15 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 			switch (element.tagName()) { // Comportement différent selon le type de champ
 				case 'textarea':
 					element.val(v
-						.replaceAll('<br />', '\n')
-						.replaceAll(/<strong>{1}(.*)<\/strong>{1}/,'**$1**')
-						.replaceAll(/<em>{1}(.*)<\/em>{1}/,'*$1*')
-						.replaceAll(/<u>{1}(.*)<\/u>{1}/,'__$1__')
-						.replaceAll(/<s>{1}(.*)<\/s>{1}/,'~$1~'));
+					.replaceAll('<br />', '\n')
+					.replaceAll(/\*{1}(.*)\*{1}/,'\\*$1*')
+					.replaceAll(/<em>{1}(.*)<\/em>{1}/,'*$1*')
+					.replaceAll(/_{2}(.*)_{2}/,'\\__$1__')
+					.replaceAll(/<u>{1}(.*)<\/u>{1}/,'__$1__')
+					.replaceAll(/~{1}(.*)~{1}/,'\\~$1~')
+					.replaceAll(/<s>{1}(.*)<\/s>{1}/,'~$1~')
+					.replaceAll(/\*{2}(.*)\*{2}/,'\\**$1**')
+					.replaceAll(/<strong>{1}(.*)<\/strong>{1}/,'**$1**'));
 					break;
 				case 'input':
 					element.val(v);
@@ -429,12 +437,16 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 		switch ($v.tagName()) {
 			case 'textarea':
 				$v.val($v.val()
-					.replaceAll('\r\n', '<br />')
-					.replaceAll('\n', '<br />')
-					.replaceAll(/\*{2}(.*)\*{2}/,'<strong>$1</strong>')
-					.replaceAll(/\*{1}(.*)\*{1}/,'<em>$1</em>')
-					.replaceAll(/_{2}(.*)_{2}/,'<u>$1</u>')
-					.replaceAll(/~{1}(.*)~{1}/,'<s>$1</s>'));
+				.replaceAll('\r\n', '<br />')
+				.replaceAll('\n', '<br />')
+				.replaceAll(/\*{2}(.*)\*{2}/,'<strong>$1</strong>')
+				.replaceAll(/\*{1}(.*)\*{1}/,'<em>$1</em>')
+				.replaceAll(/\\<em>(.*)<\/em>/,'*$1*')
+				.replaceAll(/\\<strong>(.*)<\/strong>/,'**$1**')
+				.replaceAll(/_{2}(.*)_{2}/,'<u>$1</u>')
+				.replaceAll(/\\<u>(.*)<\/u>/,'__$1__')
+				.replaceAll(/~{1}(.*)~{1}/,'<s>$1</s>')
+				.replaceAll(/\\<s>(.*)<\/s>/,'~$1~'));
 
 			case 'input':
 				eval(varToFill + ' = `' + $v.val().replace('`', '\\`') + '`');
