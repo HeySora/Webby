@@ -136,8 +136,13 @@ class Element {
 			if (element != null && element.length > 0) {
 				switch (element.tagName()) {
 					case 'textarea':
-						element.val(v.replaceAll('<br />', '\n'));
-						break;
+						element.val(v
+							.replaceAll('<br />', '\n')
+							.replaceAll(/<strong>{1}(.*)<\/strong>{1}/,'**$1**')
+							.replaceAll(/<em>{1}(.*)<\/em>{1}/,'*$1*')
+							.replaceAll(/<u>{1}(.*)<\/u>{1}/,'__$1__')
+							.replaceAll(/<s>{1}(.*)<\/s>{1}/,'~$1~'));
+							break;
 					case 'input':
 						element.val(v);
 						break;
@@ -298,7 +303,12 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 		if (element != null && element.length > 0) {
 			switch (element.tagName()) { // Comportement différent selon le type de champ
 				case 'textarea':
-					element.val(v.replaceAll('<br />', '\n'));
+					element.val(v
+						.replaceAll('<br />', '\n')
+						.replaceAll(/<strong>{1}(.*)<\/strong>{1}/,'**$1**')
+						.replaceAll(/<em>{1}(.*)<\/em>{1}/,'*$1*')
+						.replaceAll(/<u>{1}(.*)<\/u>{1}/,'__$1__')
+						.replaceAll(/<s>{1}(.*)<\/s>{1}/,'~$1~'));
 					break;
 				case 'input':
 					element.val(v);
@@ -418,7 +428,14 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 		}
 		switch ($v.tagName()) {
 			case 'textarea':
-				$v.val($v.val().replaceAll('\r\n', '<br />').replaceAll('\n', '<br />'));
+				$v.val($v.val()
+					.replaceAll('\r\n', '<br />')
+					.replaceAll('\n', '<br />')
+					.replaceAll(/\*{2}(.*)\*{2}/,'<strong>$1</strong>')
+					.replaceAll(/\*{1}(.*)\*{1}/,'<em>$1</em>')
+					.replaceAll(/_{2}(.*)_{2}/,'<u>$1</u>')
+					.replaceAll(/~{1}(.*)~{1}/,'<s>$1</s>'));
+
 			case 'input':
 				eval(varToFill + ' = `' + $v.val().replace('`', '\\`') + '`');
 				$v.val('');
