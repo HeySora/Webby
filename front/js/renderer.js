@@ -40,28 +40,26 @@ const ElementType = {
 	// todo img ul ol li hr
 	P: 0,
 	DIV: 1,
-	A: 2,
-	ADDRESS: 3,
-	ARTICLE: 4,
-	ASIDE: 5,
-	BLOCKQUOTE: 6,
-	FOOTER: 7,
-	H1: 8,
-	H2: 9,
-	H3: 10,
-	H4: 11,
-	H5: 12,
-	H6: 13,
-	HEADER: 14,
-	MAIN: 15,
-	NAV: 16,
-	SECTION: 17,
+	ADDRESS: 2,
+	ARTICLE: 3,
+	ASIDE: 4,
+	BLOCKQUOTE: 5,
+	FOOTER: 6,
+	H1: 7,
+	H2: 8,
+	H3: 0,
+	H4: 10,
+	H5: 11,
+	H6: 12,
+	HEADER: 13,
+	MAIN: 14,
+	NAV: 15,
+	SECTION: 16,
 };
 
 const Tags = [
 	'p',
 	'div',
-	'a',
 	'address',
 	'article',
 	'aside',
@@ -84,7 +82,6 @@ const Locales = {
 		Elements: [
 			'Paragraphe',
 			'Bloc',
-			'Hyperlien',
 			'Adresse',
 			'Article',
 			'Contenu annexe',
@@ -106,7 +103,7 @@ const Locales = {
 
 // Classe Element, au centre de tout
 class Element {
-	constructor(type, name, text, sizes, properties) {
+	constructor(type, name, text, sizes, properties, showElementProperties = true) {
 		// Déclaration des propriétés
 		this._type = type;
 		this._name = name;
@@ -127,44 +124,45 @@ class Element {
 		addElement(this);
 
 		// Affichage de l'assistant afin de directement modifier les propriétés de l'élément
+		if (showElementProperties) {
+			$epModal.find('[type="hidden"]').val(this._position);
 
-		$epModal.find('[type="hidden"]').val(this._position);
+			$.each(projectInfos.elements[this._position], (i,v) => {
+				let element = $epModal.find(`[name="element-${i.substr(1)}"]`);
 
-		$.each(projectInfos.elements[this._position], (i,v) => {
-			let element = $epModal.find(`[name="element-${i.substr(1)}"]`);
-
-			if (element != null && element.length > 0) {
-				switch (element.tagName()) {
-					case 'textarea':
-						element.val(v.replaceAll('<br />', '\n'));
-						break;
-					case 'input':
-						element.val(v);
-						break;
-					case 'select':
-						element.children(`[value="${v}"]`).prop('selected', true);
-						break;
-				}
-			} else if (typeof v === 'object') {
-				$.each(v, (i2,v2) => {
-					let element2 = $epModal.find(`[name="element-${i.substr(1)}-${i2}"]`);
-
-					if (element2 != null && element2.length > 0) {
-						switch (element2.tagName()) {
-							case 'input':
-							case 'textarea':
-								element2.val(v2);
-								break;
-							case 'select':
-								element2.children(`[value="${v2}"]`).prop('selected', true)
-								break;
-						}
+				if (element != null && element.length > 0) {
+					switch (element.tagName()) {
+						case 'textarea':
+							element.val(v.replaceAll('<br />', '\n'));
+							break;
+						case 'input':
+							element.val(v);
+							break;
+						case 'select':
+							element.children(`[value="${v}"]`).prop('selected', true);
+							break;
 					}
-				});
-			}
-		});
+				} else if (typeof v === 'object') {
+					$.each(v, (i2,v2) => {
+						let element2 = $epModal.find(`[name="element-${i.substr(1)}-${i2}"]`);
 
-		$epModal.foundation('open');
+						if (element2 != null && element2.length > 0) {
+							switch (element2.tagName()) {
+								case 'input':
+								case 'textarea':
+									element2.val(v2);
+									break;
+								case 'select':
+									element2.children(`[value="${v2}"]`).prop('selected', true)
+									break;
+							}
+						}
+					});
+				}
+			});
+
+			$epModal.foundation('open');
+		}
 	}
 
 	// Suppression d'un élément
@@ -450,7 +448,7 @@ ipcRenderer.on('project-loaded', (ev, infos) => {
 	let jsonElements = projectInfos.elements;
 	projectInfos.elements = [];
 	$.each(jsonElements, (i,v) => {
-		new Element(v._type, v._name, v._text, v._sizes, v._properties);
+		new Element(v._type, v._name, v._text, v._sizes, v._properties, false);
 	});
 });
 

@@ -41,6 +41,7 @@ const template = [
                     if (fileNames != null && fileNames.length > 0) {
                         fs.readFile(fileNames[0], (err, data) => {
                             if (err) throw err;
+                            lastFileName = '';
                             global.webbyData.projectInfos = JSON.parse(data);
                             mwContents.send('project-loaded', global.webbyData.projectInfos);
                         });
