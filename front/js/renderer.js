@@ -22,6 +22,11 @@ jQuery.fn.tagName = function() {
 	return this.prop('tagName').toLowerCase();
 }
 
+jQuery.fn.hasAttr = function(attrName) {
+	let attr = this.attr(attrName);
+	return (typeof attr !== typeof undefined && attr !== false);
+}
+
 // Importation des modules
 const {remote, ipcRenderer} = require('electron');
 
