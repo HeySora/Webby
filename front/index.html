@@ -376,6 +376,12 @@
                     <div class="row">
                         <div class="small-12 column">
                             <label>Contenu de l'élément
+                                <div id="text-editor">
+                                    <a href="#" id="button-bold" class="button"><i class="fa fa-bold" aria-hidden="true"></i></a>
+                                    <a href="#"  id="button-italic" class="button"><i class="fa fa-italic" aria-hidden="true"></i></a>
+                                    <a href="#" id="button-underline" class="button"><i class="fa fa-underline" aria-hidden="true"></i></a>
+                                    <a href="#" id="button-strikethrough" class="button"><i class="fa fa-strikethrough" aria-hidden="true"></i></a>
+                                </div>
                                 <textarea name="element-text" required="required"></textarea>
                             </label>
                         </div>
@@ -383,6 +389,40 @@
                     <div class="row align-center">
                         <div class="small-4 column">
                             <input type="submit" class="button" value="Modifier !" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Assistant "JS" -->
+            <div class="large reveal" id="element-js-modal" data-reveal>
+                <h2>Évènements JavaScript</h2>
+                <form>
+                    <div class="row">
+                       <div class="small-6 columns">
+                            <label>Évènements
+                                <select name="element-js-event" required="required">
+                                    <option value="da-DK">Danois</option>
+                                    <option value="de-CH">Allemand (Suisse)</option>
+                                    <option value="de-DE">Allemand (Allemagne)</option>
+                                    <option value="de-LU">Allemand (Luxembourg)</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="small-6 columns">
+                            <label>Actions faites à partir de l'événement
+                                <select name="element-js-action" required="required">
+                                    <option value="da-DK">Danois</option>
+                                    <option value="de-CH">Allemand (Suisse)</option>
+                                    <option value="de-DE">Allemand (Allemagne)</option>
+                                    <option value="de-LU">Allemand (Luxembourg)</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row align-center">
+                        <div class="small-4 column">
+                            <input type="submit" class="button" value="Valider !" />
                         </div>
                     </div>
                 </form>
@@ -405,6 +445,7 @@
                         <ul>
                             <li><a href="#" class="delete-element button">Supprimer</a></li>
                             <li><a href="#" class="element-properties button">Propriétés</a></li>
+                            <li><a href="#" class="element-js button">Évènements</a></li>
                         </ul>
                     </div>
                 </div>

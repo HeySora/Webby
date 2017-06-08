@@ -1,4 +1,19 @@
 // Implémentation de méthodes supplémentaires
+function getSelectionText(elem) {
+    let text = '';
+    let activeEl = elem ? elem : document.activeElement;
+    let activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+    if (
+      (activeElTagName == 'textarea') &&
+      (typeof activeEl.selectionStart == 'number')
+    ) {
+        text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+    } else if (window.getSelection) {
+        text = window.getSelection().toString();
+    }
+    return text;
+}
+
 Array.prototype.move = function (old_index, new_index) {
     if (new_index >= this.length) {
         let k = new_index - this.length;
@@ -22,6 +37,21 @@ jQuery.fn.tagName = function() {
 	return this.prop('tagName').toLowerCase();
 }
 
+jQuery.fn.getCursorPosition = function() {
+    let el = $(this).get(0);
+    let pos = 0;
+    if('selectionStart' in el) {
+        pos = el.selectionStart;
+    } else if('selection' in document) {
+        el.focus();
+        let sel = document.selection.createRange();
+        let selLength = document.selection.createRange().text.length;
+        sel.moveStart('character', -el.value.length);
+        pos = sel.text.length - selLength;
+    }
+    return pos;
+}
+
 // Importation des modules
 const {remote, ipcRenderer} = require('electron');
 
@@ -34,6 +64,7 @@ let $d = $(document),
 	$npModal = $('#new-project-modal'),
 	$ppModal = $('#project-properties-modal'),
 	$epModal = $('#element-properties-modal');
+	$ejModal = $('#element-js-modal');
 
 // Déclaration des enums
 const ElementType = {
@@ -137,15 +168,17 @@ class Element {
 				switch (element.tagName()) {
 					case 'textarea':
 					element.val(v
-					.replaceAll('<br />', '\n')
-					.replaceAll(/\*{1}(.*)\*{1}/,'\\*$1*')
-					.replaceAll(/<em>{1}(.*)<\/em>{1}/,'*$1*')
-					.replaceAll(/_{2}(.*)_{2}/,'\\__$1__')
-					.replaceAll(/<u>{1}(.*)<\/u>{1}/,'__$1__')
-					.replaceAll(/~{1}(.*)~{1}/,'\\~$1~')
-					.replaceAll(/<s>{1}(.*)<\/s>{1}/,'~$1~')
-					.replaceAll(/\*{2}(.*)\*{2}/,'\\**$1**')
-					.replaceAll(/<strong>{1}(.*)<\/strong>{1}/,'**$1**'));
+						.replaceAll('<br />', '\n')
+						.replaceAll(/\/{2}(.+?)\/{2}/,'\\//$1//')
+						.replaceAll(/<em>{1}(.+?)<\/em>{1}/,'//$1//')
+						.replaceAll(/_{2}(.+?)_{2}/,'\\__$1__')
+						.replaceAll(/<u>{1}(.+?)<\/u>{1}/,'__$1__')
+						.replaceAll(/~{1}(.+?)~{1}/,'\\~$1~')
+						.replaceAll(/<s>{1}(.+?)<\/s>{1}/,'~$1~')
+						.replaceAll(/\*{2}(.+?)\*{2}/,'\\**$1**')
+						.replaceAll(/<strong>{1}(.+?)<\/strong>{1}/,'**$1**')
+						.replaceAll(/<a href="(.+?)" target="_blank">(.+?)<\/a>/, '[$2]($1)')
+					);
 					break;
 					case 'input':
 						element.val(v);
@@ -308,15 +341,17 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 			switch (element.tagName()) { // Comportement différent selon le type de champ
 				case 'textarea':
 					element.val(v
-					.replaceAll('<br />', '\n')
-					.replaceAll(/\*{1}(.*)\*{1}/,'\\*$1*')
-					.replaceAll(/<em>{1}(.*)<\/em>{1}/,'*$1*')
-					.replaceAll(/_{2}(.*)_{2}/,'\\__$1__')
-					.replaceAll(/<u>{1}(.*)<\/u>{1}/,'__$1__')
-					.replaceAll(/~{1}(.*)~{1}/,'\\~$1~')
-					.replaceAll(/<s>{1}(.*)<\/s>{1}/,'~$1~')
-					.replaceAll(/\*{2}(.*)\*{2}/,'\\**$1**')
-					.replaceAll(/<strong>{1}(.*)<\/strong>{1}/,'**$1**'));
+						.replaceAll('<br />', '\n')
+						.replaceAll(/\/{2}(.+?)\/{2}/,'\\//$1//')
+						.replaceAll(/<em>{1}(.+?)<\/em>{1}/,'//$1//')
+						.replaceAll(/_{2}(.+?)_{2}/,'\\__$1__')
+						.replaceAll(/<u>{1}(.+?)<\/u>{1}/,'__$1__')
+						.replaceAll(/~{1}(.+?)~{1}/,'\\~$1~')
+						.replaceAll(/<s>{1}(.+?)<\/s>{1}/,'~$1~')
+						.replaceAll(/\*{2}(.+?)\*{2}/,'\\**$1**')
+						.replaceAll(/<strong>{1}(.+?)<\/strong>{1}/,'**$1**')
+						.replaceAll(/<a href="(.+?)" target="_blank">(.+?)<\/a>/, '[$2]($1)')
+					);
 					break;
 				case 'input':
 					element.val(v);
@@ -437,17 +472,20 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 		switch ($v.tagName()) {
 			case 'textarea':
 				$v.val($v.val()
-				.replaceAll('\r\n', '<br />')
-				.replaceAll('\n', '<br />')
-				.replaceAll(/\*{2}(.*)\*{2}/,'<strong>$1</strong>')
-				.replaceAll(/\*{1}(.*)\*{1}/,'<em>$1</em>')
-				.replaceAll(/\\<em>(.*)<\/em>/,'*$1*')
-				.replaceAll(/\\<strong>(.*)<\/strong>/,'**$1**')
-				.replaceAll(/_{2}(.*)_{2}/,'<u>$1</u>')
-				.replaceAll(/\\<u>(.*)<\/u>/,'__$1__')
-				.replaceAll(/~{1}(.*)~{1}/,'<s>$1</s>')
-				.replaceAll(/\\<s>(.*)<\/s>/,'~$1~'));
-
+					.replaceAll('\r\n', '<br />')
+					.replaceAll('\n', '<br />')
+					.replaceAll(/\[(.+?)\]\((.+?)\)/,'<a href="$2" target="_blank">$1</a>')
+					.replaceAll(/(https?):\/{2}/, '$1:§§')
+					.replaceAll(/\*{2}(.+?)\*{2}/,'<strong>$1</strong>')
+					.replaceAll(/\/{2}(.+?)\/{2}/,'<em>$1</em>')
+					.replaceAll(/\\<em>(.+?)<\/em>/,'//$1//')
+					.replaceAll(/\\<strong>(.+?)<\/strong>/,'**$1**')
+					.replaceAll(/_{2}(.+?)_{2}/,'<u>$1</u>')
+					.replaceAll(/\\<u>(.+?)<\/u>/,'__$1__')
+					.replaceAll(/~{1}(.+?)~{1}/,'<s>$1</s>')
+					.replaceAll(/\\<s>(.+?)<\/s>/,'~$1~')
+					.replaceAll(/(https?):§{2}/, '$1://')
+				);
 			case 'input':
 				eval(varToFill + ' = `' + $v.val().replace('`', '\\`') + '`');
 				$v.val('');
@@ -572,6 +610,50 @@ $('[data-toggle]').click(function() {
 $s.find('[id^="add-"]').click(function(ev) {
 	let newTag = $(this).attr('id').substr(4);
 	new Element(ElementType[newTag.toUpperCase()], 'Nom', 'Texte');
+	ev.preventDefault();
+});
+
+
+
+function pelle(str) {
+	let $area = $('[name="element-text"]');
+	let area = $area[0];
+	let position = $area.getCursorPosition();
+	let oldText = $area.val();
+	let text = getSelectionText(area);
+
+	if (text != '') {
+		$area.val(oldText.substr(0, position) + str + text + str + oldText.substr(position+ text.length));
+		area.focus();
+	} else {
+		$area.val(oldText.substr(0, position) + str + 'texte' + str + oldText.substr(position));
+		area.focus();
+		area.selectionStart = position + str.length;
+		area.selectionEnd = area.selectionStart + 5;
+	}
+}
+
+$('#button-bold').click(function(ev) {
+	pelle('**');
+
+	ev.preventDefault();
+});
+
+$('#button-italic').click(function(ev) {
+	pelle('//');
+
+	ev.preventDefault();
+});
+
+$('#button-underline').click(function(ev) {
+	pelle('__');
+
+	ev.preventDefault();
+});
+
+$('#button-strikethrough').click(function(ev) {
+	pelle('~');
+
 	ev.preventDefault();
 });
 

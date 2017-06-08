@@ -149,6 +149,14 @@ input.button {
 }
 
 
+/* Assistants */
+
+#text-editor a.button {
+	background-color: #999;
+	padding: 0.425em 0.5em;
+}
+
+
 /* Aperçu de la page résultante */
 
 #preview {
