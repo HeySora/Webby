@@ -163,7 +163,7 @@ const Locales = {
 
 // Classe Element, au centre de tout
 class Element {
-	constructor(type, name, properties, showElementProperties = true) {
+	constructor(type, name, properties, showElementProperties = true, js) {
 		// Déclaration des propriétés
 		this._type = type;
 		this._name = name;
@@ -173,6 +173,11 @@ class Element {
 			backgroundColor: 'transparent',
 			fontFamily: 'sans-serif',
 			textAlign: 'default'
+		};
+		this._js = js != null ? js : {
+			event: '',
+			action: '',
+			text: ''
 		};
 	}
 
@@ -228,11 +233,18 @@ class Element {
 	set properties(properties) {
 		this._properties = properties;
 	}
+
+	get js() {
+		return this._js;
+	}
+	set js(js) {
+		this._js = js;
+	}
 }
 
 class InlineElement extends Element {
-	constructor(type, name, text, properties, showElementProperties) {
-		super(type, name, properties, showElementProperties);
+	constructor(type, name, text, properties, showElementProperties, js) {
+		super(type, name, properties, showElementProperties, js);
 		this._class = 'InlineElement';
 		this._text = text != null ? text : '';
 	}
@@ -246,8 +258,8 @@ class InlineElement extends Element {
 }
 
 class DataElement extends InlineElement {
-	constructor(type, name, text, properties, data, showElementProperties) {
-		super(type, name, text, properties, showElementProperties);
+	constructor(type, name, text, properties, data, showElementProperties, js) {
+		super(type, name, text, properties, showElementProperties, js);
 		this._data = data != null ? data : {};
 	}
 
@@ -260,8 +272,8 @@ class DataElement extends InlineElement {
 }
 
 class BlockElement extends Element {
-	constructor(type, name, sizes, properties, showElementProperties) {
-		super(type, name, properties, showElementProperties);
+	constructor(type, name, sizes, properties, showElementProperties, js) {
+		super(type, name, properties, showElementProperties, js);
 		this._class = 'BlockElement';
 		this._sizes = sizes != null ? sizes : [12, 12, 12];
 	}
@@ -719,29 +731,87 @@ $('#button-strikethrough').click(ev => {
 });
 
 $('.element-js').click(function() {
+	let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
+	let instance = projectInfos.elements[id];
+	$ejModal.find('[type="hidden"]').val(id);
+
+	$.each(projectInfos.elements[id], (i,v) => {
+		let element = $ejModal.find(`[name="element-${i.substr(1)}"]`);
+
+		if (element != null && element.length > 0) {
+			switch (element.tagName()) { // Comportement différent selon le type de champ
+				case 'textarea':
+					element.val(v
+						.replaceAll('<br />', '\n')
+						.replaceAll(/\/{2}(.+?)\/{2}/,'\\//$1//')
+						.replaceAll(/<em>{1}(.+?)<\/em>{1}/,'//$1//')
+						.replaceAll(/_{2}(.+?)_{2}/,'\\__$1__')
+						.replaceAll(/<u>{1}(.+?)<\/u>{1}/,'__$1__')
+						.replaceAll(/~{1}(.+?)~{1}/,'\\~$1~')
+						.replaceAll(/<s>{1}(.+?)<\/s>{1}/,'~$1~')
+						.replaceAll(/\*{2}(.+?)\*{2}/,'\\**$1**')
+						.replaceAll(/<strong>{1}(.+?)<\/strong>{1}/,'**$1**')
+						.replaceAll(/<a href="(.+?)" target="_blank">(.+?)<\/a>/, '[$2]($1)')
+					);
+					break;
+				case 'input':
+					element.val(v);
+					break;
+				case 'select':
+					element.children(`[value="${v}"]`).prop('selected', true);
+					break;
+			}
+		} else if (typeof v === 'object') {
+			$.each(v, (i2,v2) => {
+				let element2 = $ejModal.find(`[name="element-${i.substr(1)}-${i2}"]`);
+
+				if (element2 != null && element2.length > 0) {
+					switch (element2.tagName()) {
+						case 'input':
+						case 'textarea':
+							element2.val(v2);
+							break;
+						case 'select':
+							element2.children(`[value="${v2}"]`).prop('selected', true)
+							break;
+					}
+				}
+			});
+		}
+	});
+
+	if (!$('.element-js-message').prop('selected')) {
+		$('.element-js-text').addClass('hidden');
+	} else {
+		$('.element-js-text').removeClass('hidden');
+	}
+
 	$($ejModal).foundation('open');
-	$('.element-js-text').addClass('hidden');
 });
 
 $('.element-js-action').change(function() {
 
-		if ($('.element-js-message').prop('selected'))
-			{
-				$('.element-js-text').removeClass('hidden');
-			}
-			else
-			{
-				$('.element-js-text').addClass('hidden');
-			}
+	if ($('.element-js-message').prop('selected')) {
+		$('.element-js-text').removeClass('hidden');
+	} else {
+		$('.element-js-text').addClass('hidden');
+	}
 
 });
 
 $ejModal.children('form').submit(ev => {
 	$ejModal.foundation('close');
-	$ejModal.find('input[type!="submit"],select,textarea').each((i, v) => {
+
+	// Récupération de l'ID, pour savoir quel élément modifier.
+	let id = $ejModal.find('[type="hidden"]').val();
+
+	let instance = projectInfos.elements[id];
+
+	$ejModal.find('input[type!="submit"][type!="hidden"],select,textarea').each((i,v) => {
 		let $v = $(v);
+
 		let indexes = $v.attr('name').substr(8).split('-');
-		let varToFill = 'projectInfos';
+		let varToFill = `projectInfos.elements[${id}]`;
 		for (let i = 0; i < indexes.length; i++) {
 			let v = indexes[i];
 			if (isNaN(parseInt(v))) {
@@ -749,9 +819,39 @@ $ejModal.children('form').submit(ev => {
 			} else {
 				varToFill += `[${v}]`
 			}
+			if (!eval('(function() { return (' + varToFill + ' != null); })()') && !(instance instanceof DataElement && varToFill.includes('.data'))) {
+				console.log('FAILLL');
+				console.log(varToFill);
+				return true;
+			}
 		}
-		eval(varToFill + ' = "' + $v.val() + '"');
-		$v.val('');
+		switch ($v.tagName()) {
+			case 'textarea':
+				$v.val($v.val()
+					.replaceAll('\r\n', '<br />')
+					.replaceAll('\n', '<br />')
+					.replaceAll(/\[(.+?)\]\((.+?)\)/,'<a href="$2" target="_blank">$1</a>')
+					.replaceAll(/(https?):\/{2}/, '$1:§§')
+					.replaceAll(/\*{2}(.+?)\*{2}/,'<strong>$1</strong>')
+					.replaceAll(/\/{2}(.+?)\/{2}/,'<em>$1</em>')
+					.replaceAll(/\\<em>(.+?)<\/em>/,'//$1//')
+					.replaceAll(/\\<strong>(.+?)<\/strong>/,'**$1**')
+					.replaceAll(/_{2}(.+?)_{2}/,'<u>$1</u>')
+					.replaceAll(/\\<u>(.+?)<\/u>/,'__$1__')
+					.replaceAll(/~{1}(.+?)~{1}/,'<s>$1</s>')
+					.replaceAll(/\\<s>(.+?)<\/s>/,'~$1~')
+					.replaceAll(/(https?):§{2}/, '$1://')
+				);
+				// no break
+			case 'input':
+				eval(varToFill + ' = `' + $v.val().replace('`', '\\`') + '`');
+				$v.val('');
+				break;
+			case 'select':
+				eval(varToFill + ' = "' + $v.find(":selected").val() + '"');
+				$v.find(":selected").prop('selected', false);
+				break;
+		}
 	});
 	remote.getGlobal('webbyData').projectInfos = projectInfos;
 
