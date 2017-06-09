@@ -92,6 +92,7 @@ const ElementType = {
 	NAV: 15,
 	SECTION: 16,
 	UL: 17,
+	OL: 18,
 };
 
 const ElementClass = {
@@ -113,12 +114,22 @@ const ElementClass = {
 	[ElementType.NAV]: 'BlockElement',
 	[ElementType.SECTION]: 'BlockElement',
 	[ElementType.UL]: 'DataElement',
+	[ElementType.OL]: 'DataElement',
 };
 
 // Peuvent retourner un objet jQuery ou un string !
 const DataFunctions = {
 	[ElementType.UL]: (instance) => {
 		let $list = $('<ul></ul>').attr('id', `elem-${instance.position}`);
+
+		$.each(instance.data, (i,v) => {
+			$list.append($('<li></li>').html(v));
+		});
+
+		return $list;
+	},
+	[ElementType.OL]: (instance) => {
+		let $list = $('<ol></ol>').attr('id', `elem-${instance.position}`);
 
 		$.each(instance.data, (i,v) => {
 			$list.append($('<li></li>').html(v));
@@ -147,6 +158,7 @@ const Tags = {
 	[ElementType.NAV]: 'nav',
 	[ElementType.SECTION]: 'section',
 	[ElementType.UL]: 'ul',
+	[ElementType.OL]: 'ol',
 };
 
 const Locales = {
@@ -169,7 +181,8 @@ const Locales = {
 			[ElementType.MAIN]: 'Contenu principal',
 			[ElementType.NAV]: 'Navigation',
 			[ElementType.SECTION]: 'Section',
-			[ElementType.UL]: 'Liste non-ordonnée'
+			[ElementType.UL]: 'Liste non-ordonnée',
+			[ElementType.OL]: 'Liste ordonnée',
 		}
 	}
 }
@@ -374,6 +387,11 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 					$('#add-ul-element').click();
 				}
 				break;
+			case ElementType.OL:
+				for (let i = 0; i < instance.data.length - 1; i++) {
+					$('#add-ol-element').click();
+				}
+				break;
 		}
 	} else if (instance instanceof InlineElement) {
 		$epModal.find('#sizes').css('display', 'none');
@@ -514,6 +532,10 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 	$epModal.find('input[type!="submit"][type!="hidden"],select,textarea').each((i,v) => {
 		let $v = $(v);
 
+		if (instance instanceof DataElement && $v.closest('[id^="data-"]').length > 0 && $v.closest(`#data-${Tags[instance.type]}`).length < 1) {
+			return true;
+		}
+
 		let indexes = $v.attr('name').substr(8).split('-');
 		let varToFill = `projectInfos.elements[${id}]`;
 		for (let i = 0; i < indexes.length; i++) {
@@ -527,6 +549,7 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 				return true;
 			}
 		}
+
 		switch ($v.tagName()) {
 			case 'textarea':
 				$v.val($v.val()
@@ -558,10 +581,16 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 
 	// Reset les assistants personnalisés
 	$('#data-ul').find('ul:not(.accordion)').children().remove();
-	let $list = $('.accordion-content').find('ul');
-	let $newElem = $(ulElementString($list.children().length));
-	$newElem.find('.remove-ul-element').click(removeUlElement);
-	$newElem.appendTo($list);
+	let $ulList = $('#data-ul').find('.accordion-content').find('ul');
+	let $ulNewElem = $(ulElementString($ulList.children().length));
+	$ulNewElem.find('.remove-ul-element').click(removeUlElement);
+	$ulNewElem.appendTo($ulList);
+
+	$('#data-ol').find('ol:not(.accordion)').children().remove();
+	let $olList = $('#data-ol').find('.accordion-content').find('ol');
+	let $olNewElem = $(olElementString($olList.children().length));
+	$olNewElem.find('.remove-ol-element').click(removeOlElement);
+	$olNewElem.appendTo($olList);
 
 	// Mise à jour de l'affichage dans la sidebar + aperçu
 	updateElements(true);
@@ -771,6 +800,45 @@ function removeUlElement(ev) {
 $('#add-ul-element').click(addUlElement);
 
 $('.remove-ul-element').click(removeUlElement);
+
+function addOlElement(ev) {
+	let $list = $(this).closest('.accordion-content').find('ol');
+	let $newElem = $(olElementString($list.children().length));
+	$newElem.find('.remove-ol-element').click(removeOlElement);
+	$newElem.appendTo($list);
+
+	ev.preventDefault();
+}
+
+function olElementString(id) {
+	return `<li><div class="input-group"><input type="text" class="input-group-field" name="element-data-${id != null ? id : 0}" /><a href="#" class="input-group-button button remove-ol-element"><i class="fa fa-times"></i></a></div></li>`
+}
+
+function removeOlElement(ev) {
+	let $parent = $(this).parent();
+	let id = $parent.children('input').attr('name').substr(13);
+	let $list = $parent.closest('.accordion-content').find('ol');
+
+	if ($list.children('li').length <= 1) {
+		return;
+	}
+
+	$list.children('li').eq(id).remove();
+
+	$list.children().each((i,v) => {
+		if (i < id) {
+			return true;
+		}
+
+		$(v).find('[name^="element-data-"]').attr('name', `element-data-${i}`);
+	});
+
+	ev.preventDefault();
+}
+
+$('#add-ol-element').click(addOlElement);
+
+$('.remove-ol-element').click(removeOlElement);
 
 $('#button-bold').click(ev => {
 	pelle('**');

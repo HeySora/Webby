@@ -169,15 +169,15 @@ ul.accordion {
 	display: none;
 }
 
-#data-ul input {
+#data-ul input, #data-ol input {
 	display: inline-block;
 }
 
-#data-ul .input-group {
+#data-ul .input-group, #data-ol .input-group {
 	display: inline-flex;
 }
 
-#data-ul .input-group-field {
+#data-ul .input-group-field, #data-ol .input-group-field {
 	height: 2.4375rem;
 }
 
