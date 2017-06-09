@@ -2,7 +2,7 @@
 
 /* Propriétés de base */
 
-*, body, h1, h2, h3, h4, h5, h6 {
+*:not([id^='elem-'], [id^='elem-'] *), body, h1:not([id^='elem-'], [id^='elem-'] *), h2:not([id^='elem-'], [id^='elem-'] *), h3:not([id^='elem-'], [id^='elem-'] *), h4:not([id^='elem-'], [id^='elem-'] *), h5:not([id^='elem-'], [id^='elem-'] *), h6 {
 	font-family: "Roboto", sans-serif;
 }
 
