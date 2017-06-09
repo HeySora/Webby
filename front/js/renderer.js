@@ -95,69 +95,82 @@ const ElementType = {
 };
 
 const ElementClass = {
-	0: 'InlineElement',
-	1: 'BlockElement',
-	2: 'InlineElement',
-	3: 'BlockElement',
-	4: 'BlockElement',
-	5: 'InlineElement',
-	6: 'BlockElement',
-	7: 'InlineElement',
-	8: 'InlineElement',
-	9: 'InlineElement',
-	10: 'InlineElement',
-	11: 'InlineElement',
-	12: 'InlineElement',
-	13: 'BlockElement',
-	14: 'BlockElement',
-	15: 'BlockElement',
-	16: 'BlockElement',
-	17: 'DataElement',
+	[ElementType.P]: 'InlineElement',
+	[ElementType.DIV]: 'BlockElement',
+	[ElementType.ADDRESS]: 'InlineElement',
+	[ElementType.ARTICLE]: 'BlockElement',
+	[ElementType.ASIDE]: 'BlockElement',
+	[ElementType.BLOCKQUOTE]: 'InlineElement',
+	[ElementType.FOOTER]: 'BlockElement',
+	[ElementType.H1]: 'InlineElement',
+	[ElementType.H2]: 'InlineElement',
+	[ElementType.H3]: 'InlineElement',
+	[ElementType.H4]: 'InlineElement',
+	[ElementType.H5]: 'InlineElement',
+	[ElementType.H6]: 'InlineElement',
+	[ElementType.HEADER]: 'BlockElement',
+	[ElementType.MAIN]: 'BlockElement',
+	[ElementType.NAV]: 'BlockElement',
+	[ElementType.SECTION]: 'BlockElement',
+	[ElementType.UL]: 'DataElement',
 };
 
-const Tags = [
-	'p',
-	'div',
-	'address',
-	'article',
-	'aside',
-	'blockquote',
-	'footer',
-	'h1',
-	'h2',
-	'h3',
-	'h4',
-	'h5',
-	'h6',
-	'header',
-	'main',
-	'nav',
-	'section',
-	'ul',
-];
+// Peuvent retourner un objet jQuery ou un string !
+const DataFunctions = {
+	[ElementType.UL]: (instance) => {
+		let $list = $('<ul></ul>').attr('id', `elem-${instance.position}`);
+
+		$.each(instance.data, (i,v) => {
+			$list.append($('<li></li>').html(v));
+		});
+
+		return $list;
+	}
+}
+
+const Tags = {
+	[ElementType.P]: 'p',
+	[ElementType.DIV]: 'div',
+	[ElementType.ADDRESS]: 'address',
+	[ElementType.ARTICLE]: 'article',
+	[ElementType.ASIDE]: 'aside',
+	[ElementType.BLOCKQUOTE]: 'blockquote',
+	[ElementType.FOOTER]: 'footer',
+	[ElementType.H1]: 'h1',
+	[ElementType.H2]: 'h2',
+	[ElementType.H3]: 'h3',
+	[ElementType.H4]: 'h4',
+	[ElementType.H5]: 'h5',
+	[ElementType.H6]: 'h6',
+	[ElementType.HEADER]: 'header',
+	[ElementType.MAIN]: 'main',
+	[ElementType.NAV]: 'nav',
+	[ElementType.SECTION]: 'section',
+	[ElementType.UL]: 'ul',
+};
 
 const Locales = {
 	Fr: {
-		Elements: [
-			'Paragraphe',
-			'Bloc',
-			'Adresse',
-			'Article',
-			'Contenu annexe',
-			'Citation',
-			'Pied de page',
-			'Titre',
-			'Sous-titre',
-			'Titre 3',
-			'Titre 4',
-			'Titre 5',
-			'Titre 6',
-			'En-tête',
-			'Contenu principal',
-			'Navigation',
-			'Section',
-			'Liste non-ordonnée'
-		]
+		Elements: {
+			[ElementType.P]: 'Paragraphe',
+			[ElementType.DIV]: 'Bloc',
+			[ElementType.ADDRESS]: 'Adresse',
+			[ElementType.ARTICLE]: 'Article',
+			[ElementType.ASIDE]: 'Contenu annexe',
+			[ElementType.BLOCKQUOTE]: 'Citation',
+			[ElementType.FOOTER]: 'Pied de page',
+			[ElementType.H1]: 'Titre',
+			[ElementType.H2]: 'Sous-titre',
+			[ElementType.H3]: 'Titre 3',
+			[ElementType.H4]: 'Titre 4',
+			[ElementType.H5]: 'Titre 5',
+			[ElementType.H6]: 'Titre 6',
+			[ElementType.HEADER]: 'En-tête',
+			[ElementType.MAIN]: 'Contenu principal',
+			[ElementType.NAV]: 'Navigation',
+			[ElementType.SECTION]: 'Section',
+			[ElementType.UL]: 'Liste non-ordonnée'
+		}
 	}
 }
 
@@ -257,9 +270,10 @@ class InlineElement extends Element {
 	}
 }
 
-class DataElement extends InlineElement {
-	constructor(type, name, text, properties, data, showElementProperties, js) {
-		super(type, name, text, properties, showElementProperties, js);
+class DataElement extends Element {
+	constructor(type, name, data, properties,showElementProperties, js) {
+		super(type, name, properties, showElementProperties, js);
+		this._class = 'DataElement';
 		this._data = data != null ? data : {};
 	}
 
@@ -347,14 +361,23 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 	$epModal.find('#text').css('display', '');
 	$epModal.find('[id^="data-"]').css('display', '');
 
-	if (instance instanceof InlineElement) {
+	if (instance instanceof DataElement) {
+		$epModal.find('#sizes').css('display', 'none');
+		$epModal.find('#text').css('display', 'none');
+
+		$epModal.find(`#data-${Tags[instance.type]}`).css('display', 'block');
+
+		// Préparation des assistants personnalisés
+		switch (instance.type) {
+			case ElementType.UL:
+				for (let i = 0; i < instance.data.length - 1; i++) {
+					$('#add-ul-element').click();
+				}
+				break;
+		}
+	} else if (instance instanceof InlineElement) {
 		$epModal.find('#sizes').css('display', 'none');
 	} else if (instance instanceof BlockElement) {
-		$epModal.find('#text').css('display', 'none');
-	}
-
-	if (instance instanceof DataElement) {
-		$epModal.find(`#data-${Tags[instance.type]}`).css('display', 'block');
 		$epModal.find('#text').css('display', 'none');
 	}
 
@@ -483,6 +506,10 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 
 	let instance = projectInfos.elements[id];
 
+	if (instance instanceof DataElement) {
+		instance.data = [];
+	}
+
 	// Remplissage des informations par les nouvelles
 	$epModal.find('input[type!="submit"][type!="hidden"],select,textarea').each((i,v) => {
 		let $v = $(v);
@@ -529,11 +556,15 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 		}
 	});
 
-	// Mise à jour de l'affichage dans la sidebar
-	updateElements();
+	// Reset les assistants personnalisés
+	$('#data-ul').find('ul:not(.accordion)').children().remove();
+	let $list = $('.accordion-content').find('ul');
+	let $newElem = $(ulElementString($list.children().length));
+	$newElem.find('.remove-ul-element').click(removeUlElement);
+	$newElem.appendTo($list);
 
-	// Mise à jour de l'élément de l'aperçu
-	updateHTMLElement(projectInfos.elements[id]);
+	// Mise à jour de l'affichage dans la sidebar + aperçu
+	updateElements(true);
 
 	remote.getGlobal('webbyData').projectInfos = projectInfos;
 	ev.preventDefault();
@@ -548,10 +579,16 @@ ipcRenderer.on('project-loaded', (ev, elements) => {
 	projectInfos =  JSON.parse(JSON.stringify(remote.getGlobal('webbyData').projectInfos));
 	$.each(elements, (i,v) => {
 		let instance;
-		if (v._class === 'InlineElement') {
-			instance = new InlineElement(v._type, v._name, v._text, v._properties, false);
-		} else {
-			instance = new BlockElement(v._type, v._name, v._sizes, v._properties, false);
+		switch (v._class) {
+			case 'InlineElement':
+				instance = new InlineElement(v._type, v._name, v._text, v._properties, false, v._js);
+				break;
+			case 'BlockElement':
+				instance = new BlockElement(v._type, v._name, v._sizes, v._properties, false, v._js);
+				break;
+			case 'DataElement':
+				instance = new DataElement(v._type, v._name, v._data, v._properties, false, v._js);
+				break;
 		}
 
 		projectInfos.elements[projectInfos.elements.length] = instance;
@@ -566,34 +603,38 @@ function typeToLocale(type, lang = 'fr') {
 }
 
 // Ajout d'un élément
-function addElement(elem, addTags = true) {
+function addElement(instance, addTags = true) {
 	// Clonage de la template d'élément de sidebar
 	let $newElem = $('#template-element').clone(true);
 
 	// Changement des IDs/Classes
-	$newElem.attr('id', `element-${elem.position}`);
-	$newElem.find('.dropdown-pane').attr('id', elem.position + '-dropdown-properties');
-	$newElem.find('[data-toggle]').attr('data-toggle', elem.position + '-dropdown-properties');
+	$newElem.attr('id', `element-${instance.position}`);
+	$newElem.find('.dropdown-pane').attr('id', instance.position + '-dropdown-properties');
+	$newElem.find('[data-toggle]').attr('data-toggle', instance.position + '-dropdown-properties');
 
 	// Contenu de l'élément
-	if (elem.text != null && elem.text !== '') {
-		$newElem.find('strong').html(elem.name + ' &middot; ' + typeToLocale(elem.type));
-		$newElem.find('em').html($(`<span>${elem.text.replaceAll('<br />', '   ')}</span>`).text());
+	if (instance.text != null && instance.text !== '') {
+		$newElem.find('strong').html(instance.name + ' &middot; ' + typeToLocale(instance.type));
+		$newElem.find('em').html($(`<span>${instance.text.replaceAll('<br />', '   ')}</span>`).text());
 	} else {
-		$newElem.find('strong').html(elem.name);
-		$newElem.find('em').html(typeToLocale(elem.type));
+		$newElem.find('strong').html(instance.name);
+		$newElem.find('em').html(typeToLocale(instance.type));
 	}
 
 	// Ajout d'éléments dans l'aperçu
 	if (addTags) {
-		let $newTag = $(`<${Tags[elem.type]}>`).attr('id', `elem-${elem.position}`).html(elem.text);
-		$.each(elem.properties, (i,v) => {
-			if (v === 'default') {
-				return;
-			}
-			$newTag.css(i, v);
-		});
-		$newTag.appendTo('#preview');
+		if (instance instanceof DataElement) {
+			$p.append(DataFunctions[instance.type](instance));
+		} else {
+			let $newTag = $(`<${Tags[instance.type]}>`).attr('id', `elem-${instance.position}`).html(instance.text);
+			$.each(instance.properties, (i,v) => {
+				if (v === 'default') {
+					return;
+				}
+				$newTag.css(i, v);
+			});
+			$newTag.appendTo('#preview');
+		}
 	}
 
 	$newElem.appendTo('#elements');
@@ -602,24 +643,36 @@ function addElement(elem, addTags = true) {
 }
 
 // Mise à jour de l'élément de l'aperçu
-function updateHTMLElement(element) {
-	let $elem = $(`#elem-${element.position}`);
-	$elem.html(element.text);
-	$.each(element.properties, (i,v) => {
-		if (v === 'default') {
-			$elem.css(i, '');
-		} else {
-			$elem.css(i, v);
-		}
+function updateHTMLElement(instance) {
+	if (instance instanceof DataElement) {
+		$(`#elem-${instance.position}`).replaceWith(DataFunctions[instance.type](instance));
+	} else {
+		let $elem = $(`#elem-${instance.position}`);
+		$elem.html(instance.text);
+		$.each(instance.properties, (i,v) => {
+			if (v === 'default') {
+				$elem.css(i, '');
+			} else {
+				$elem.css(i, v);
+			}
+		});
+	}
+}
+
+// Mise à jour de l'affichage de tous les éléments de la sidebar (+ preview si demandé)
+function updateElements(updateTags = false) {
+	clearElements();
+	if (updateTags) {
+		deleteHTMLElements();
+	}
+	$.each(projectInfos.elements, (i,v) => {
+		addElement(v, updateTags);
 	});
 }
 
-// Mise à jour de l'affichage de tous les éléments de la sidebar
-function updateElements() {
-	clearElements();
-	$.each(projectInfos.elements, (i,v) => {
-		addElement(v, false);
-	});
+// Suppression des éléments HTML
+function deleteHTMLElements() {
+	$('[id^="elem-"]').remove();
 }
 
 // Suppression des éléments
@@ -680,19 +733,28 @@ function pelle(str) {
 	}
 }
 
-$('#add-ul-element').click(function(ev) {
+function addUlElement(ev) {
 	let $list = $(this).closest('.accordion-content').find('ul');
-	let $newElem = $(`<li><div class="input-group"><input type="text" class="input-group-field" name="element-data-${$list.children().length}" /><a href="#" class="input-group-button button remove-ul-element"><i class="fa fa-times"></i></a></div></li>`);
+	let $newElem = $(ulElementString($list.children().length));
 	$newElem.find('.remove-ul-element').click(removeUlElement);
 	$newElem.appendTo($list);
 
 	ev.preventDefault();
-});
+}
+
+function ulElementString(id) {
+	return `<li><div class="input-group"><input type="text" class="input-group-field" name="element-data-${id != null ? id : 0}" /><a href="#" class="input-group-button button remove-ul-element"><i class="fa fa-times"></i></a></div></li>`
+}
 
 function removeUlElement(ev) {
 	let $parent = $(this).parent();
 	let id = $parent.children('input').attr('name').substr(13);
 	let $list = $parent.closest('.accordion-content').find('ul');
+
+	if ($list.children('li').length <= 1) {
+		return;
+	}
+
 	$list.children('li').eq(id).remove();
 
 	$list.children().each((i,v) => {
@@ -702,7 +764,11 @@ function removeUlElement(ev) {
 
 		$(v).find('[name^="element-data-"]').attr('name', `element-data-${i}`);
 	});
+
+	ev.preventDefault();
 }
+
+$('#add-ul-element').click(addUlElement);
 
 $('.remove-ul-element').click(removeUlElement);
 
@@ -820,8 +886,6 @@ $ejModal.children('form').submit(ev => {
 				varToFill += `[${v}]`
 			}
 			if (!eval('(function() { return (' + varToFill + ' != null); })()') && !(instance instanceof DataElement && varToFill.includes('.data'))) {
-				console.log('FAILLL');
-				console.log(varToFill);
 				return true;
 			}
 		}
@@ -853,6 +917,7 @@ $ejModal.children('form').submit(ev => {
 				break;
 		}
 	});
+
 	remote.getGlobal('webbyData').projectInfos = projectInfos;
 
 	ev.preventDefault();
