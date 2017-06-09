@@ -83,7 +83,7 @@ const ElementType = {
 	FOOTER: 6,
 	H1: 7,
 	H2: 8,
-	H3: 0,
+	H3: 9,
 	H4: 10,
 	H5: 11,
 	H6: 12,
@@ -91,6 +91,26 @@ const ElementType = {
 	MAIN: 14,
 	NAV: 15,
 	SECTION: 16,
+};
+
+const ElementClass = {
+	0: 'InlineElement',
+	1: 'BlockElement',
+	2: 'InlineElement',
+	3: 'BlockElement',
+	4: 'BlockElement',
+	5: 'InlineElement',
+	6: 'BlockElement',
+	7: 'InlineElement',
+	8: 'InlineElement',
+	9: 'InlineElement',
+	10: 'InlineElement',
+	11: 'InlineElement',
+	12: 'InlineElement',
+	13: 'BlockElement',
+	14: 'BlockElement',
+	15: 'BlockElement',
+	16: 'BlockElement',
 };
 
 const Tags = [
@@ -139,76 +159,16 @@ const Locales = {
 
 // Classe Element, au centre de tout
 class Element {
-	constructor(type, name, text, sizes, properties, showElementProperties = true) {
+	constructor(type, name, properties, showElementProperties = true) {
 		// Déclaration des propriétés
 		this._type = type;
 		this._name = name;
-		this._text = text != null ? text : '';
 		this._position = projectInfos.elements.length;
-		this._sizes = sizes != null ? sizes : [12, 12, 12];
 		this._properties = properties != null ? properties : {
 			color: 'default',
 			backgroundColor: 'transparent',
 			fontFamily: 'sans-serif'
 		};
-
-		projectInfos.elements.push(this);
-		// Mise à jour de la variable globale à chaque modification de projectInfos
-		remote.getGlobal('webbyData').projectInfos = projectInfos;
-
-		// Création de l'élément HTML dans l'aperçu
-		addElement(this);
-
-		// Affichage de l'assistant afin de directement modifier les propriétés de l'élément
-		if (showElementProperties) {
-			$epModal.find('[type="hidden"]').val(this._position);
-
-			$.each(projectInfos.elements[this._position], (i,v) => {
-				let element = $epModal.find(`[name="element-${i.substr(1)}"]`);
-
-				if (element != null && element.length > 0) {
-					switch (element.tagName()) {
-						case 'textarea':
-						element.val(v
-							.replaceAll('<br />', '\n')
-							.replaceAll(/\/{2}(.+?)\/{2}/,'\\//$1//')
-							.replaceAll(/<em>{1}(.+?)<\/em>{1}/,'//$1//')
-							.replaceAll(/_{2}(.+?)_{2}/,'\\__$1__')
-							.replaceAll(/<u>{1}(.+?)<\/u>{1}/,'__$1__')
-							.replaceAll(/~{1}(.+?)~{1}/,'\\~$1~')
-							.replaceAll(/<s>{1}(.+?)<\/s>{1}/,'~$1~')
-							.replaceAll(/\*{2}(.+?)\*{2}/,'\\**$1**')
-							.replaceAll(/<strong>{1}(.+?)<\/strong>{1}/,'**$1**')
-							.replaceAll(/<a href="(.+?)" target="_blank">(.+?)<\/a>/, '[$2]($1)')
-						);
-						break;
-						case 'input':
-							element.val(v);
-							break;
-						case 'select':
-							element.children(`[value="${v}"]`).prop('selected', true);
-							break;
-					}
-				} else if (typeof v === 'object') {
-					$.each(v, (i2,v2) => {
-						let element2 = $epModal.find(`[name="element-${i.substr(1)}-${i2}"]`);
-
-						if (element2 != null && element2.length > 0) {
-							switch (element2.tagName()) {
-								case 'input':
-								case 'textarea':
-									element2.val(v2);
-									break;
-								case 'select':
-									element2.children(`[value="${v2}"]`).prop('selected', true)
-									break;
-							}
-						}
-					});
-				}
-			});
-		}
-		$epModal.foundation('open');
 	}
 
 	// Suppression d'un élément
@@ -250,13 +210,6 @@ class Element {
 		this._name = name;
 	}
 
-	get text() {
-		return this._text;
-	}
-	set text(text) {
-		this._text = text;
-	}
-
 	get position() {
 		return this._position;
 	}
@@ -264,18 +217,41 @@ class Element {
 		this._position = position;
 	}
 
-	get sizes() {
-		return this._sizes;
-	}
-	set sizes(sizes) {
-		this._sizes = sizes;
-	}
-
 	get properties() {
 		return this._properties;
 	}
 	set properties(properties) {
 		this._properties = properties;
+	}
+}
+
+class InlineElement extends Element {
+	constructor(type, name, text, properties, showElementProperties) {
+		super(type, name, properties, showElementProperties);
+		this._class = 'InlineElement';
+		this._text = text != null ? text : '';
+	}
+
+	get text() {
+		return this._text;
+	}
+	set text(text) {
+		this._text = text;
+	}
+}
+
+class BlockElement extends Element {
+	constructor(type, name, sizes, properties, showElementProperties) {
+		super(type, name, properties, showElementProperties);
+		this._class = 'BlockElement';
+		this._sizes = sizes != null ? sizes : [12, 12, 12];
+	}
+
+	get sizes() {
+		return this._sizes;
+	}
+	set sizes(sizes) {
+		this._sizes = sizes;
 	}
 }
 
@@ -333,7 +309,17 @@ showProjectProperties = () => { // Assistant propriétés du projet
 $('.element-properties').click(function() { // Propriétés de l'élément
 	// Définition d'un input caché, utilisé pour appliquer les propriétés au bon élément
 	let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
+	let instance = projectInfos.elements[id];
 	$epModal.find('[type="hidden"]').val(id);
+
+	$epModal.find('#sizes').css('display', '');
+	$epModal.find('#text').css('display', '');
+
+	if (instance instanceof InlineElement) {
+		$epModal.find('#sizes').css('display', 'none');
+	} else {
+		$epModal.find('#text').css('display', 'none');
+	}
 
 	// Application des propriétés dans les champs de texte
 	$.each(projectInfos.elements[id], (i,v) => {
@@ -470,6 +456,9 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 			} else {
 				varToFill += `[${v}]`
 			}
+			if (!eval('(function() { return (' + varToFill + ' != null); })()')) {
+				return true;
+			}
 		}
 		switch ($v.tagName()) {
 			case 'textarea':
@@ -488,6 +477,7 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 					.replaceAll(/\\<s>(.+?)<\/s>/,'~$1~')
 					.replaceAll(/(https?):§{2}/, '$1://')
 				);
+				// no break
 			case 'input':
 				eval(varToFill + ' = `' + $v.val().replace('`', '\\`') + '`');
 				$v.val('');
@@ -510,17 +500,24 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 });
 
 // Lors de l'importation d'un projet
-ipcRenderer.on('project-loaded', (ev, infos) => {
+ipcRenderer.on('project-loaded', (ev, elements) => {
 	// Effacement des éléments, sans changer la variable globale (sa valeur est déjà correcte)
 	clearElements(true, false);
 
 	// Remplacement du JSON par des vraies instances d'Element
-	projectInfos = infos;
-	let jsonElements = projectInfos.elements;
-	projectInfos.elements = [];
-	$.each(jsonElements, (i,v) => {
-		new Element(v._type, v._name, v._text, v._sizes, v._properties, false);
+	projectInfos =  JSON.parse(JSON.stringify(remote.getGlobal('webbyData').projectInfos));
+	$.each(elements, (i,v) => {
+		let instance;
+		if (v._class === 'InlineElement') {
+			instance = new InlineElement(v._type, v._name, v._text, v._properties, false);
+		} else {
+			instance = new BlockElement(v._type, v._name, v._sizes, v._properties, false);
+		}
+
+		projectInfos.elements[projectInfos.elements.length] = instance;
+		addElement(instance);
 	});
+	remote.getGlobal('webbyData').projectInfos = projectInfos;
 });
 
 // Convertit un élément interne en élément lisible par l'utilisateur
@@ -539,9 +536,9 @@ function addElement(elem, addTags = true) {
 	$newElem.find('[data-toggle]').attr('data-toggle', elem.position + '-dropdown-properties');
 
 	// Contenu de l'élément
-	if (elem.text !== '') {
+	if (elem.text != null && elem.text !== '') {
 		$newElem.find('strong').html(elem.name + ' &middot; ' + typeToLocale(elem.type));
-		$newElem.find('em').html(elem.text.replaceAll('<br />', ' '));
+		$newElem.find('em').html($(`<span>${elem.text.replaceAll('<br />', '   ')}</span>`).text());
 	} else {
 		$newElem.find('strong').html(elem.name);
 		$newElem.find('em').html(typeToLocale(elem.type));
@@ -611,7 +608,13 @@ $('[data-toggle]').click(function() {
 // Lors du clic sur le bouton "+"
 $s.find('[id^="add-"]').click(function(ev) {
 	let newTag = $(this).attr('id').substr(4);
-	new Element(ElementType[newTag.toUpperCase()], 'Nom', 'Texte');
+	let type = ElementType[newTag.toUpperCase()];
+	let instance = eval('(function() { return new ' + ElementClass[type] + '(type, "Nom") })()');
+
+	projectInfos.elements.push(instance);
+	addElement(instance);
+	remote.getGlobal('webbyData').projectInfos = projectInfos;
+
 	ev.preventDefault();
 });
 

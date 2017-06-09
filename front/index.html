@@ -240,15 +240,15 @@
                 <form>
                     <input type="hidden" name="element-id" value="" />
                     <div class="row">
-                        <div class="small-6 columns">
+                        <div class="columns">
                             <label>Nom de l'élément
                                 <input type="text" name="element-name" required="required" />
                             </label>
                         </div>
-                        <div class="small-6 columns">
+                        <div id="sizes" class="columns">
                             <label>Tailles (Mobile / Tablette / Ordinateur)
                                 <div class="input-group">
-                                    <select name="element-sizes-0" required="required" class="input-group-field">
+                                    <select name="element-sizes-0" class="input-group-field">
                                         <option value="1">8.3% (1/12)</option>
                                         <option value="2">16.7% (1/6)</option>
                                         <option value="3">25% (1/4)</option>
@@ -262,7 +262,7 @@
                                         <option value="11">91.7% (11/12)</option>
                                         <option value="12">100%</option>
                                     </select>
-                                    <select name="element-sizes-1" required="required" class="input-group-field">
+                                    <select name="element-sizes-1" class="input-group-field">
                                         <option value="1">8.3% (1/12)</option>
                                         <option value="2">16.7% (1/6)</option>
                                         <option value="3">25% (1/4)</option>
@@ -276,7 +276,7 @@
                                         <option value="11">91.7% (11/12)</option>
                                         <option value="12">100%</option>
                                     </select>
-                                    <select name="element-sizes-2" required="required" class="input-group-field">
+                                    <select name="element-sizes-2" class="input-group-field">
                                         <option value="1">8.3% (1/12)</option>
                                         <option value="2">16.7% (1/6)</option>
                                         <option value="3">25% (1/4)</option>
@@ -372,7 +372,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" id="text">
                         <div class="small-12 column">
                             <label>Contenu de l'élément
                                 <div id="text-editor">
@@ -381,7 +381,7 @@
                                     <a href="#" id="button-underline" class="button"><i class="fa fa-underline" aria-hidden="true"></i></a>
                                     <a href="#" id="button-strikethrough" class="button"><i class="fa fa-strikethrough" aria-hidden="true"></i></a>
                                 </div>
-                                <textarea name="element-text" required="required"></textarea>
+                                <textarea name="element-text"></textarea>
                             </label>
                         </div>
                     </div>

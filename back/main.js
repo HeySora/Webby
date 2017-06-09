@@ -43,7 +43,9 @@ const template = [
                             if (err) throw err;
                             lastFileName = '';
                             global.webbyData.projectInfos = JSON.parse(data);
-                            mwContents.send('project-loaded', global.webbyData.projectInfos);
+                            let elements = JSON.parse(JSON.stringify(global.webbyData.projectInfos.elements));
+                            global.webbyData.projectInfos.elements = [];
+                            mwContents.send('project-loaded', elements);
                         });
                     }
                 }

@@ -42,6 +42,10 @@ input.button {
 .dropdown-pane.visible {
 	visibility: visible;
 }
+
+ul.accordion {
+	margin-bottom: 0.5rem;
+}
 .accordion-title, .accordion-title:focus, .accordion-title:hover {
 	color: #000;
 }
