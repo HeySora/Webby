@@ -44,6 +44,7 @@
                                 <li><a href="#" class="button" id="add-address">Adresse</a></li>
                                 <li><a href="#" class="button" id="add-blockquote">Citation</a></li>
                                 <li><a href="#" class="button" id="add-p">Paragraphe</a></li>
+                                <li><a href="#" class="button" id="add-ul">Liste non-ordonnée</a></li>
                                 <li><a href="#" class="button" id="add-h1">Titre</a></li>
                                 <li><a href="#" class="button" id="add-h2">Sous-titre</a></li>
                                 <li><a href="#" class="button" id="add-h3">Titre 3</a></li>
@@ -140,7 +141,7 @@
                         </div>
                     </div>
                     <div class="row align-center">
-                        <div class="small-4 column">
+                        <div class="small-4 columns">
                             <input type="submit" class="button" value="Créer !" />
                         </div>
                     </div>
@@ -227,7 +228,7 @@
                         </div>
                     </div>
                     <div class="row align-center">
-                        <div class="small-4 column">
+                        <div class="small-4 columns">
                             <input type="submit" class="button" value="Modifier !" />
                         </div>
                     </div>
@@ -295,7 +296,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="small-12 column">
+                        <div class="small-12 columns">
                             <ul class="accordion" data-accordion data-allow-all-closed="true">
                                 <li class="accordion-item" data-accordion-item>
                                     <a href="#" class="accordion-title">Styles</a>
@@ -372,12 +373,41 @@
                             </ul>
                         </div>
                     </div>
+                    <div class="row" id="data-ul">
+                        <div class="small-12 columns">
+                            <ul class="accordion" data-accordion data-allow-all-closed="true">
+                                <li class="accordion-item is-active" data-accordion-item>
+                                    <a href="#" class="accordion-title">Paramètres de la liste</a>
+                                    <div class="accordion-content" data-tab-content>
+                                        <div class="row align-right">
+                                            <div class="shrink columns">
+                                                <a href="#" class="button" id="add-ul-element"><i class="fa fa-plus"></i> Ajouter un élément</a>
+                                            </div>
+                                            <div class="small-1 column"></div>
+                                        </div>
+                                        <div class="row align-center">
+                                            <div class="small-10 columns">
+                                                <ul>
+                                                    <li>
+                                                        <div class="input-group">
+                                                            <input type="text" class="input-group-field" name="element-data-0" />
+                                                            <a href="#" class="input-group-button button remove-ul-element"><i class="fa fa-times"></i></a>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                     <div class="row" id="text">
-                        <div class="small-12 column">
+                        <div class="small-12 columns">
                             <label>Contenu de l'élément
                                 <div id="text-editor">
                                     <a href="#" id="button-bold" class="button"><i class="fa fa-bold" aria-hidden="true"></i></a>
-                                    <a href="#"  id="button-italic" class="button"><i class="fa fa-italic" aria-hidden="true"></i></a>
+                                    <a href="#" id="button-italic" class="button"><i class="fa fa-italic" aria-hidden="true"></i></a>
                                     <a href="#" id="button-underline" class="button"><i class="fa fa-underline" aria-hidden="true"></i></a>
                                     <a href="#" id="button-strikethrough" class="button"><i class="fa fa-strikethrough" aria-hidden="true"></i></a>
                                 </div>
@@ -386,7 +416,7 @@
                         </div>
                     </div>
                     <div class="row align-center">
-                        <div class="small-4 column">
+                        <div class="small-4 columns">
                             <input type="submit" class="button" value="Modifier !" />
                         </div>
                     </div>
@@ -420,7 +450,7 @@
                         </div>
                     </div>
                     <div class="row align-center">
-                        <div class="small-4 column">
+                        <div class="small-4 columns">
                             <input type="submit" class="button" value="Valider !" />
                         </div>
                     </div>

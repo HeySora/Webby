@@ -160,6 +160,21 @@ ul.accordion {
 	padding: 0.425em 0.5em;
 }
 
+#element-properties-modal [id^='data-'] {
+	display: none;
+}
+
+#data-ul input {
+	display: inline-block;
+}
+
+#data-ul .input-group {
+	display: inline-flex;
+}
+
+#data-ul .input-group-field {
+	height: 2.4375rem;
+}
 
 /* Aperçu de la page résultante */
 
