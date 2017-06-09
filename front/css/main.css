@@ -33,6 +33,11 @@ input.button {
 	width: 100%;
 }
 
+.hidden {
+	display: none !important;
+	visibility: hidden !important;
+}
+
 .dropdown-pane {
 	background: rgba(255, 255, 255, 0.8);
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);

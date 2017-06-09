@@ -670,6 +670,45 @@ $('#button-strikethrough').click(function(ev) {
 	ev.preventDefault();
 });
 
+$('.element-js').click(function() {
+	$($ejModal).foundation('open');
+	$('.element-js-text').addClass('hidden');
+});
+
+$('.element-js-action').change(function() {
+
+		if ($('.element-js-message').prop('selected'))
+			{
+				$('.element-js-text').removeClass('hidden');
+			}
+			else
+			{
+				$('.element-js-text').addClass('hidden');
+			}
+
+});
+
+$ejModal.children('form').submit(ev => {
+	$ejModal.foundation('close');
+	$ejModal.find('input[type!="submit"],select,textarea').each((i, v) => {
+		let $v = $(v);
+		let indexes = $v.attr('name').substr(8).split('-');
+		let varToFill = 'projectInfos';
+		for (let i = 0; i < indexes.length; i++) {
+			let v = indexes[i];
+			if (isNaN(parseInt(v))) {
+				varToFill += `.${v}`;
+			} else {
+				varToFill += `[${v}]`
+			}
+		}
+		eval(varToFill + ' = "' + $v.val() + '"');
+		$v.val('');
+	});
+	remote.getGlobal('webbyData').projectInfos = projectInfos;
+
+	ev.preventDefault();
+});
 // Lors du scroll sur la liste d'éléments, mise à jour de la position des fenêtres flottantes
 $elems.scroll(() => {
 	$elems.find('[id$="dropdown-properties"]').css('margin-top', -$elems.scrollTop());

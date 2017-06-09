@@ -401,24 +401,40 @@
                        <div class="small-6 columns">
                             <label>Évènements
                                 <select name="element-js-event" required="required">
-                                    <option value="da-DK">Danois</option>
-                                    <option value="de-CH">Allemand (Suisse)</option>
-                                    <option value="de-DE">Allemand (Allemagne)</option>
-                                    <option value="de-LU">Allemand (Luxembourg)</option>
+                                    <option value="onclick">Clic</option>
+                                    <option value="ondblclick">Double clic</option>
+                                    <option value="onmouseover">Au survol</option>
                                 </select>
                             </label>
                         </div>
                         <div class="small-6 columns">
                             <label>Actions faites à partir de l'événement
-                                <select name="element-js-action" required="required">
-                                    <option value="da-DK">Danois</option>
-                                    <option value="de-CH">Allemand (Suisse)</option>
-                                    <option value="de-DE">Allemand (Allemagne)</option>
-                                    <option value="de-LU">Allemand (Luxembourg)</option>
+                                <select class="element-js-action" name="element-js-action" required="required">
+                                    <option class="element-js-change" value="change">Modifier élément</option>
+                                    <option class="element-js-delete" value="delete">Supprimer un élément</option>
+                                    <option class="element-js-message" value="message">Afficher un message</option>
                                 </select>
                             </label>
                         </div>
+                        <div class="small-12 columns element-js-text">
+                            <label>Message pour l'évènement
+                                <textarea name="element-js-text"></textarea>
+                            </label>
+                        </div>
                     </div>
+
+                    <!--
+                    <div class="small-12 column">
+                        <ul class="accordion" data-accordion data-allow-all-closed="true">
+                            <li class="accordion-item" data-accordion-item>
+                                <a href="#" class="accordion-title">Évènements actifs</a>
+                                <div class="accordion-content" data-tab-content>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    -->
+
                     <div class="row align-center">
                         <div class="small-4 column">
                             <input type="submit" class="button" value="Valider !" />
