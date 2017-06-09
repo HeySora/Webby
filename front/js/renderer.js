@@ -91,6 +91,7 @@ const ElementType = {
 	MAIN: 14,
 	NAV: 15,
 	SECTION: 16,
+	UL: 17,
 };
 
 const ElementClass = {
@@ -111,6 +112,7 @@ const ElementClass = {
 	14: 'BlockElement',
 	15: 'BlockElement',
 	16: 'BlockElement',
+	17: 'DataElement',
 };
 
 const Tags = [
@@ -131,6 +133,7 @@ const Tags = [
 	'main',
 	'nav',
 	'section',
+	'ul',
 ];
 
 const Locales = {
@@ -152,7 +155,8 @@ const Locales = {
 			'En-tête',
 			'Contenu principal',
 			'Navigation',
-			'Section'
+			'Section',
+			'Liste non-ordonnée'
 		]
 	}
 }
@@ -241,6 +245,20 @@ class InlineElement extends Element {
 	}
 }
 
+class DataElement extends InlineElement {
+	constructor(type, name, text, properties, data, showElementProperties) {
+		super(type, name, text, properties, showElementProperties);
+		this._data = data != null ? data : {};
+	}
+
+	get data() {
+		return this._data;
+	}
+	set data(data) {
+		this._data = data;
+	}
+}
+
 class BlockElement extends Element {
 	constructor(type, name, sizes, properties, showElementProperties) {
 		super(type, name, properties, showElementProperties);
@@ -315,10 +333,16 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 
 	$epModal.find('#sizes').css('display', '');
 	$epModal.find('#text').css('display', '');
+	$epModal.find('[id^="data-"]').css('display', '');
 
 	if (instance instanceof InlineElement) {
 		$epModal.find('#sizes').css('display', 'none');
-	} else {
+	} else if (instance instanceof BlockElement) {
+		$epModal.find('#text').css('display', 'none');
+	}
+
+	if (instance instanceof DataElement) {
+		$epModal.find(`#data-${Tags[instance.type]}`).css('display', 'block');
 		$epModal.find('#text').css('display', 'none');
 	}
 
@@ -445,9 +469,12 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 	// Récupération de l'ID, pour savoir quel élément modifier.
 	let id = $epModal.find('[type="hidden"]').val();
 
+	let instance = projectInfos.elements[id];
+
 	// Remplissage des informations par les nouvelles
 	$epModal.find('input[type!="submit"][type!="hidden"],select,textarea').each((i,v) => {
 		let $v = $(v);
+
 		let indexes = $v.attr('name').substr(8).split('-');
 		let varToFill = `projectInfos.elements[${id}]`;
 		for (let i = 0; i < indexes.length; i++) {
@@ -457,9 +484,7 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 			} else {
 				varToFill += `[${v}]`
 			}
-			if (!eval('(function() { return (' + varToFill + ' != null); })()')) {
-				console.log('FAILLLLL');
-				console.log(varToFill);
+			if (!eval('(function() { return (' + varToFill + ' != null); })()') && !(instance instanceof DataElement && varToFill.includes('.data'))) {
 				return true;
 			}
 		}
@@ -569,7 +594,6 @@ function updateHTMLElement(element) {
 	let $elem = $(`#elem-${element.position}`);
 	$elem.html(element.text);
 	$.each(element.properties, (i,v) => {
-		console.log([i, v]);
 		if (v === 'default') {
 			$elem.css(i, '');
 		} else {
@@ -626,8 +650,6 @@ $s.find('[id^="add-"]').click(function(ev) {
 	ev.preventDefault();
 });
 
-
-
 function pelle(str) {
 	let $area = $('[name="element-text"]');
 	let area = $area[0];
@@ -646,25 +668,51 @@ function pelle(str) {
 	}
 }
 
-$('#button-bold').click(function(ev) {
+$('#add-ul-element').click(function(ev) {
+	let $list = $(this).closest('.accordion-content').find('ul');
+	let $newElem = $(`<li><div class="input-group"><input type="text" class="input-group-field" name="element-data-${$list.children().length}" /><a href="#" class="input-group-button button remove-ul-element"><i class="fa fa-times"></i></a></div></li>`);
+	$newElem.find('.remove-ul-element').click(removeUlElement);
+	$newElem.appendTo($list);
+
+	ev.preventDefault();
+});
+
+function removeUlElement(ev) {
+	let $parent = $(this).parent();
+	let id = $parent.children('input').attr('name').substr(13);
+	let $list = $parent.closest('.accordion-content').find('ul');
+	$list.children('li').eq(id).remove();
+
+	$list.children().each((i,v) => {
+		if (i < id) {
+			return true;
+		}
+
+		$(v).find('[name^="element-data-"]').attr('name', `element-data-${i}`);
+	});
+}
+
+$('.remove-ul-element').click(removeUlElement);
+
+$('#button-bold').click(ev => {
 	pelle('**');
 
 	ev.preventDefault();
 });
 
-$('#button-italic').click(function(ev) {
+$('#button-italic').click(ev => {
 	pelle('//');
 
 	ev.preventDefault();
 });
 
-$('#button-underline').click(function(ev) {
+$('#button-underline').click(ev => {
 	pelle('__');
 
 	ev.preventDefault();
 });
 
-$('#button-strikethrough').click(function(ev) {
+$('#button-strikethrough').click(ev => {
 	pelle('~');
 
 	ev.preventDefault();
