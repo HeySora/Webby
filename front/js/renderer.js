@@ -368,13 +368,13 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 					element.val(v
 						.replaceAll('<br />', '\n')
 						.replaceAll(/\/{2}(.+?)\/{2}/,'\\//$1//')
-						.replaceAll(/<em>{1}(.+?)<\/em>{1}/,'//$1//')
+						.replaceAll(/<em>(.+?)<\/em>/,'//$1//')
 						.replaceAll(/_{2}(.+?)_{2}/,'\\__$1__')
-						.replaceAll(/<u>{1}(.+?)<\/u>{1}/,'__$1__')
-						.replaceAll(/~{1}(.+?)~{1}/,'\\~$1~')
-						.replaceAll(/<s>{1}(.+?)<\/s>{1}/,'~$1~')
+						.replaceAll(/<u>(.+?)<\/u>/,'__$1__')
+						.replaceAll(/~(.+?)~/,'\\~$1~')
+						.replaceAll(/<s>(.+?)<\/s>/,'~$1~')
 						.replaceAll(/\*{2}(.+?)\*{2}/,'\\**$1**')
-						.replaceAll(/<strong>{1}(.+?)<\/strong>{1}/,'**$1**')
+						.replaceAll(/<strong>(.+?)<\/strong>/,'**$1**')
 						.replaceAll(/<a href="(.+?)" target="_blank">(.+?)<\/a>/, '[$2]($1)')
 					);
 					break;
@@ -513,7 +513,7 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 					.replaceAll(/\\<strong>(.+?)<\/strong>/,'**$1**')
 					.replaceAll(/_{2}(.+?)_{2}/,'<u>$1</u>')
 					.replaceAll(/\\<u>(.+?)<\/u>/,'__$1__')
-					.replaceAll(/~{1}(.+?)~{1}/,'<s>$1</s>')
+					.replaceAll(/~(.+?)~/,'<s>$1</s>')
 					.replaceAll(/\\<s>(.+?)<\/s>/,'~$1~')
 					.replaceAll(/(https?):§{2}/, '$1://')
 				);
