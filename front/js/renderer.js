@@ -458,8 +458,6 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 				varToFill += `[${v}]`
 			}
 			if (!eval('(function() { return (' + varToFill + ' != null); })()')) {
-				console.log('FAILLLLL');
-				console.log(varToFill);
 				return true;
 			}
 		}
@@ -569,7 +567,6 @@ function updateHTMLElement(element) {
 	let $elem = $(`#elem-${element.position}`);
 	$elem.html(element.text);
 	$.each(element.properties, (i,v) => {
-		console.log([i, v]);
 		if (v === 'default') {
 			$elem.css(i, '');
 		} else {
