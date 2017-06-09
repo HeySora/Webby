@@ -560,6 +560,8 @@ function addElement(elem, addTags = true) {
 	}
 
 	$newElem.appendTo('#elements');
+
+	return $newElem;
 }
 
 // Mise à jour de l'élément de l'aperçu
@@ -616,8 +618,10 @@ $s.find('[id^="add-"]').click(function(ev) {
 	let instance = eval('(function() { return new ' + ElementClass[type] + '(type, "Nom") })()');
 
 	projectInfos.elements.push(instance);
-	addElement(instance);
+	let $newElem = addElement(instance);
 	remote.getGlobal('webbyData').projectInfos = projectInfos;
+
+	$newElem.find('.element-properties').click();
 
 	ev.preventDefault();
 });
