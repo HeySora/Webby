@@ -1014,7 +1014,7 @@ $(() => {
 			projectInfos.elements.move(ev.oldIndex, ev.newIndex);
 
 			if (ev.newIndex > ev.oldIndex) {
-				for (let i = ev.newIndex - 1; i >= 0; i--) {
+				for (let i = ev.newIndex - 1; i >= ev.oldIndex; i--) {
 					projectInfos.elements[i].position--;
 				}
 
