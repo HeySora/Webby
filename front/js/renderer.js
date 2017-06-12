@@ -662,6 +662,15 @@ function addElement(instance, addTags = true) {
 				}
 				$newTag.css(i, v);
 			});
+			if (instance.js.event != '' && instance.js.action != '') {
+				$newTag.on(instance.js.event, () => {
+					switch (instance.js.action) {
+						case 'message':
+							alert(instance.js.text != null ? instance.js.text : '(Veuillez définir un message.)');
+							break;
+					}
+				});
+			}
 			$newTag.appendTo('#preview');
 		}
 	}
@@ -985,6 +994,8 @@ $ejModal.children('form').submit(ev => {
 				break;
 		}
 	});
+
+	updateElements(true);
 
 	remote.getGlobal('webbyData').projectInfos = projectInfos;
 
