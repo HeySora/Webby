@@ -68,7 +68,8 @@ let $d = $(document),
 	$p = $('#preview'),
 	$npModal = $('#new-project-modal'),
 	$ppModal = $('#project-properties-modal'),
-	$epModal = $('#element-properties-modal');
+	$ecModal = $('#element-children-modal'),
+	$epModal = $('#element-properties-modal'),
 	$ejModal = $('#element-js-modal');
 
 // Déclaration des enums
@@ -266,6 +267,13 @@ class Element {
 	set js(js) {
 		this._js = js;
 	}
+
+	get class() {
+		return this._class;
+	}
+	set class(newClass) {
+		this._class = newClass;
+	}
 }
 
 class InlineElement extends Element {
@@ -299,10 +307,11 @@ class DataElement extends Element {
 }
 
 class BlockElement extends Element {
-	constructor(type, name, sizes, properties, showElementProperties, js) {
+	constructor(type, name, sizes, properties, showElementProperties, js, children) {
 		super(type, name, properties, showElementProperties, js);
 		this._class = 'BlockElement';
 		this._sizes = sizes != null ? sizes : [12, 12, 12];
+		this._children = children != null ? children : [];
 	}
 
 	get sizes() {
@@ -310,6 +319,13 @@ class BlockElement extends Element {
 	}
 	set sizes(sizes) {
 		this._sizes = sizes;
+	}
+
+	get children() {
+		return this._children;
+	}
+	set children(children) {
+		this._children = children;
 	}
 }
 
@@ -363,6 +379,41 @@ showProjectProperties = () => { // Assistant propriétés du projet
 
 	$ppModal.foundation('open');
 }
+
+$('.element-children').click(function() { // Enfants de l'élément
+	let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
+	let instance = projectInfos.elements[id];
+
+	if (instance.class !== 'BlockElement') {
+		return;
+	}
+
+	$ecModal.find('[type="hidden"]').val(id);
+
+	$.each(instance.children, (i,v) => {
+		$ecModal.find(`#element-children-${v[0]}`).prop('checked', v[1]);
+	});
+
+	$(`#element-children-${instance.position}`)
+	.prop('checked', false)
+	.parent().css('display', 'none');
+
+	for (let i = 0; i < projectInfos.elements.length; i++) {
+		if (!$(`#elem-${i}`).is('#preview > *')) {
+			$.each(instance.children, (i,v) => {
+				if (v[1] == i && !v[2]) {
+					$(`#element-children-${i}`)
+					.prop('checked', false)
+					.parent().css('display', 'none');
+					return false;
+				}
+			})
+		}
+	}
+
+
+	$ecModal.foundation('open');
+});
 
 $('.element-properties').click(function() { // Propriétés de l'élément
 	// Définition d'un input caché, utilisé pour appliquer les propriétés au bon élément
@@ -519,6 +570,8 @@ $ppModal.children('form').submit(ev => { // Enregistrement des propriétés du p
 $epModal.children('form').submit(ev => { // Modification des propriétés de l'élément
 	$epModal.foundation('close');
 
+	$epModal.find('input[type="submit"]').val('Modifier !');
+
 	// Récupération de l'ID, pour savoir quel élément modifier.
 	let id = $epModal.find('[type="hidden"]').val();
 
@@ -613,7 +666,7 @@ ipcRenderer.on('project-loaded', (ev, elements) => {
 				instance = new InlineElement(v._type, v._name, v._text, v._properties, false, v._js);
 				break;
 			case 'BlockElement':
-				instance = new BlockElement(v._type, v._name, v._sizes, v._properties, false, v._js);
+				instance = new BlockElement(v._type, v._name, v._sizes, v._properties, false, v._js, v._children);
 				break;
 			case 'DataElement':
 				instance = new DataElement(v._type, v._name, v._data, v._properties, false, v._js);
@@ -624,6 +677,8 @@ ipcRenderer.on('project-loaded', (ev, elements) => {
 		addElement(instance);
 	});
 	remote.getGlobal('webbyData').projectInfos = projectInfos;
+
+	updateElements();
 });
 
 // Convertit un élément interne en élément lisible par l'utilisateur
@@ -635,6 +690,13 @@ function typeToLocale(type, lang = 'fr') {
 function addElement(instance, addTags = true) {
 	// Clonage de la template d'élément de sidebar
 	let $newElem = $('#template-element').clone(true);
+
+	if (instance.class === 'BlockElement') {
+		$newElem.find('.element-children').css('display', '');
+	}
+
+	// Mise à jour des checkboxes
+	//updateCheckboxes();
 
 	// Changement des IDs/Classes
 	$newElem.attr('id', `element-${instance.position}`);
@@ -677,6 +739,18 @@ function addElement(instance, addTags = true) {
 
 	$newElem.appendTo('#elements');
 
+	$ecModal.find('#element-children-container').append(
+		$('<div></div>').append(
+			$('<input type="checkbox" />')
+			.attr('id', `element-children-${instance.position}`)
+			.attr('name', `element-children-${instance.position}`)
+		).append(
+			$('<label></label>')
+			.attr('for', `element-children-${instance.position}`)
+			.html(`${instance.name} &middot; ${typeToLocale(instance.type)}`)
+		)
+	);
+
 	return $newElem;
 }
 
@@ -706,6 +780,33 @@ function updateElements(updateTags = false) {
 	$.each(projectInfos.elements, (i,v) => {
 		addElement(v, updateTags);
 	});
+
+	$.each(projectInfos.elements, (i,v) => {
+		$.each(v.children, (i2,v2) => {
+			if (v2[1]) {
+				$(`#elem-${v2[0]}`).detach().appendTo(`#elem-${i}`);
+			}
+		});
+	})
+}
+
+function updateCheckboxes() {
+	$ecModal.find('#element-children-container').children().remove();
+
+	let $cc = $ecModal.find('#element-children-container');
+	$.each(projectInfos.elements, (i,v) => {
+		$cc.append(
+			$('<div></div>').append(
+				$('<input type="checkbox" />')
+				.attr('id', `element-children-${v.position}`)
+				.attr('name', `element-children-${v.position}`)
+			).append(
+				$('<label></label>')
+				.attr('for', `element-children-${v.position}`)
+				.html(`${v.name} &middot; ${typeToLocale(v.type)}`)
+			)
+		);
+	});
 }
 
 // Suppression des éléments HTML
@@ -725,6 +826,9 @@ function clearElements(trueDelete = false, updateGlobal = true) {
 		}
 	}
 	$('#elements > *').remove();
+
+	// Retrait des cases à cocher
+	$ecModal.find('#element-children-container').children().remove();
 }
 
 // Lors du clic sur le bouton "Supprimer l'élément"
@@ -738,16 +842,23 @@ $('[data-toggle]').click(function() {
 	$('#' + $(this).attr('data-toggle')).toggleClass('visible');
 });
 
-// Lors du clic sur le bouton "+"
+// Lors du clic sur le bouton e"+"
 $s.find('[id^="add-"]').click(function(ev) {
 	let newTag = $(this).attr('id').substr(4);
 	let type = ElementType[newTag.toUpperCase()];
 	let instance = eval('(function() { return new ' + ElementClass[type] + '(type, "Nom") })()');
 
 	projectInfos.elements.push(instance);
+
+	if (ElementClass[type] === 'BlockElement') {
+		for (let i = 0; i < projectInfos.elements.length; i++) {
+			instance.children[i] = [i, false];
+		}
+	}
+
 	let $newElem = addElement(instance);
 	remote.getGlobal('webbyData').projectInfos = projectInfos;
-
+	$epModal.find('input[type="submit"]').val('Créer !');
 	$newElem.find('.element-properties').click();
 
 	ev.preventDefault();
@@ -929,7 +1040,7 @@ $('.element-js').click(function() {
 		$('.element-js-text').removeClass('hidden');
 	}
 
-	$($ejModal).foundation('open');
+	$ejModal.foundation('open');
 });
 
 $('.element-js-action').change(function() {
@@ -1001,6 +1112,41 @@ $ejModal.children('form').submit(ev => {
 
 	ev.preventDefault();
 });
+
+$ecModal.children('form').submit(ev => {
+	$ecModal.foundation('close');
+
+	// Récupération de l'ID, pour savoir quel élément modifier.
+	let id = $ecModal.find('[type="hidden"]').val();
+
+	let instance = projectInfos.elements[id];
+
+	if (instance.class !== 'BlockElement') {
+		return;
+	}
+
+	$.each(instance.children, (i,v) => {
+		let $checkbox = $ecModal.find(`#element-children-${i}`);
+		$.each(instance.children, (i2,v2) => {
+			console.log([i2, v2]);
+			if (v2[0] == i) {
+				instance.children[i2][1] = $checkbox.prop('checked');
+				return false;
+			}
+		});
+		if ($checkbox.parent().css('display') === 'none') {
+			$checkbox.parent().css('display', '');
+		}
+		$checkbox.prop('checked', false);
+	});
+
+	updateElements(true);
+
+	remote.getGlobal('webbyData').projectInfos = projectInfos;
+
+	ev.preventDefault();
+});
+
 // Lors du scroll sur la liste d'éléments, mise à jour de la position des fenêtres flottantes
 $elems.scroll(() => {
 	$elems.find('[id$="dropdown-properties"]').css('margin-top', -$elems.scrollTop());
@@ -1020,13 +1166,39 @@ $(() => {
 				return;
 			}
 
-			projectInfos.elements[ev.oldIndex].position = ev.newIndex;
+			let instance = projectInfos.elements[ev.oldIndex];
+
+			let ret = false;
+			$.each(instance.children, (i,v) => {
+				if (v[1]) {
+					ret = true;
+					return false;
+				}
+			})
+
+			if (ret) {
+				alert('Il est impossible de déplacer un élément contenant des enfants.');
+				return true;
+			}
+
+			if (!$(`#elem-${instance.position}`).is('#preview > *')) {
+				alert('Il est impossible de déplacer un élément enfant. Veuillez le retirer de son parent pour pouvoir le modifier.');
+				return;
+			}
+
+			instance.position = ev.newIndex;
 
 			projectInfos.elements.move(ev.oldIndex, ev.newIndex);
 
 			if (ev.newIndex > ev.oldIndex) {
 				for (let i = ev.newIndex - 1; i >= ev.oldIndex; i--) {
 					projectInfos.elements[i].position--;
+
+					$.each(instance.children, (i,v) => {
+						if (v[0] == i) {
+							instance.children[i][0]--;
+						}
+					});
 				}
 
 				let $movedElem = $(`#elem-${ev.oldIndex}`).insertAfter(`#elem-${ev.newIndex}`).attr('id', `elem-${ev.newIndex}-a`);
@@ -1037,9 +1209,26 @@ $(() => {
 			} else {
 				for (let i = ev.newIndex + 1; i <= ev.oldIndex; i++) {
 					projectInfos.elements[i].position++;
+
+					$.each(instance.children, (i,v) => {
+						if (v[0] == i) {
+							instance.children[i][0]++;
+						}
+					});
 				}
 
-				let $movedElem = $(`#elem-${ev.oldIndex}`).insertBefore(`#elem-${ev.newIndex}`).attr('id', `elem-${ev.newIndex}-a`);
+				let $movedElem;
+				let succeed = false;
+				for (let i = ev.newIndex; i >= 0; i--) {
+					try {
+						$movedElem = $(`#elem-${ev.oldIndex}`).insertBefore(`#elem-${ev.newIndex}`).attr('id', `elem-${ev.newIndex}-a`);
+						succeed = true;
+						break;
+					} catch (ex) {}
+				}
+				if (!succeed) {
+					alert("L'élément choisi est déjà au tout début !");
+				}
 				for (let i = ev.oldIndex - 1; i >= ev.newIndex; i--) {
 					$(`#elem-${i}`).attr('id', `elem-${i+1}`);
 				}
