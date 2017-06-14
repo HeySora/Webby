@@ -46,6 +46,7 @@
                                 <li><a href="#" class="button" id="add-p">Paragraphe</a></li>
                                 <li><a href="#" class="button" id="add-ul">Liste non-ordonnée</a></li>
                                 <li><a href="#" class="button" id="add-ol">Liste ordonnée</a></li>
+                                <li><a href="#" class="button" id="add-img">Image</a></li>
                                 <li><a href="#" class="button" id="add-h1">Titre</a></li>
                                 <li><a href="#" class="button" id="add-h2">Sous-titre</a></li>
                                 <li><a href="#" class="button" id="add-h3">Titre 3</a></li>
@@ -297,7 +298,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="small-12 columns">
+                        <div id="style" class="small-12 columns">
                             <ul class="accordion" data-accordion data-allow-all-closed="true">
                                 <li class="accordion-item" data-accordion-item>
                                     <a href="#" class="accordion-title">Styles</a>
@@ -432,6 +433,20 @@
                             </ul>
                         </div>
                     </div>
+
+                    <div class="row" id="data-img">
+                        <div class="small-6 columns">
+                            <label>URL de l'image
+                                <input type="text" name="element-img-src"  required="required"/>
+                            </label>
+                        </div>
+                        <div class="small-6 columns">
+                            <label>Texte de l'image
+                                <input type="text" name="element-img-alt" />
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="row" id="text">
                         <div class="small-12 columns">
                             <label>Contenu de l'élément
@@ -482,6 +497,7 @@
                         </div>
                     </div>
 
+                    <!--
                     <div class="small-12 column">
                         <ul class="accordion" data-accordion data-allow-all-closed="true">
                             <li class="accordion-item" data-accordion-item>
@@ -491,12 +507,13 @@
                             </li>
                         </ul>
                     </div>
-
+                    -->
                     <div class="row align-center">
                         <div class="small-4 columns">
                             <input type="submit" class="button" value="Valider !" />
                         </div>
                     </div>
+
                 </form>
             </div>
 
