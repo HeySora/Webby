@@ -237,6 +237,22 @@
                 </form>
             </div>
 
+            <!-- Assistant "Enfants" -->
+            <div class="large reveal" id="element-children-modal" data-reveal data-close-on-click="false" data-close-on-esc="false">
+                <h2>Enfants de l'élément</h2>
+                <form>
+                    <input type="hidden" name="element-id" value="" />
+                    <div class="row align-center">
+                        <div id="element-children-container" class="small-6 columns"></div>
+                    </div>
+                    <div class="row align-center">
+                        <div class="small-4 columns">
+                            <input type="submit" class="button" value="Modifier !" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
             <!-- Assistant "Propriétés de l'élément" -->
             <div class="large reveal" id="element-properties-modal" data-reveal data-close-on-click="false" data-close-on-esc="false">
                 <h2>Propriétés de l'élément</h2>
@@ -532,6 +548,7 @@
                     <i class="fa fa-chevron-down"></i>
                     <div class="dropdown-pane" id="dropdown-properties" data-auto-focus="true">
                         <ul>
+                            <li><a href="#" class="element-children button" style="display: none;">Éléments enfants</a></li>
                             <li><a href="#" class="delete-element button">Supprimer</a></li>
                             <li><a href="#" class="element-properties button">Propriétés</a></li>
                             <li><a href="#" class="element-js button">Évènements</a></li>

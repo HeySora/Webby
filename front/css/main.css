@@ -25,6 +25,14 @@ ol, ul {
 	margin-bottom: 0;
 }
 
+label {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
 [id^='template-'] {
 	display: none;
 }
@@ -184,6 +192,7 @@ ul.accordion {
 /* Aperçu de la page résultante */
 
 #preview {
+	word-wrap: break-word;
 	overflow: auto;
 }
 
