@@ -3,241 +3,241 @@
 /* Propriétés de base */
 
 *:not([id^='elem-'], [id^='elem-'] *), body, h1:not([id^='elem-'], [id^='elem-'] *), h2:not([id^='elem-'], [id^='elem-'] *), h3:not([id^='elem-'], [id^='elem-'] *), h4:not([id^='elem-'], [id^='elem-'] *), h5:not([id^='elem-'], [id^='elem-'] *), h6 {
-	font-family: "Roboto", sans-serif;
+    font-family: "Roboto", sans-serif;
 }
 
 body {
-	width: 100vw;
-	height: 100vh;
-	overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
 }
 
 textarea {
-	max-height: 224px;
+    max-height: 224px;
 }
 
 hr {
-	width: 75%;
-	border-bottom-width: 2px;
+    width: 75%;
+    border-bottom-width: 2px;
 }
 
 ol, ul {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 label {
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
-	user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 
 [id^='template-'] {
-	display: none;
+    display: none;
 }
 
 input.button {
-	width: 100%;
+    width: 100%;
 }
 
 .hidden {
-	display: none !important;
-	visibility: hidden !important;
+    display: none !important;
+    visibility: hidden !important;
 }
 
 .dropdown-pane {
-	background: rgba(255, 255, 255, 0.8);
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-	max-height: 384px;
-	overflow-y: auto;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    max-height: 384px;
+    overflow-y: auto;
 }
 .dropdown-pane.visible {
-	visibility: visible;
+    visibility: visible;
 }
 
 ul.accordion {
-	margin-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 .accordion-title, .accordion-title:focus, .accordion-title:hover {
-	color: #000;
+    color: #000;
 }
 
 #page {
-	width: 100%;
-	height: 100%;
-	position: relative;
+    width: 100%;
+    height: 100%;
+    position: relative;
 }
 
 
 /* Sidebar */
 
 #sidebar {
-	min-width: 320px;
-	max-width: 640px;
-	padding: 1rem;
-	background: #ddd;
-	box-shadow: 0 0 16px rgba(0, 0, 0, 0.6);
+    min-width: 320px;
+    max-width: 640px;
+    padding: 1rem;
+    background: #ddd;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.6);
 }
 
 #sidebar .fa {
-	transform: scale(1.0);
-	transition: transform 0.2s;
+    transform: scale(1.0);
+    transition: transform 0.2s;
 }
 #sidebar .fa:hover {
-	transform: scale(1.2);
+    transform: scale(1.2);
 }
 
 #sidebar h2 {
-	font-size: 2rem;
+    font-size: 2rem;
 }
 #sidebar .fa-plus {
-	font-size: 1.75rem;
+    font-size: 1.75rem;
 }
 
 #dropdown-elements ul, [id$='dropdown-properties'] ul {
-	list-style-type: none;
-	margin: 0;
+    list-style-type: none;
+    margin: 0;
 }
 
 #dropdown-elements a, [id$='dropdown-properties'] a {
-	margin-bottom: 2px;
-	background-color: rgba(64, 64, 64, 0.6);
-	display: block;
+    margin-bottom: 2px;
+    background-color: rgba(64, 64, 64, 0.6);
+    display: block;
 }
 #dropdown-elements a:focus, #dropdown-elements a:hover,
 [id$='dropdown-properties'] a:focus, [id$='dropdown-properties'] a:hover {
-	background-color: rgba(48, 48, 48, 0.7);
+    background-color: rgba(48, 48, 48, 0.7);
 }
 
 #elements {
-	height: 100%;
-	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
-	overflow-y: auto;
-	background-color: #ccc;
-	border: 1px solid #aaa;
-	border-radius: 3px;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #ccc;
+    border: 1px solid #aaa;
+    border-radius: 3px;
 
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
-	user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 
 .element {
-	width: 100%;
-	padding: 4px;
-	box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    width: 100%;
+    padding: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 .element:last-child {
-	margin-bottom: 0.125rem;
+    margin-bottom: 0.125rem;
 }
 
 .element .fa {
-	font-size: 1.5rem;
+    font-size: 1.5rem;
 }
 
 .element .column:not(.shrink), .element .columns:not(.shrink) {
-	padding-left: 0.5rem;
-	padding-right: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
 
 .element .column:not(.shrink) > *, .element .columns:not(.shrink) > * {
-	display: block;
-	width: 100%;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+    display: block;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .element:last-child [id$="dropdown-properties"] {
-	margin-top:  !important;
+    margin-top:  !important;
 }
 
 [name='element-properties-color'] > option {
-	background-color: #999;
+    background-color: #999;
 }
 
 [name='element-properties-backgroundColor'] > option {
-	color: #555;
+    color: #555;
 }
 
 
 /* Assistants */
 
 #text-editor a.button {
-	background-color: #999;
-	padding: 0.425em 0.5em;
+    background-color: #999;
+    padding: 0.425em 0.5em;
 }
 
 #element-properties-modal [id^='data-'] {
-	display: none;
+    display: none;
 }
 
 #data-ul input, #data-ol input {
-	display: inline-block;
+    display: inline-block;
 }
 
 #data-ul .input-group, #data-ol .input-group {
-	display: inline-flex;
+    display: inline-flex;
 }
 
 #data-ul .input-group-field, #data-ol .input-group-field {
-	height: 2.4375rem;
+    height: 2.4375rem;
 }
 
 /* Aperçu de la page résultante */
 
 #preview {
-	word-wrap: break-word;
-	overflow: auto;
-	padding: 0 15px;
-	margin: 0;
+    word-wrap: break-word;
+    overflow: auto;
+    padding: 0 15px;
+    margin: 0;
 }
 
 #overlay {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
-	background: #000;
-	display: none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #000;
+    display: none;
 }
 
 /* Page d'accueil */
 
 #home {
-	margin: auto;
-	padding: 1rem;
-	width: 480px;
-	height: 100%;
-	background: #fff;
-	text-align: center;
+    margin: auto;
+    padding: 1rem;
+    width: 480px;
+    height: 100%;
+    background: #fff;
+    text-align: center;
 }
 
 #logo {
-	max-width: 100%;
+    max-width: 100%;
 }
 
 #home h2 {
-	font-family: "Roboto Condensed", "Roboto", sans-serif;
-	font-size: 1.25rem;
+    font-family: "Roboto Condensed", "Roboto", sans-serif;
+    font-size: 1.25rem;
 }
 
 #home a {
-	display: block;
-	font-size: 1.5rem;
-	margin-bottom: 4px;
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 4px;
 }
 
 #home a .fa {
-	font-size: 1.25rem;
+    font-size: 1.25rem;
 }
 
 #home h3 {
-	font-size: 1.75rem;
+    font-size: 1.75rem;
 }
