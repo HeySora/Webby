@@ -14,6 +14,10 @@ function getSelectionText(elem) {
     return text;
 }
 
+function getLength(tab) {
+	return Array.isArray(tab) ? tab.length : Object.keys(tab).length;
+}
+
 Array.prototype.move = function (old_index, new_index) {
     if (new_index >= this.length) {
         let k = new_index - this.length;
@@ -140,14 +144,10 @@ const DataFunctions = {
 		return $list;
 	},
 	[ElementType.IMG]: (instance) => {
-		let imgChange;
-		let $alt = $epModal.find('[name="element-img-alt"]');
-		let $src = $epModal.find('[name="element-img-src"]');
-		let $image = $('<img>').attr('id', `elem-${instance.position}`);
-
-		$image.attr('src',$src.val()).attr('alt',$alt.val());
-
-		return $image;
+		return $('<img />')
+		.attr('id', `elem-${instance.position}`)
+		.attr('src', instance.data.src)
+		.attr('alt', instance.data.alt);
 	}
 };
 
@@ -448,12 +448,12 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 		// Préparation des assistants personnalisés
 		switch (instance.type) {
 			case ElementType.UL:
-				for (let i = 0; i < instance.data.length - 1; i++) {
+				for (let i = 0; i < getLength(instance.data) - 1; i++) {
 					$('#add-ul-element').click();
 				}
 				break;
 			case ElementType.OL:
-				for (let i = 0; i < instance.data.length - 1; i++) {
+				for (let i = 0; i < getLength(instance.data) - 1; i++) {
 					$('#add-ol-element').click();
 				}
 				break;
@@ -470,7 +470,6 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 	// Application des propriétés dans les champs de texte
 	$.each(projectInfos.elements[id], (i,v) => {
 		let element = $epModal.find(`[name="element-${i.substr(1)}"]`);
-
 		if (element != null && element.length > 0) {
 			switch (element.tagName()) { // Comportement différent selon le type de champ
 				case 'textarea':
@@ -595,7 +594,7 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 	let instance = projectInfos.elements[id];
 
 	if (instance instanceof DataElement) {
-		instance.data = [];
+		instance.data = {};
 	}
 
 	// Remplissage des informations par les nouvelles
@@ -1145,7 +1144,6 @@ $ecModal.children('form').submit(ev => {
 	$.each(instance.children, (i,v) => {
 		let $checkbox = $ecModal.find(`#element-children-${i}`);
 		$.each(instance.children, (i2,v2) => {
-			console.log([i2, v2]);
 			if (v2[0] == i) {
 				instance.children[i2][1] = $checkbox.prop('checked');
 				return false;

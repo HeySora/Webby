@@ -451,15 +451,26 @@
                     </div>
 
                     <div class="row" id="data-img">
-                        <div class="small-6 columns">
-                            <label>URL de l'image
-                                <input type="text" name="element-img-src"  required="required"/>
-                            </label>
-                        </div>
-                        <div class="small-6 columns">
-                            <label>Texte de l'image
-                                <input type="text" name="element-img-alt" />
-                            </label>
+                        <div class="small-12 columns">
+                            <ul class="accordion" data-accordion data-allow-all-closed="true">
+                                <li class="accordion-item is-active" data-accordion-item>
+                                    <a href="#" class="accordion-title">Paramètres de l'image</a>
+                                    <div class="accordion-content" data-tab-content>
+                                        <div class="row">
+                                            <div class="small-6 columns">
+                                                <label>URL de l'image
+                                                    <input type="text" name="element-data-src" />
+                                                </label>
+                                            </div>
+                                            <div class="small-6 columns">
+                                                <label>Texte de l'image
+                                                    <input type="text" name="element-data-alt" />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
 
