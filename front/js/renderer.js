@@ -74,7 +74,7 @@ let $d = $(document),
 
 // Déclaration des enums
 const ElementType = {
-	// todo img ul ol li hr
+	// todo hr
 	P: 0,
 	DIV: 1,
 	ADDRESS: 2,
@@ -94,6 +94,7 @@ const ElementType = {
 	SECTION: 16,
 	UL: 17,
 	OL: 18,
+	IMG: 19,
 };
 
 const ElementClass = {
@@ -116,6 +117,7 @@ const ElementClass = {
 	[ElementType.SECTION]: 'BlockElement',
 	[ElementType.UL]: 'DataElement',
 	[ElementType.OL]: 'DataElement',
+	[ElementType.IMG]: 'DataElement',
 };
 
 // Peuvent retourner un objet jQuery ou un string !
@@ -131,14 +133,23 @@ const DataFunctions = {
 	},
 	[ElementType.OL]: (instance) => {
 		let $list = $('<ol></ol>').attr('id', `elem-${instance.position}`);
-
 		$.each(instance.data, (i,v) => {
 			$list.append($('<li></li>').html(v));
 		});
 
 		return $list;
+	},
+	[ElementType.IMG]: (instance) => {
+		let imgChange;
+		let $alt = $epModal.find('[name="element-img-alt"]');
+		let $src = $epModal.find('[name="element-img-src"]');
+		let $image = $('<img>').attr('id', `elem-${instance.position}`);
+
+		$image.attr('src',$src.val()).attr('alt',$alt.val());
+
+		return $image;
 	}
-}
+};
 
 const Tags = {
 	[ElementType.P]: 'p',
@@ -160,6 +171,7 @@ const Tags = {
 	[ElementType.SECTION]: 'section',
 	[ElementType.UL]: 'ul',
 	[ElementType.OL]: 'ol',
+	[ElementType.IMG]: 'img'
 };
 
 const Locales = {
@@ -184,6 +196,7 @@ const Locales = {
 			[ElementType.SECTION]: 'Section',
 			[ElementType.UL]: 'Liste non-ordonnée',
 			[ElementType.OL]: 'Liste ordonnée',
+			[ElementType.IMG]: 'Image',
 		}
 	}
 }
@@ -424,6 +437,7 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 	$epModal.find('#sizes').css('display', '');
 	$epModal.find('#text').css('display', '');
 	$epModal.find('[id^="data-"]').css('display', '');
+	$epModal.find('#style').css('display', '');
 
 	if (instance instanceof DataElement) {
 		$epModal.find('#sizes').css('display', 'none');
@@ -442,6 +456,9 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 				for (let i = 0; i < instance.data.length - 1; i++) {
 					$('#add-ol-element').click();
 				}
+				break;
+			case ElementType.IMG:
+					$epModal.find('#style').css('display', 'none');
 				break;
 		}
 	} else if (instance instanceof InlineElement) {
