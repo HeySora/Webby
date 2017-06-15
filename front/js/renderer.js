@@ -1,23 +1,4 @@
 // Implémentation de méthodes supplémentaires
-function getSelectionText(elem) {
-    let text = '';
-    let activeEl = elem ? elem : document.activeElement;
-    let activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
-    if (
-      (activeElTagName == 'textarea') &&
-      (typeof activeEl.selectionStart == 'number')
-    ) {
-        text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
-    } else if (window.getSelection) {
-        text = window.getSelection().toString();
-    }
-    return text;
-}
-
-function getLength(tab) {
-    return Array.isArray(tab) ? tab.length : Object.keys(tab).length;
-}
-
 Array.prototype.move = function (old_index, new_index) {
     if (new_index >= this.length) {
         let k = new_index - this.length;
@@ -59,6 +40,298 @@ jQuery.fn.getCursorPosition = function() {
 jQuery.fn.hasAttr = function(attrName) {
     let attr = this.attr(attrName);
     return (typeof attr !== typeof undefined && attr !== false);
+}
+
+function getSelectionText(elem) {
+    let text = '';
+    let activeEl = elem ? elem : document.activeElement;
+    let activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+    if (
+      (activeElTagName == 'textarea') &&
+      (typeof activeEl.selectionStart == 'number')
+    ) {
+        text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+    } else if (window.getSelection) {
+        text = window.getSelection().toString();
+    }
+    return text;
+}
+
+function getLength(tab) {
+    return Array.isArray(tab) ? tab.length : Object.keys(tab).length;
+}
+
+// Convertit un élément interne en élément lisible par l'utilisateur
+function typeToLocale(type, lang = 'fr') {
+    return Locales[lang.capitalizeFirstLetter()].Elements[type];
+}
+
+function onArrowClick(ev) {
+    let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
+
+    let instance = projectInfos.elements[id];
+
+    let ret = false;
+
+    $.each(instance.children, (i,v) => {
+        if (v[1]) {
+            ret = true;
+            return false;
+        }
+    })
+
+    if (ret) {
+        alert('Il est impossible de déplacer un élément contenant des enfants.');
+    } else if (!$(`#elem-${instance.position}`).is('#preview > *')) {
+        alert('Il est impossible de déplacer un élément enfant. Veuillez le retirer de son parent pour pouvoir le modifier.');
+    }
+
+    ev.preventDefault();
+}
+// Ajout d'un élément
+function addElement(instance, addTags = true) {
+    // Clonage de la template d'élément de sidebar
+    let $newElem = $('#template-element').clone(true);
+    $newElem.find('.fa-arrows-v').click(onArrowClick);
+
+    if (instance.class === 'BlockElement') {
+        $newElem.find('.element-children').css('display', '');
+    }
+
+    // Mise à jour des checkboxes
+    //updateCheckboxes();
+
+    // Changement des IDs/Classes
+    $newElem.attr('id', `element-${instance.position}`);
+    $newElem.find('.dropdown-pane').attr('id', instance.position + '-dropdown-properties');
+    $newElem.find('[data-toggle]').attr('data-toggle', instance.position + '-dropdown-properties');
+
+    // Contenu de l'élément
+    if (instance.text != null && instance.text !== '') {
+        $newElem.find('strong').html(instance.name + ' &middot; ' + typeToLocale(instance.type));
+        $newElem.find('em').html($(`<span>${instance.text.replaceAll('<br />', '   ')}</span>`).text());
+    } else {
+        $newElem.find('strong').html(instance.name);
+        $newElem.find('em').html(typeToLocale(instance.type));
+    }
+
+    // Ajout d'éléments dans l'aperçu
+    if (addTags) {
+        if (instance instanceof DataElement) {
+            $p.append(DataFunctions[instance.type](instance));
+        } else {
+            let $newTag = $(`<${Tags[instance.type]}>`).attr('id', `elem-${instance.position}`).html(instance.text);
+            $.each(instance.properties, (i,v) => {
+                if (v === 'default') {
+                    return;
+                }
+                $newTag.css(i, v);
+            });
+            if (instance.js.event != '' && instance.js.action != '') {
+                $newTag.on(instance.js.event, () => {
+                    switch (instance.js.action) {
+                        case 'message':
+                            alert(instance.js.text != null ? instance.js.text : '(Veuillez définir un message.)');
+                            break;
+                    }
+                });
+            }
+
+            if (instance instanceof BlockElement) {
+                let sizes = instance.sizes;
+                $newTag
+                .addClass(`small-${sizes[0]}`)
+                .addClass(`medium-${sizes[1]}`)
+                .addClass(`large-${sizes[2]}`);
+            } else {
+                $newTag.addClass('small-12');
+            }
+
+            $newTag.addClass('columns');
+
+            $newTag.appendTo('#preview');
+        }
+    }
+
+    $newElem.appendTo('#elements');
+
+    $ecModal.find('#element-children-container').append(
+        $('<div></div>').append(
+            $('<input type="checkbox" />')
+            .attr('id', `element-children-${instance.position}`)
+            .attr('name', `element-children-${instance.position}`)
+        ).append(
+            $('<label></label>')
+            .attr('for', `element-children-${instance.position}`)
+            .html(`${instance.name} &middot; ${typeToLocale(instance.type)}`)
+        )
+    );
+
+    return $newElem;
+}
+
+// Mise à jour de l'élément de l'aperçu
+function updateHTMLElement(instance) {
+    if (instance instanceof DataElement) {
+        $(`#elem-${instance.position}`).replaceWith(DataFunctions[instance.type](instance));
+    } else {
+        let $elem = $(`#elem-${instance.position}`);
+        $elem.html(instance.text);
+        $.each(instance.properties, (i,v) => {
+            if (v === 'default') {
+                $elem.css(i, '');
+            } else {
+                $elem.css(i, v);
+            }
+        });
+    }
+}
+
+// Mise à jour de l'affichage de tous les éléments de la sidebar (+ preview si demandé)
+function updateElements(updateTags = false) {
+    clearElements();
+    if (updateTags) {
+        deleteHTMLElements();
+    }
+    $.each(projectInfos.elements, (i,v) => {
+        addElement(v, updateTags);
+    });
+
+    $.each(projectInfos.elements, (i,v) => {
+        $.each(v.children, (i2,v2) => {
+            if (v2[1]) {
+                $(`#elem-${v2[0]}`).detach().appendTo(`#elem-${i}`);
+            }
+        });
+    })
+}
+
+function updateCheckboxes() {
+    $ecModal.find('#element-children-container').children().remove();
+
+    let $cc = $ecModal.find('#element-children-container');
+    $.each(projectInfos.elements, (i,v) => {
+        $cc.append(
+            $('<div></div>').append(
+                $('<input type="checkbox" />')
+                .attr('id', `element-children-${v.position}`)
+                .attr('name', `element-children-${v.position}`)
+            ).append(
+                $('<label></label>')
+                .attr('for', `element-children-${v.position}`)
+                .html(`${v.name} &middot; ${typeToLocale(v.type)}`)
+            )
+        );
+    });
+}
+
+// Suppression des éléments HTML
+function deleteHTMLElements() {
+    $('[id^="elem-"]').remove();
+}
+
+// Suppression des éléments
+function clearElements(trueDelete = false, updateGlobal = true) {
+    if (trueDelete) {
+        $.each(projectInfos.elements, (i,v) => {
+            v.delete(false, false);
+        });
+        projectInfos.elements = [];
+        if (updateGlobal) {
+            remote.getGlobal('webbyData').projectInfos = projectInfos;
+        }
+    }
+    $('#elements > *').remove();
+
+    // Retrait des cases à cocher
+    $ecModal.find('#element-children-container').children().remove();
+}
+
+function pelle(str) {
+    let $area = $('[name="element-text"]');
+    let area = $area[0];
+    let position = $area.getCursorPosition();
+    let oldText = $area.val();
+    let text = getSelectionText(area);
+
+    if (text != '') {
+        $area.val(oldText.substr(0, position) + str + text + str + oldText.substr(position+ text.length));
+        area.focus();
+    } else {
+        $area.val(oldText.substr(0, position) + str + 'texte' + str + oldText.substr(position));
+        area.focus();
+        area.selectionStart = position + str.length;
+        area.selectionEnd = area.selectionStart + 5;
+    }
+}
+
+function addUlElement(ev) {
+    let $list = $(this).closest('.accordion-content').find('ul');
+    let $newElem = $(ulElementString($list.children().length));
+    $newElem.find('.remove-ul-element').click(removeUlElement);
+    $newElem.appendTo($list);
+
+    ev.preventDefault();
+}
+
+function ulElementString(id) {
+    return `<li><div class="input-group"><input type="text" class="input-group-field" name="element-data-${id != null ? id : 0}" /><a href="#" class="input-group-button button remove-ul-element"><i class="fa fa-times"></i></a></div></li>`
+}
+
+function removeUlElement(ev) {
+    let $parent = $(this).parent();
+    let id = $parent.children('input').attr('name').substr(13);
+    let $list = $parent.closest('.accordion-content').find('ul');
+
+    if ($list.children('li').length <= 1) {
+        return;
+    }
+
+    $list.children('li').eq(id).remove();
+
+    $list.children().each((i,v) => {
+        if (i < id) {
+            return true;
+        }
+
+        $(v).find('[name^="element-data-"]').attr('name', `element-data-${i}`);
+    });
+
+    ev.preventDefault();
+}
+function addOlElement(ev) {
+    let $list = $(this).closest('.accordion-content').find('ol');
+    let $newElem = $(olElementString($list.children().length));
+    $newElem.find('.remove-ol-element').click(removeOlElement);
+    $newElem.appendTo($list);
+
+    ev.preventDefault();
+}
+
+function olElementString(id) {
+    return `<li><div class="input-group"><input type="text" class="input-group-field" name="element-data-${id != null ? id : 0}" /><a href="#" class="input-group-button button remove-ol-element"><i class="fa fa-times"></i></a></div></li>`
+}
+
+function removeOlElement(ev) {
+    let $parent = $(this).parent();
+    let id = $parent.children('input').attr('name').substr(13);
+    let $list = $parent.closest('.accordion-content').find('ol');
+
+    if ($list.children('li').length <= 1) {
+        return;
+    }
+
+    $list.children('li').eq(id).remove();
+
+    $list.children().each((i,v) => {
+        if (i < id) {
+            return true;
+        }
+
+        $(v).find('[name^="element-data-"]').attr('name', `element-data-${i}`);
+    });
+
+    ev.preventDefault();
 }
 
 // Importation des modules
@@ -369,7 +642,7 @@ resize();
 exportPreview = () => {
     let $export = $p.clone();
 
-    $export.children('p,address,blockquote,h1,h2,h3,h4,h5,h6,ul,ol,img').addClass('small-12').addClass('columns');
+    //$export.children('p,address,blockquote,h1,h2,h3,h4,h5,h6,ul,ol,img').addClass('small-12').addClass('columns');
 
     return `<!DOCTYPE html>
 <html lang="${projectInfos.metadatas.lang}" dir="ltr" prefix="og: http://ogp.me/ns#">
@@ -732,190 +1005,7 @@ ipcRenderer.on('project-loaded', (ev, elements) => {
     updateElements();
 });
 
-// Convertit un élément interne en élément lisible par l'utilisateur
-function typeToLocale(type, lang = 'fr') {
-    return Locales[lang.capitalizeFirstLetter()].Elements[type];
-}
-
-function onArrowClick(ev) {
-    let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
-
-    let instance = projectInfos.elements[id];
-
-    let ret = false;
-
-    $.each(instance.children, (i,v) => {
-        if (v[1]) {
-            ret = true;
-            return false;
-        }
-    })
-
-    if (ret) {
-        alert('Il est impossible de déplacer un élément contenant des enfants.');
-    } else if (!$(`#elem-${instance.position}`).is('#preview > *')) {
-        alert('Il est impossible de déplacer un élément enfant. Veuillez le retirer de son parent pour pouvoir le modifier.');
-    }
-
-    ev.preventDefault();
-}
-
 $('.fa-arrows-v').click(onArrowClick);
-
-// Ajout d'un élément
-function addElement(instance, addTags = true) {
-    // Clonage de la template d'élément de sidebar
-    let $newElem = $('#template-element').clone(true);
-    $newElem.find('.fa-arrows-v').click(onArrowClick);
-
-    if (instance.class === 'BlockElement') {
-        $newElem.find('.element-children').css('display', '');
-    }
-
-    // Mise à jour des checkboxes
-    //updateCheckboxes();
-
-    // Changement des IDs/Classes
-    $newElem.attr('id', `element-${instance.position}`);
-    $newElem.find('.dropdown-pane').attr('id', instance.position + '-dropdown-properties');
-    $newElem.find('[data-toggle]').attr('data-toggle', instance.position + '-dropdown-properties');
-
-    // Contenu de l'élément
-    if (instance.text != null && instance.text !== '') {
-        $newElem.find('strong').html(instance.name + ' &middot; ' + typeToLocale(instance.type));
-        $newElem.find('em').html($(`<span>${instance.text.replaceAll('<br />', '   ')}</span>`).text());
-    } else {
-        $newElem.find('strong').html(instance.name);
-        $newElem.find('em').html(typeToLocale(instance.type));
-    }
-
-    // Ajout d'éléments dans l'aperçu
-    if (addTags) {
-        if (instance instanceof DataElement) {
-            $p.append(DataFunctions[instance.type](instance));
-        } else {
-            let $newTag = $(`<${Tags[instance.type]}>`).attr('id', `elem-${instance.position}`).html(instance.text);
-            $.each(instance.properties, (i,v) => {
-                if (v === 'default') {
-                    return;
-                }
-                $newTag.css(i, v);
-            });
-            if (instance.js.event != '' && instance.js.action != '') {
-                $newTag.on(instance.js.event, () => {
-                    switch (instance.js.action) {
-                        case 'message':
-                            alert(instance.js.text != null ? instance.js.text : '(Veuillez définir un message.)');
-                            break;
-                    }
-                });
-            }
-
-            if (instance instanceof BlockElement) {
-                let sizes = instance.sizes;
-                $newTag
-                .addClass(`small-${sizes[0]}`)
-                .addClass(`medium-${sizes[1]}`)
-                .addClass(`large-${sizes[2]}`);
-            }
-
-            $newTag.appendTo('#preview');
-        }
-    }
-
-    $newElem.appendTo('#elements');
-
-    $ecModal.find('#element-children-container').append(
-        $('<div></div>').append(
-            $('<input type="checkbox" />')
-            .attr('id', `element-children-${instance.position}`)
-            .attr('name', `element-children-${instance.position}`)
-        ).append(
-            $('<label></label>')
-            .attr('for', `element-children-${instance.position}`)
-            .html(`${instance.name} &middot; ${typeToLocale(instance.type)}`)
-        )
-    );
-
-    return $newElem;
-}
-
-// Mise à jour de l'élément de l'aperçu
-function updateHTMLElement(instance) {
-    if (instance instanceof DataElement) {
-        $(`#elem-${instance.position}`).replaceWith(DataFunctions[instance.type](instance));
-    } else {
-        let $elem = $(`#elem-${instance.position}`);
-        $elem.html(instance.text);
-        $.each(instance.properties, (i,v) => {
-            if (v === 'default') {
-                $elem.css(i, '');
-            } else {
-                $elem.css(i, v);
-            }
-        });
-    }
-}
-
-// Mise à jour de l'affichage de tous les éléments de la sidebar (+ preview si demandé)
-function updateElements(updateTags = false) {
-    clearElements();
-    if (updateTags) {
-        deleteHTMLElements();
-    }
-    $.each(projectInfos.elements, (i,v) => {
-        addElement(v, updateTags);
-    });
-
-    $.each(projectInfos.elements, (i,v) => {
-        $.each(v.children, (i2,v2) => {
-            if (v2[1]) {
-                $(`#elem-${v2[0]}`).detach().appendTo(`#elem-${i}`);
-            }
-        });
-    })
-}
-
-function updateCheckboxes() {
-    $ecModal.find('#element-children-container').children().remove();
-
-    let $cc = $ecModal.find('#element-children-container');
-    $.each(projectInfos.elements, (i,v) => {
-        $cc.append(
-            $('<div></div>').append(
-                $('<input type="checkbox" />')
-                .attr('id', `element-children-${v.position}`)
-                .attr('name', `element-children-${v.position}`)
-            ).append(
-                $('<label></label>')
-                .attr('for', `element-children-${v.position}`)
-                .html(`${v.name} &middot; ${typeToLocale(v.type)}`)
-            )
-        );
-    });
-}
-
-// Suppression des éléments HTML
-function deleteHTMLElements() {
-    $('[id^="elem-"]').remove();
-}
-
-// Suppression des éléments
-function clearElements(trueDelete = false, updateGlobal = true) {
-    if (trueDelete) {
-        $.each(projectInfos.elements, (i,v) => {
-            v.delete(false, false);
-        });
-        projectInfos.elements = [];
-        if (updateGlobal) {
-            remote.getGlobal('webbyData').projectInfos = projectInfos;
-        }
-    }
-    $('#elements > *').remove();
-
-    // Retrait des cases à cocher
-    $ecModal.find('#element-children-container').children().remove();
-}
 
 // Lors du clic sur le bouton "Supprimer l'élément"
 $('.delete-element').click(function(ev) {
@@ -950,97 +1040,9 @@ $s.find('[id^="add-"]').click(function(ev) {
     ev.preventDefault();
 });
 
-function pelle(str) {
-    let $area = $('[name="element-text"]');
-    let area = $area[0];
-    let position = $area.getCursorPosition();
-    let oldText = $area.val();
-    let text = getSelectionText(area);
-
-    if (text != '') {
-        $area.val(oldText.substr(0, position) + str + text + str + oldText.substr(position+ text.length));
-        area.focus();
-    } else {
-        $area.val(oldText.substr(0, position) + str + 'texte' + str + oldText.substr(position));
-        area.focus();
-        area.selectionStart = position + str.length;
-        area.selectionEnd = area.selectionStart + 5;
-    }
-}
-
-function addUlElement(ev) {
-    let $list = $(this).closest('.accordion-content').find('ul');
-    let $newElem = $(ulElementString($list.children().length));
-    $newElem.find('.remove-ul-element').click(removeUlElement);
-    $newElem.appendTo($list);
-
-    ev.preventDefault();
-}
-
-function ulElementString(id) {
-    return `<li><div class="input-group"><input type="text" class="input-group-field" name="element-data-${id != null ? id : 0}" /><a href="#" class="input-group-button button remove-ul-element"><i class="fa fa-times"></i></a></div></li>`
-}
-
-function removeUlElement(ev) {
-    let $parent = $(this).parent();
-    let id = $parent.children('input').attr('name').substr(13);
-    let $list = $parent.closest('.accordion-content').find('ul');
-
-    if ($list.children('li').length <= 1) {
-        return;
-    }
-
-    $list.children('li').eq(id).remove();
-
-    $list.children().each((i,v) => {
-        if (i < id) {
-            return true;
-        }
-
-        $(v).find('[name^="element-data-"]').attr('name', `element-data-${i}`);
-    });
-
-    ev.preventDefault();
-}
-
 $('#add-ul-element').click(addUlElement);
 
 $('.remove-ul-element').click(removeUlElement);
-
-function addOlElement(ev) {
-    let $list = $(this).closest('.accordion-content').find('ol');
-    let $newElem = $(olElementString($list.children().length));
-    $newElem.find('.remove-ol-element').click(removeOlElement);
-    $newElem.appendTo($list);
-
-    ev.preventDefault();
-}
-
-function olElementString(id) {
-    return `<li><div class="input-group"><input type="text" class="input-group-field" name="element-data-${id != null ? id : 0}" /><a href="#" class="input-group-button button remove-ol-element"><i class="fa fa-times"></i></a></div></li>`
-}
-
-function removeOlElement(ev) {
-    let $parent = $(this).parent();
-    let id = $parent.children('input').attr('name').substr(13);
-    let $list = $parent.closest('.accordion-content').find('ol');
-
-    if ($list.children('li').length <= 1) {
-        return;
-    }
-
-    $list.children('li').eq(id).remove();
-
-    $list.children().each((i,v) => {
-        if (i < id) {
-            return true;
-        }
-
-        $(v).find('[name^="element-data-"]').attr('name', `element-data-${i}`);
-    });
-
-    ev.preventDefault();
-}
 
 $('#add-ol-element').click(addOlElement);
 
