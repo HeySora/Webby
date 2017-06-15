@@ -191,6 +191,9 @@ ul.accordion {
 
 /* Aperçu de la page résultante */
 
+main {
+    padding: 0 !important;
+}
 #preview {
     word-wrap: break-word;
     overflow: auto;

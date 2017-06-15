@@ -123,7 +123,15 @@ const template = [
                 }
             },
             {
-                label: 'Propriétés',
+                label: 'Apparence de la page',
+                click() {
+                    mwContents.executeJavaScript('showBodyProperties();', true).catch(error => {
+                        console.log(error);
+                    });
+                }
+            },
+            {
+                label: 'Propriétés du projet',
                 click() {
                     mwContents.executeJavaScript('showProjectProperties();', true).catch(error => {
                         console.log(error);

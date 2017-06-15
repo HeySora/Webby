@@ -237,6 +237,48 @@
                 </form>
             </div>
 
+            <!-- Assistant "Paramètres de la page" -->
+            <div class="large reveal" id="body-properties-modal" data-reveal data-close-on-click="false" data-close-on-esc="false">
+                <h2>Propriétés de la page</h2>
+                <form>
+                    <div class="row">
+                        <div class="small-6 columns">
+                            <label>Couleur de fond
+                                <select name="project-bodyProperties-color">
+                                    <option value="transparent">Transparent</option>
+                                    <option value="black" style="background-color: black">Noir</option>
+                                    <option value="white" style="background-color: white">Blanc</option>
+                                    <option value="cyan" style="background-color: cyan">Cyan</option>
+                                    <option value="blue" style="background-color: blue">Bleu foncé</option>
+                                    <option value="magenta" style="background-color: magenta">Magenta</option>
+                                    <option value="green" style="background-color: green">Vert</option>
+                                    <option value="gray" style="background-color: gray">Gris</option>
+                                    <option value="lime" style="background-color: lime">Vert citron</option>
+                                    <option value="maroon" style="background-color: maroon">Marron</option>
+                                    <option value="navy" style="background-color: navy">Bleu marine</option>
+                                    <option value="olive" style="background-color: olive">Olive</option>
+                                    <option value="purple" style="background-color: purple">Violet</option>
+                                    <option value="red" style="background-color: red">Rouge</option>
+                                    <option value="silver" style="background-color: silver">Argent</option>
+                                    <option value="teal" style="background-color: teal">Cyan foncé</option>
+                                    <option value="yellow" style="background-color: yellow">Jaune</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="small-6 columns">
+                            <label>Image de fond
+                                <input type="text" name="project-bodyProperties-image" placeholder="URL" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row align-center">
+                        <div class="small-4 columns">
+                            <input type="submit" class="button" value="Créer !" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
             <!-- Assistant "Enfants" -->
             <div class="large reveal" id="element-children-modal" data-reveal data-close-on-click="false" data-close-on-esc="false">
                 <h2>Enfants de l'élément</h2>

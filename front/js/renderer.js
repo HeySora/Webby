@@ -187,8 +187,16 @@ function updateHTMLElement(instance) {
     }
 }
 
+function updateBody() {
+    $p.css({
+        background: `${projectInfos.bodyProperties.color} url('${projectInfos.bodyProperties.image}') no-repeat center center fixed`,
+        backgroundSize: 'cover'
+    });
+}
+
 // Mise à jour de l'affichage de tous les éléments de la sidebar (+ preview si demandé)
 function updateElements(updateTags = false) {
+    updateBody();
     clearElements();
     if (updateTags) {
         deleteHTMLElements();
@@ -347,7 +355,8 @@ let $d = $(document),
     $ppModal = $('#project-properties-modal'),
     $ecModal = $('#element-children-modal'),
     $epModal = $('#element-properties-modal'),
-    $ejModal = $('#element-js-modal');
+    $ejModal = $('#element-js-modal'),
+    $bpModal = $('#body-properties-modal');
 
 // Déclaration des enums
 const ElementType = {
@@ -627,6 +636,10 @@ let projectInfos = {
         ogType: '',
         ogTypeParams: {}
     },
+    bodyProperties: {
+        color: '',
+        image: ''
+    },
     elements: []
 };
 
@@ -661,7 +674,7 @@ exportPreview = () => {
 
         <link rel="stylesheet" href="https://webby.heysora.net/foundation.min.css" />
     </head>
-    <body>
+    <body style="background: ${projectInfos.bodyProperties.color} url('${projectInfos.bodyProperties.image}') no-repeat center center fixed; background-size: cover;">
         <div class="row">
             ${$export.html()}
         </div>
@@ -699,6 +712,29 @@ showProjectProperties = () => { // Assistant propriétés du projet
     });
 
     $ppModal.foundation('open');
+}
+
+showBodyProperties = () => {
+    // Mise à jour des champs dynamiquement
+    $.each(projectInfos.bodyProperties, (i, v) => {
+        let element = $bpModal.find(`[name="project-bodyProperties-${i}"]`);
+        console.log(`[name="project-bodyProperties-${i}"]`);
+        console.log(element.length);
+        console.log(v);
+        if (element != null && element.length > 0) {
+            switch (element.tagName()) {
+                case 'input':
+                case 'textarea':
+                    element.val(v);
+                    break;
+                case 'select':
+                    element.children(`[value="${v}"]`).prop('selected', true);
+                    break;
+            }
+        }
+    });
+
+    $bpModal.foundation('open')
 }
 
 $('.element-children').click(function() { // Enfants de l'élément
@@ -842,6 +878,10 @@ $npModal.children('form').submit(ev => { // Nouveau projet
             ogType: '',
             ogTypeParams: {}
         },
+        bodyProperties: {
+            color: '',
+            image: ''
+        },
         elements: []
     };
 
@@ -888,6 +928,33 @@ $ppModal.children('form').submit(ev => { // Enregistrement des propriétés du p
     });
     remote.getGlobal('webbyData').projectInfos = projectInfos;
 
+    ev.preventDefault();
+});
+
+$bpModal.children('form').submit(ev => { // Propriétés body
+    $bpModal.foundation('close');
+
+    // Remplissage des informations avec les nouvelles
+    $bpModal.find('input[type!="submit"],select').each((i, v) => {
+        let $v = $(v);
+        let indexes = $v.attr('name').substr(8).split('-');
+        let varToFill = 'projectInfos';
+        for (let i = 0; i < indexes.length; i++) {
+            let v = indexes[i];
+            if (isNaN(parseInt(v))) {
+                varToFill += `.${v}`;
+            } else {
+                varToFill += `[${v}]`
+            }
+        }
+        eval(varToFill + ' = "' + $v.val() + '"');
+        $v.val('');
+    });
+    remote.getGlobal('webbyData').projectInfos = projectInfos;
+
+    updateBody();
+
+    // Annuler le rechargement de la page, dû au bouton submit
     ev.preventDefault();
 });
 
