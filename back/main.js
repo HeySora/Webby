@@ -97,6 +97,32 @@ const template = [
                 }
             },
             {
+                label: 'Exporter vers...',
+                click() {
+                    let fileName = dialog.showSaveDialog(mainWindow, {
+                        title: 'Sauvegarder le site',
+                        filters: [
+                            {
+                                name: 'Fichier HTML',
+                                extensions: ['html']
+                            }
+                        ]
+                    });
+
+                    if (fileName != null && fileName !== '') {
+                        mwContents.executeJavaScript('exportPreview();', true).then(res => {
+                            fs.writeFile(fileName, res, {
+                                flag: fs.constants.O_WRONLY + fs.constants.O_CREAT + fs.constants.O_TRUNC
+                            }, err => {
+                                if (err) throw err;
+                            });
+                        }).catch(err => {
+                            if (err) throw err;
+                        })
+                    }
+                }
+            },
+            {
                 label: 'Propriétés',
                 click() {
                     mwContents.executeJavaScript('showProjectProperties();', true).catch(error => {

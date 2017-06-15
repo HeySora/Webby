@@ -1,17 +1,17 @@
 // Implémentation de méthodes supplémentaires
 function getSelectionText(elem) {
-    let text = '';
-    let activeEl = elem ? elem : document.activeElement;
-    let activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
-    if (
-      (activeElTagName == 'textarea') &&
-      (typeof activeEl.selectionStart == 'number')
-    ) {
-        text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
-    } else if (window.getSelection) {
-        text = window.getSelection().toString();
-    }
-    return text;
+	let text = '';
+	let activeEl = elem ? elem : document.activeElement;
+	let activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+	if (
+	  (activeElTagName == 'textarea') &&
+	  (typeof activeEl.selectionStart == 'number')
+	) {
+		text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+	} else if (window.getSelection) {
+		text = window.getSelection().toString();
+	}
+	return text;
 }
 
 function getLength(tab) {
@@ -19,22 +19,22 @@ function getLength(tab) {
 }
 
 Array.prototype.move = function (old_index, new_index) {
-    if (new_index >= this.length) {
-        let k = new_index - this.length;
-        while ((k--) + 1) {
-            this.push(undefined);
-        }
-    }
-    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
-    return this;
+	if (new_index >= this.length) {
+		let k = new_index - this.length;
+		while ((k--) + 1) {
+			this.push(undefined);
+		}
+	}
+	this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+	return this;
 };
 
 String.prototype.replaceAll = function(search, replacement) {
-    return this.replace(new RegExp(search, 'g'), replacement);
+	return this.replace(new RegExp(search, 'g'), replacement);
 };
 
 String.prototype.capitalizeFirstLetter = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
+	return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
 jQuery.fn.tagName = function() {
@@ -42,18 +42,18 @@ jQuery.fn.tagName = function() {
 }
 
 jQuery.fn.getCursorPosition = function() {
-    let el = $(this).get(0);
-    let pos = 0;
-    if('selectionStart' in el) {
-        pos = el.selectionStart;
-    } else if('selection' in document) {
-        el.focus();
-        let sel = document.selection.createRange();
-        let selLength = document.selection.createRange().text.length;
-        sel.moveStart('character', -el.value.length);
-        pos = sel.text.length - selLength;
-    }
-    return pos;
+	let el = $(this).get(0);
+	let pos = 0;
+	if('selectionStart' in el) {
+		pos = el.selectionStart;
+	} else if('selection' in document) {
+		el.focus();
+		let sel = document.selection.createRange();
+		let selLength = document.selection.createRange().text.length;
+		sel.moveStart('character', -el.value.length);
+		pos = sel.text.length - selLength;
+	}
+	return pos;
 }
 
 jQuery.fn.hasAttr = function(attrName) {
@@ -365,6 +365,41 @@ function resize() {
 }
 $w.resize(resize);
 resize();
+
+exportPreview = () => {
+	let $export = $p.clone();
+
+	$export.children('p,address,blockquote,h1,h2,h3,h4,h5,h6,ul,ol,img').addClass('small-12').addClass('columns');
+
+	return `<!DOCTYPE html>
+<html lang="${projectInfos.metadatas.lang}" dir="ltr" prefix="og: http://ogp.me/ns#">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="x-ua-compatible" content="ie=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<title>${projectInfos.metadatas.title}</title>
+		<meta property="og:title" content="${projectInfos.metadatas.title}" />
+		<meta property="og:type" content="${projectInfos.metadatas.ogType}" />
+		<meta property="og:url" content="${projectInfos.metadatas.url}" />
+		<meta property="og:image" content="${projectInfos.metadatas.img}" />
+		<meta property="og:description" content="${projectInfos.metadatas.description}" />
+		<meta property="og:locale" content="${projectInfos.metadatas.lang}" />
+
+		<link rel="stylesheet" href="https://webby.heysora.net/foundation.min.css" />
+	</head>
+	<body>
+		<div class="row">
+			${$export.html()}
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8= sha384-3ceskX3iaEnIogmQchP8opvBy3Mi7Ce34nWjpBIwVTHfGYWQS9jwHDVRnpKKHJg7 sha512-U6K1YLIFUWcvuw5ucmMtT9HH4t0uz3M366qrF5y4vnyH6dgDzndlcGvH/Lz5k8NFh80SN95aJ5rqGZEdaQZ7ZQ==" crossorigin="anonymous"></script>
+
+		<script src="https://webby.heysora.net/what-input.js" integrity="sha256-KMqcTylJ68ulQkRhXvNWbHigbDNg0P/GsbejTZUC3X4= sha384-oZFMpwhLrPDLzzJZlB/BGvNJ55D7GMcNOl23buKTT6kac6JkWmIZi3FP5n9odgjj sha512-lWxwvEBkyl6ST2DRCc2ZgacLNKmy7R+DAg6R8Eu9KLa7szpig6zN+V0b1GL/N1yyckFyWcvYB4dAi9DmetY2Cw==" crossorigin="anonymous"></script>
+		<script src="https://webby.heysora.net/foundation.min.js" integrity="sha256-V428304adQn81KybT4/uZv8uNrchI8tI0rieKxppNc8= sha384-DPq7BHHDDUCTgkwE8wngcz64YwRe/Ype7H4iAjMDCpsy/Pns9RtFYcm1npfqhxAZ sha512-tn0JNwfTLwZqzwNuiPlp4M1Q2mFyZ2jaq3u7NlvjW+5CsrtHDDJC/1ofnTBOKungbnQMaX30F6STfqKuXW33qA==" crossorigin="anonymous"></script>
+	</body>
+</html>`;
+}
 
 // Ouvertures d'assistants
 newProject = () => { // Assistant nouveau projet
@@ -702,10 +737,36 @@ function typeToLocale(type, lang = 'fr') {
 	return Locales[lang.capitalizeFirstLetter()].Elements[type];
 }
 
+function onArrowClick(ev) {
+	let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
+
+	let instance = projectInfos.elements[id];
+
+	let ret = false;
+
+	$.each(instance.children, (i,v) => {
+		if (v[1]) {
+			ret = true;
+			return false;
+		}
+	})
+
+	if (ret) {
+		alert('Il est impossible de déplacer un élément contenant des enfants.');
+	} else if (!$(`#elem-${instance.position}`).is('#preview > *')) {
+		alert('Il est impossible de déplacer un élément enfant. Veuillez le retirer de son parent pour pouvoir le modifier.');
+	}
+
+	ev.preventDefault();
+}
+
+$('.fa-arrows-v').click(onArrowClick);
+
 // Ajout d'un élément
 function addElement(instance, addTags = true) {
 	// Clonage de la template d'élément de sidebar
 	let $newElem = $('#template-element').clone(true);
+	$newElem.find('.fa-arrows-v').click(onArrowClick);
 
 	if (instance.class === 'BlockElement') {
 		$newElem.find('.element-children').css('display', '');
@@ -749,6 +810,15 @@ function addElement(instance, addTags = true) {
 					}
 				});
 			}
+
+			if (instance instanceof BlockElement) {
+				let sizes = instance.sizes;
+				$newTag
+				.addClass(`small-${sizes[0]}`)
+				.addClass(`medium-${sizes[1]}`)
+				.addClass(`large-${sizes[2]}`);
+			}
+
 			$newTag.appendTo('#preview');
 		}
 	}
@@ -1198,7 +1268,7 @@ $(() => {
 
 			if (!$(`#elem-${instance.position}`).is('#preview > *')) {
 				alert('Il est impossible de déplacer un élément enfant. Veuillez le retirer de son parent pour pouvoir le modifier.');
-				return;
+				return true;
 			}
 
 			instance.position = ev.newIndex;
