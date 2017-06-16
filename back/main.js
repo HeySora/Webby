@@ -5,6 +5,37 @@ const path = require('path');
 const url = require('url');
 const fs = require('fs');
 
+function loadProject() {
+    let fileNames = dialog.showOpenDialog(mainWindow, {
+        title: 'Ouvrir un projet',
+        filters: [
+            {
+                name: 'Projet Webby',
+                extensions: ['json']
+            }
+        ],
+        properties: ['openFile']
+    });
+
+    if (fileNames != null && fileNames.length > 0) {
+        fs.readFile(fileNames[0], (err, data) => {
+            if (err) throw err;
+            lastFileName = '';
+            global.webbyData.projectInfos = JSON.parse(data);
+            let elements = JSON.parse(JSON.stringify(global.webbyData.projectInfos.elements));
+            global.webbyData.projectInfos.elements = [];
+            mwContents.send('project-loaded', elements);
+        });
+        return true;
+    }
+
+    return false;
+}
+
+ipcMain.on('load-project', ev => {
+    ev.returnValue = loadProject();
+});
+
 // Variable globale partagée entre les deux processus
 global.webbyData = {projectInfos: null};
 
@@ -27,27 +58,7 @@ const template = [
             {
                 label: 'Ouvrir',
                 click() {
-                    let fileNames = dialog.showOpenDialog(mainWindow, {
-                        title: 'Ouvrir un projet',
-                        filters: [
-                            {
-                                name: 'Projet Webby',
-                                extensions: ['json']
-                            }
-                        ],
-                        properties: ['openFile']
-                    });
-
-                    if (fileNames != null && fileNames.length > 0) {
-                        fs.readFile(fileNames[0], (err, data) => {
-                            if (err) throw err;
-                            lastFileName = '';
-                            global.webbyData.projectInfos = JSON.parse(data);
-                            let elements = JSON.parse(JSON.stringify(global.webbyData.projectInfos.elements));
-                            global.webbyData.projectInfos.elements = [];
-                            mwContents.send('project-loaded', elements);
-                        });
-                    }
+                    loadProject();
                 }
             },
             {

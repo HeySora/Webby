@@ -291,6 +291,7 @@ let $d = $(document),
     $s = $('#sidebar'),
     $elems = $('#elements'),
     $p = $('#preview'),
+    $o = $('#overlay'),
     $npModal = $('#new-project-modal'),
     $ppModal = $('#project-properties-modal'),
     $epModal = $('#element-properties-modal'),
@@ -766,6 +767,7 @@ $('.element-properties').click(function() { // Propriétés de l'élément
 
 // Validation des assistants
 $npModal.children('form').submit(ev => { // Nouveau projet
+    $o.css('display', 'none');
     $npModal.foundation('close');
 
     // Suppression forcée de tous les éléments
@@ -1177,6 +1179,13 @@ $elems.scroll(() => {
     $elems.find('[id$="dropdown-properties"]').css('margin-top', -$elems.scrollTop());
     let $lastDropdown = $elems.children(':last-child').find('[id$="dropdown-properties"]')
     $lastDropdown.css('margin-top', -($elems.scrollTop() + $lastDropdown.outerHeight() + 28));
+});
+
+$('#create-project').click(newProject);
+$('#import-project').click(() => {
+    if (ipcRenderer.sendSync('load-project', 'hey')) {
+        $o.css('display', 'none');
+    }
 });
 
 // Lorsque la page est prête
