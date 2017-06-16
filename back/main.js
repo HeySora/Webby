@@ -203,20 +203,7 @@ function createWindow () {
     // Affichage de la page lorsque tout est prêt
     mainWindow.once('ready-to-show', () => {
         mainWindow.show()
-    })
-
-    mainWindow.on('close', () => {
-        mainWindow.capturePage(img => {
-            console.log(img);
-            console.log(img.toPng())
-            console.log(img.toDataURL())
-            console.log(img.toJPEG(100))
-            console.log(img.toBitmap())
-            fs.writeFile('front/last.png', img.toPng(), err => {
-                if (err) throw err;
-            })
-        });
-    })
+    });
 
     // Suppression de la variable lorsque la fenêtre est fermée, pour éviter les fuites de RAM
     mainWindow.on('closed', () => {
