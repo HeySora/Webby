@@ -216,6 +216,7 @@ function addUlElement(ev) {
     let $newElem = $(ulElementString($list.children().length));
     $newElem.find('.remove-ul-element').click(removeUlElement);
     $newElem.appendTo($list);
+    $newElem.find('input').focus();
 
     ev.preventDefault();
 }
@@ -250,6 +251,7 @@ function addOlElement(ev) {
     let $newElem = $(olElementString($list.children().length));
     $newElem.find('.remove-ol-element').click(removeOlElement);
     $newElem.appendTo($list);
+    $newElem.find('input').focus();
 
     ev.preventDefault();
 }
