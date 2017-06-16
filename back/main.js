@@ -110,15 +110,16 @@ const template = [
                     });
 
                     if (fileName != null && fileName !== '') {
+                        let fsc = fs.constants;
                         mwContents.executeJavaScript('exportPreview();', true).then(res => {
                             fs.writeFile(fileName, res, {
-                                flag: fs.constants.O_WRONLY + fs.constants.O_CREAT + fs.constants.O_TRUNC
+                                flag: fsc.O_WRONLY + fsc.O_CREAT + fsc.O_TRUNC
                             }, err => {
                                 if (err) throw err;
                             });
                         }).catch(err => {
                             if (err) throw err;
-                        })
+                        });
                     }
                 }
             },

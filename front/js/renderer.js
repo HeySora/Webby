@@ -604,6 +604,7 @@ exportPreview = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <title>${projectInfos.metadatas.title}</title>
+        <meta name="description" content="${projectInfos.metadatas.description}" />
         <meta property="og:title" content="${projectInfos.metadatas.title}" />
         <meta property="og:type" content="${projectInfos.metadatas.ogType}" />
         <meta property="og:url" content="${projectInfos.metadatas.url}" />
