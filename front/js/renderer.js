@@ -91,13 +91,33 @@ function addElement(instance, addTags = true) {
         $newElem.find('strong').html(instance.name + ' &middot; ' + typeToLocale(instance.type));
         $newElem.find('em').html($(`<span>${instance.text.replaceAll('<br />', '   ')}</span>`).text());
     } else {
-        $newElem.find('strong').html(instance.name);
-        $newElem.find('em').html(typeToLocale(instance.type));
+        if (instance instanceof SpecialElement) {
+            $newElem.find('strong').html(`<u>Fin de</u> ${instance.name}`);
+            $newElem.find('em').html(typeToLocale(instance.type));
+            $newElem.find('[data-toggle$="dropdown-properties"]').remove();
+        } else {
+            $newElem.find('strong').html(instance.name);
+            $newElem.find('em').html(typeToLocale(instance.type));
+        }
     }
 
     // Ajout d'éléments dans l'aperçu
     if (addTags) {
-        if (instance instanceof DataElement) {
+        if (instance instanceof SpecialElement) {
+            let oldHTML = $p.html();
+            console.log(instance.oldPosition);
+            console.log(Tags[instance.type]);
+            let newHTML = oldHTML.replace(
+                new RegExp(`<${Tags[instance.type]}(.+?)id="elem-${instance.oldPosition}"(.+)>(.*)</${Tags[instance.type]}>`, 'i'),
+                `<${Tags[instance.type]}$1id="elem-${instance.oldPosition}"$2>$3`
+            );
+            console.log([oldHTML, newHTML]);
+            if (oldHTML != newHTML) {
+                $p.html(newHTML + `</${Tags[instance.type]}>`);
+            } else {
+                alert('La fin d\'un élément ne peut se situer avant le début !');
+            }
+        } else if (instance instanceof DataElement) {
             $p.append(DataFunctions[instance.type](instance));
         } else {
             let $newTag = $(`<${Tags[instance.type]}>`).attr('id', `elem-${instance.position}`).html(instance.text);
@@ -284,6 +304,7 @@ function removeOlElement(ev) {
 
 // Importation des modules
 const {remote, ipcRenderer} = require('electron');
+const beautify = require('js-beautify').html;
 
 // Déclaration des variables globales
 let $d = $(document),
@@ -547,11 +568,60 @@ class DataElement extends Element {
 }
 
 class BlockElement extends Element {
-    constructor(type, name, sizes, properties, showElementProperties, js, children) {
+    constructor(type, name, sizes, properties, showElementProperties, js, children, linkedPosition) {
         super(type, name, properties, showElementProperties, js);
         this._class = 'BlockElement';
         this._sizes = sizes != null ? sizes : [12, 12, 12];
         this._children = children != null ? children : [];
+        this._linkedPosition = linkedPosition;
+    }
+
+    get type() {
+        return super.type;
+    }
+    set type(type) {
+        super.type = type;
+        projectInfos.elements[this._linkedPosition].type = type;
+    }
+
+    get name() {
+        return super.name;
+    }
+    set name(name) {
+        super.name = name;
+        projectInfos.elements[this._linkedPosition].name = name;
+    }
+
+    get position() {
+        return super.position;
+    }
+    set position(position) {
+        super.position = position;
+        projectInfos.elements[this._linkedPosition].position = position;
+    }
+
+    get properties() {
+        return super.properties;
+    }
+    set properties(properties) {
+        super.properties = properties;
+        projectInfos.elements[this._linkedPosition].properties = properties;
+    }
+
+    get js() {
+        return super.js;
+    }
+    set js(js) {
+        super.js = js;
+        projectInfos.elements[this._linkedPosition].js = js;
+    }
+
+    get class() {
+        return super.class;
+    }
+    set class(newClass) {
+        super.class = newClass;
+        projectInfos.elements[this._linkedPosition].class = newClass;
     }
 
     get sizes() {
@@ -566,6 +636,38 @@ class BlockElement extends Element {
     }
     set children(children) {
         this._children = children;
+    }
+
+    get linkedPosition() {
+        return this._linkedPosition;
+    }
+    set linkedPosition(linkedPosition) {
+        this._linkedPosition = linkedPosition;
+    }
+}
+
+alog = (data) => {
+    console.log(JSON.parse(JSON.stringify(data)));
+}
+
+class SpecialElement extends Element {
+    constructor(linkedInstance) {
+        super(
+            linkedInstance.type,
+            linkedInstance.name,
+            linkedInstance.properties,
+            linkedInstance.showElementProperties,
+            linkedInstance.js
+        );
+        this._oldPosition = linkedInstance._position;
+        linkedInstance.linkedPosition = this._position;
+    }
+
+    get oldPosition() {
+        return this._oldPosition;
+    }
+    set oldPosition(oldPosition) {
+        this._oldPosition = oldPosition;
     }
 }
 
@@ -602,16 +704,16 @@ exportPreview = () => {
 
     //$export.children('p,address,blockquote,h1,h2,h3,h4,h5,h6,ul,ol,img').addClass('small-12').addClass('columns');
 
-    return `<!DOCTYPE html>
+    return beautify(`<!DOCTYPE html>
 <html lang="${projectInfos.metadatas.lang}" dir="ltr" prefix="og: http://ogp.me/ns#">
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="x-ua-compatible" content="ie=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>${projectInfos.metadatas.title}</title>
+        <title>${projectInfos.metadatas.title || projectInfos.name}</title>
         <meta name="description" content="${projectInfos.metadatas.description}" />
-        <meta property="og:title" content="${projectInfos.metadatas.title}" />
+        <meta property="og:title" content="${projectInfos.metadatas.title || projectInfos.name}" />
         <meta property="og:type" content="${projectInfos.metadatas.ogType}" />
         <meta property="og:url" content="${projectInfos.metadatas.url}" />
         <meta property="og:image" content="${projectInfos.metadatas.img}" />
@@ -655,7 +757,18 @@ exportPreview = () => {
         <script src="https://webby.heysora.net/what-input.js" integrity="sha256-KMqcTylJ68ulQkRhXvNWbHigbDNg0P/GsbejTZUC3X4= sha384-oZFMpwhLrPDLzzJZlB/BGvNJ55D7GMcNOl23buKTT6kac6JkWmIZi3FP5n9odgjj sha512-lWxwvEBkyl6ST2DRCc2ZgacLNKmy7R+DAg6R8Eu9KLa7szpig6zN+V0b1GL/N1yyckFyWcvYB4dAi9DmetY2Cw==" crossorigin="anonymous"></script>
         <script src="https://webby.heysora.net/foundation.min.js" integrity="sha256-V428304adQn81KybT4/uZv8uNrchI8tI0rieKxppNc8= sha384-DPq7BHHDDUCTgkwE8wngcz64YwRe/Ype7H4iAjMDCpsy/Pns9RtFYcm1npfqhxAZ sha512-tn0JNwfTLwZqzwNuiPlp4M1Q2mFyZ2jaq3u7NlvjW+5CsrtHDDJC/1ofnTBOKungbnQMaX30F6STfqKuXW33qA==" crossorigin="anonymous"></script>
     </body>
-</html>`;
+</html>`, {
+        indent_level: 1,
+        max_preserve_newlines: 5,
+        space_in_paren: true,
+        space_in_empty_paren: true,
+        jslint_happy: true,
+        keep_array_indentation: true,
+        wrap_line_length: 40,
+        e4x: true,
+        comma_first: true,
+        space_before_conditional: true
+    });
 }
 
 // Ouvertures d'assistants
@@ -994,7 +1107,7 @@ ipcRenderer.on('project-loaded', (ev, elements) => {
                 instance = new InlineElement(v._type, v._name, v._text, v._properties, false, v._js);
                 break;
             case 'BlockElement':
-                instance = new BlockElement(v._type, v._name, v._sizes, v._properties, false, v._js, v._children);
+                instance = new BlockElement(v._type, v._name, v._sizes, v._properties, false, v._js, v._children, v._linkedPosition);
                 break;
             case 'DataElement':
                 instance = new DataElement(v._type, v._name, v._data, v._properties, false, v._js);
@@ -1027,15 +1140,22 @@ $s.find('[id^="add-"]').click(function(ev) {
     let newTag = $(this).attr('id').substr(4);
     let type = ElementType[newTag.toUpperCase()];
     let className = ElementClass[type];
-    /*if (className === 'BlockElement') {
-        let instance = new BlockElement(type, "Nom");
-    } else {*/
-        let instance = eval('(function() { return new ' + className + '(type, "Nom") })()');
-    //}
+
+    let instance;
+    let endInstance;
+
+    instance = eval('(function() { return new ' + className + '(type, "Nom") })()');
 
     projectInfos.elements.push(instance);
-
     let $newElem = addElement(instance);
+
+    if (className === 'BlockElement') {
+        endInstance = new SpecialElement(instance);
+
+        projectInfos.elements.push(endInstance);
+        addElement(endInstance);
+    }
+
     remote.getGlobal('webbyData').projectInfos = projectInfos;
     $epModal.find('input[type="submit"]').val('Créer !');
     $newElem.find('.element-properties').click();
@@ -1233,34 +1353,55 @@ $(() => {
             let instance = projectInfos.elements[ev.oldIndex];
 
             instance.position = ev.newIndex;
+            if (instance instanceof SpecialElement) {
+                projectInfos.elements[instance.oldPosition].linkedPosition = ev.newIndex;
+            } else if (instance instanceof BlockElement) {
+                projectInfos.elements[instance.linkedPosition].oldPosition = ev.newIndex;
+            }
 
             projectInfos.elements.move(ev.oldIndex, ev.newIndex);
 
             if (ev.newIndex > ev.oldIndex) {
                 for (let i = ev.newIndex - 1; i >= ev.oldIndex; i--) {
-                    projectInfos.elements[i].position--;
+                    let curInstance = projectInfos.elements[i];
+                    curInstance.position--;
+                    if (curInstance instanceof SpecialElement) {
+                        projectInfos.elements[curInstance.oldPosition].linkedPosition--;
+                    } else if (curInstance instanceof BlockElement) {
+                        projectInfos.elements[curInstance.linkedPosition].oldPosition--;
+                    }
                 }
 
+                /*
                 let $movedElem = $(`#elem-${ev.oldIndex}`).insertAfter(`#elem-${ev.newIndex}`).attr('id', `elem-${ev.newIndex}-a`);
                 for (let i = ev.oldIndex + 1; i <= ev.newIndex; i++) {
                     $(`#elem-${i}`).attr('id', `elem-${i-1}`);
                 }
                 $movedElem.attr('id', `elem-${ev.newIndex}`);
+                */
             } else {
                 for (let i = ev.newIndex + 1; i <= ev.oldIndex; i++) {
-                    projectInfos.elements[i].position++;
+                    let curInstance = projectInfos.elements[i];
+                    curInstance.position++;
+                    if (curInstance instanceof SpecialElement) {
+                        projectInfos.elements[curInstance.oldPosition].linkedPosition++;
+                    } else if (curInstance instanceof BlockElement) {
+                        projectInfos.elements[curInstance.linkedPosition].oldPosition++;
+                    }
                 }
 
+                /*
                 let $movedElem = $(`#elem-${ev.oldIndex}`).insertBefore(`#elem-${ev.newIndex}`).attr('id', `elem-${ev.newIndex}-a`);
                 for (let i = ev.oldIndex - 1; i >= ev.newIndex; i--) {
                     $(`#elem-${i}`).attr('id', `elem-${i+1}`);
                 }
                 $movedElem.attr('id', `elem-${ev.newIndex}`);
+                */
             }
 
             remote.getGlobal('webbyData').projectInfos = projectInfos;
 
-            updateElements();
+            updateElements(true);
         }
     });
 

@@ -20,5 +20,7 @@
     "electron": "~1.6.2"
   },
   "homepage": "https://webby.heysora.net",
-  "dependencies": {}
+  "dependencies": {
+    "js-beautify": "^1.6.14"
+  }
 }
