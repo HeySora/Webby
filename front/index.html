@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="css/main.css" />
 
         <!-- Google Fonts -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed%7CRoboto:400,400i,700" />  
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,400i,700,700i|Roboto:400,400i,700,700i" />  
 
         <!-- FontAwesome
             =========================================== -->
@@ -75,7 +75,7 @@
             <!-- Aperçu de la page résultante
                 =========================================== -->
             <main class="columns">
-                <div id="preview" class="row"></div>
+                <div id="preview" class="expanded row"></div>
             </main>
 
             <div id="overlay">
@@ -340,7 +340,7 @@
                                     <a href="#" class="accordion-title">Styles</a>
                                     <div class="accordion-content" data-tab-content>
                                         <div class="row">
-                                            <div class="small-3 columns">
+                                            <div class="small-4 columns">
                                                 <label>Couleur
                                                     <select name="element-properties-color" required="required">
                                                         <option value="default">Couleur par défaut</option>
@@ -363,7 +363,7 @@
                                                     </select>
                                                 </label>
                                             </div>
-                                            <div class="small-3 columns">
+                                            <div class="small-4 columns">
                                                 <label>Couleur de fond
                                                     <select name="element-properties-backgroundColor" required="required">
                                                         <option value="transparent">Transparent</option>
@@ -386,7 +386,7 @@
                                                     </select>
                                                 </label>
                                             </div>
-                                            <div class="small-3 columns">
+                                            <div class="small-4 columns">
                                                 <label>Type de police
                                                     <select name="element-properties-fontFamily" required="required">
                                                         <option value="'Roboto', sans-serif" style="font-family: 'Roboto', sans-serif">Sans empattements</option>
@@ -395,13 +395,51 @@
                                                     </select>
                                                 </label>
                                             </div>
-                                            <div class="small-3 columns">
+                                            <div class="small-4 columns">
                                                 <label>Alignement du texte
                                                     <select name="element-properties-textAlign" required="required">
                                                         <option value="left">Gauche</option>
                                                         <option value="center">Centré</option>
                                                         <option value="right">Droite</option>
                                                         <option value="justify">Justifié</option>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                            <div class="small-4 columns">
+                                                <label>Bordure de l'élément
+                                                    <select name="element-properties-border" required="required">
+                                                        <option value=" ">Aucune bordure</option>
+                                                        <option value="2px dotted black">Pointillés</option>
+                                                        <option value="2px dashed black">Traitillés</option>
+                                                        <option value="2px solid black">Pleine</option>
+                                                        <option value="4px double black">Double pleine</option>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                            <div class="small-4 columns">
+                                                <label>Arrondissement des coins (en pixels)
+                                                    <input type="number" name="element-properties-borderRadius" value="0" min="0" required="required" />
+                                                </label>
+                                            </div>
+                                            <div class="small-4 columns">
+                                                <label>Espacement des lettres (en pixels)
+                                                    <input type="number" name="element-properties-letterSpacing" value="0" min="0" max="200" required="required" />
+                                                </label>
+                                            </div>
+                                            <div class="small-4 columns">
+                                                <label>Ombre texte
+                                                    <select name="element-properties-textShadow" required="required">
+                                                        <option value="none">Aucune ombre</option>
+                                                        <option value="0 0 4px rgba(0, 0, 0, 0.5)">Lueur</option>
+                                                        <option value="0 2px 2px rgba(0, 0, 0, 0.4)">Légère ombre portée</option>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                            <div class="small-4 columns">
+                                                <label>Retirer marges ?
+                                                    <select name="element-properties-margin" required="required">
+                                                        <option value="0 0 16px 0">Non</option>
+                                                        <option value="0">Oui</option>
                                                     </select>
                                                 </label>
                                             </div>

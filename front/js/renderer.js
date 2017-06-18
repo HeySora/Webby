@@ -105,7 +105,7 @@ function addElement(instance, addTags = true) {
                 if (v === 'default') {
                     return;
                 }
-                $newTag.css(i, v);
+                $newTag.css(i, (isNaN(Number(v))) ? v : `${v}px`);
             });
             if (instance.js.event != '' && instance.js.action != '') {
                 $newTag.on(instance.js.event, () => {
@@ -149,14 +149,14 @@ function updateHTMLElement(instance) {
             if (v === 'default') {
                 $elem.css(i, '');
             } else {
-                $elem.css(i, v);
+                $elem.css(i, isNaN(Number(v)) ? v : `${v}px`);
             }
         });
     }
 }
 
 function updateBody() {
-    $p.css({
+    $p.parent().css({
         background: `${projectInfos.bodyProperties.color} url('${projectInfos.bodyProperties.image}') no-repeat center center fixed`,
         backgroundSize: 'cover'
     });
@@ -434,7 +434,12 @@ class Element {
             color: 'default',
             backgroundColor: 'transparent',
             fontFamily: 'sans-serif',
-            textAlign: 'default'
+            textAlign: 'default',
+            border: '',
+            borderRadius: '0',
+            letterSpacing: '0',
+            textShadow: 'none',
+            margin: ''
         };
         this._js = js != null ? js : {
             event: '',
@@ -614,8 +619,33 @@ exportPreview = () => {
         <meta property="og:locale" content="${projectInfos.metadatas.lang}" />
 
         <link rel="stylesheet" href="https://webby.heysora.net/foundation.min.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,400i,700,700i%7CRoboto:400,400i,700,700i" />  
+
+        <style>
+            *, h1, h2, h3 {
+                font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            }
+
+            h4, h5, h6 {
+                font-family: "Roboto Condensed", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            }
+
+            html, body {
+                min-height: 100%;
+            }
+
+            body {
+                background: ${projectInfos.bodyProperties.color} url('${projectInfos.bodyProperties.image}') no-repeat center center fixed;
+                -webkit-background-size: cover;
+                -moz-background-size: cover;
+                -ms-background-size: cover;
+                -o-background-size: cover;
+                background-size: cover;
+                word-wrap: break-word;
+            }
+        </style>
     </head>
-    <body style="background: ${projectInfos.bodyProperties.color} url('${projectInfos.bodyProperties.image}') no-repeat center center fixed; background-size: cover;">
+    <body>
         <div class="row">
             ${$export.html()}
         </div>
@@ -799,7 +829,7 @@ $npModal.children('form').submit(ev => { // Nouveau projet
         let varToFill = 'projectInfos';
         for (let i = 0; i < indexes.length; i++) {
             let v = indexes[i];
-            if (isNaN(parseInt(v))) {
+            if (isNaN(Number(v))) {
                 varToFill += `.${v}`;
             } else {
                 varToFill += `[${v}]`
@@ -824,7 +854,7 @@ $ppModal.children('form').submit(ev => { // Enregistrement des propriétés du p
         let varToFill = 'projectInfos';
         for (let i = 0; i < indexes.length; i++) {
             let v = indexes[i];
-            if (isNaN(parseInt(v))) {
+            if (isNaN(Number(v))) {
                 varToFill += `.${v}`;
             } else {
                 varToFill += `[${v}]`
@@ -848,7 +878,7 @@ $bpModal.children('form').submit(ev => { // Propriétés body
         let varToFill = 'projectInfos';
         for (let i = 0; i < indexes.length; i++) {
             let v = indexes[i];
-            if (isNaN(parseInt(v))) {
+            if (isNaN(Number(v))) {
                 varToFill += `.${v}`;
             } else {
                 varToFill += `[${v}]`
@@ -891,7 +921,7 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
         let varToFill = `projectInfos.elements[${id}]`;
         for (let i = 0; i < indexes.length; i++) {
             let v = indexes[i];
-            if (isNaN(parseInt(v))) {
+            if (isNaN(Number(v))) {
                 varToFill += `.${v}`;
             } else {
                 varToFill += `[${v}]`
@@ -1129,7 +1159,7 @@ $ejModal.children('form').submit(ev => {
         let varToFill = `projectInfos.elements[${id}]`;
         for (let i = 0; i < indexes.length; i++) {
             let v = indexes[i];
-            if (isNaN(parseInt(v))) {
+            if (isNaN(Number(v))) {
                 varToFill += `.${v}`;
             } else {
                 varToFill += `[${v}]`

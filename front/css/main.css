@@ -2,8 +2,12 @@
 
 /* Propriétés de base */
 
-*:not([id^='elem-'], [id^='elem-'] *), body, h1:not([id^='elem-'], [id^='elem-'] *), h2:not([id^='elem-'], [id^='elem-'] *), h3:not([id^='elem-'], [id^='elem-'] *), h4:not([id^='elem-'], [id^='elem-'] *), h5:not([id^='elem-'], [id^='elem-'] *), h6 {
-    font-family: "Roboto", sans-serif;
+*, h1, h2, h3 {
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+h4, h5, h6 {
+    font-family: "Roboto Condensed", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 body {
@@ -78,6 +82,7 @@ ul.accordion {
     padding: 1rem;
     background: #ddd;
     box-shadow: 0 0 16px rgba(0, 0, 0, 0.6);
+    z-index: 1;
 }
 
 #sidebar .fa {
@@ -192,6 +197,7 @@ ul.accordion {
 
 main {
     padding: 0 !important;
+    overflow-y: auto;
 }
 #preview {
     word-wrap: break-word;
