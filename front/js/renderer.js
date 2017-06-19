@@ -208,7 +208,7 @@ function clearElements(trueDelete = false, updateGlobal = true) {
     $('#elements > *').remove();
 }
 
-function pelle(str) {
+function pelle(str, str2) {
     let $area = $('[name="element-text"]');
     let area = $area[0];
     let position = $area.getCursorPosition();
@@ -216,10 +216,10 @@ function pelle(str) {
     let text = getSelectionText(area);
 
     if (text != '') {
-        $area.val(oldText.substr(0, position) + str + text + str + oldText.substr(position+ text.length));
+        $area.val(oldText.substr(0, position) + str + text + (str2 || str) + oldText.substr(position+ text.length));
         area.focus();
     } else {
-        $area.val(oldText.substr(0, position) + str + 'texte' + str + oldText.substr(position));
+        $area.val(oldText.substr(0, position) + str + 'texte' + (str2 || str) + oldText.substr(position));
         area.focus();
         area.selectionStart = position + str.length;
         area.selectionEnd = area.selectionStart + 5;
@@ -1208,6 +1208,12 @@ $('#button-underline').click(ev => {
 
 $('#button-strikethrough').click(ev => {
     pelle('~');
+
+    ev.preventDefault();
+});
+
+$('#button-link').click(ev => {
+    pelle('[', '](http://url.com/)');
 
     ev.preventDefault();
 });
