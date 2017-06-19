@@ -197,12 +197,14 @@ function deleteHTMLElements() {
 }
 
 // Suppression des éléments
-function clearElements(updateGlobal = true) {
-    projectInfos.elements = [];
-    if (updateGlobal) {
-        remote.getGlobal('webbyData').projectInfos = projectInfos;
+function clearElements(trueDelete = false, updateGlobal = true) {
+    if (trueDelete) {
+        projectInfos.elements = [];
+        $('[id^="elem-"]').remove();
+        if (updateGlobal) {
+            remote.getGlobal('webbyData').projectInfos = projectInfos;
+        }
     }
-    $('[id^="elem-"]').remove();
     $('#elements > *').remove();
 }
 
@@ -474,7 +476,7 @@ class Element {
             if (instance instanceof SpecialElement) {
                 projectInfos.elements[instance.oldPosition].linkedPosition--;
             } else if (instance instanceof BlockElement) {
-                projectInfos.elements[instance.linkedPosition].oldPosition--;
+                projectInfos.elements[instance.linkedPosition - 1].oldPosition--;
             }
         }
 
@@ -924,7 +926,7 @@ $npModal.children('form').submit(ev => { // Nouveau projet
     $npModal.foundation('close');
 
     // Suppression forcée de tous les éléments
-    clearElements();
+    clearElements(true);
 
     // Réinitialisation des informations
     projectInfos = {
@@ -1106,7 +1108,7 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 // Lors de l'importation d'un projet
 ipcRenderer.on('project-loaded', (ev, elements) => {
     // Effacement des éléments, sans changer la variable globale (sa valeur est déjà correcte)
-    clearElements(false);
+    clearElements(true, false);
 
     // Remplacement du JSON par des vraies instances d'Element
     projectInfos =  JSON.parse(JSON.stringify(remote.getGlobal('webbyData').projectInfos));
