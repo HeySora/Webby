@@ -105,13 +105,10 @@ function addElement(instance, addTags = true) {
     if (addTags) {
         if (instance instanceof SpecialElement) {
             let oldHTML = $p.html();
-            console.log(instance.oldPosition);
-            console.log(Tags[instance.type]);
             let newHTML = oldHTML.replace(
-                new RegExp(`<${Tags[instance.type]}(.+?)id="elem-${instance.oldPosition}"(.+)>(.*)</${Tags[instance.type]}>`, 'i'),
-                `<${Tags[instance.type]}$1id="elem-${instance.oldPosition}"$2>$3`
+                new RegExp(`<${Tags[instance.type]}(.+?)id="elem-${instance.oldPosition}"(.+?)></${Tags[instance.type]}>`, 'i'),
+                `<${Tags[instance.type]}$1id="elem-${instance.oldPosition}"$2>`
             );
-            console.log([oldHTML, newHTML]);
             if (oldHTML != newHTML) {
                 $p.html(newHTML + `</${Tags[instance.type]}>`);
             } else {
@@ -127,7 +124,7 @@ function addElement(instance, addTags = true) {
                 }
                 $newTag.css(i, (isNaN(Number(v))) ? v : `${v}px`);
             });
-            if (instance.js.event != '' && instance.js.action != '') {
+            if (instance.js.event != null && instance.js.event !== '' && instance.js.action != null && instance.js.action !== '') {
                 $newTag.on(instance.js.event, () => {
                     switch (instance.js.action) {
                         case 'message':
@@ -200,16 +197,12 @@ function deleteHTMLElements() {
 }
 
 // Suppression des éléments
-function clearElements(trueDelete = false, updateGlobal = true) {
-    if (trueDelete) {
-        $.each(projectInfos.elements, (i,v) => {
-            v.delete(false, false);
-        });
-        projectInfos.elements = [];
-        if (updateGlobal) {
-            remote.getGlobal('webbyData').projectInfos = projectInfos;
-        }
+function clearElements(updateGlobal = true) {
+    projectInfos.elements = [];
+    if (updateGlobal) {
+        remote.getGlobal('webbyData').projectInfos = projectInfos;
     }
+    $('[id^="elem-"]').remove();
     $('#elements > *').remove();
 }
 
@@ -470,26 +463,25 @@ class Element {
     }
 
     // Suppression d'un élément
-    delete(update = true, deleteElement = true) {
-        if (deleteElement) { // Retirer l'instance du tableau projectInfos.elements
-            projectInfos.elements.splice(this._position, 1);
-        }
-
-        // Supprimer l'élément HTML de l'aperçu
-        $(`#elem-${this._position}`).remove();
+    delete(update = true) {
+        // Retirer l'instance du tableau projectInfos.elements
+        projectInfos.elements.splice(this._position, 1);
 
         // Mettre à jour toutes les positions des éléments situés après celui-ci
-        for (let i = this._position; i <= projectInfos.elements.length; i++) {
-            if (i < projectInfos.elements.length) {
-                projectInfos.elements[i].position--;
+        for (let i = this._position; i < projectInfos.elements.length; i++) {
+            let instance = projectInfos.elements[i]
+            instance.position--;
+            if (instance instanceof SpecialElement) {
+                projectInfos.elements[instance.oldPosition].linkedPosition--;
+            } else if (instance instanceof BlockElement) {
+                projectInfos.elements[instance.linkedPosition].oldPosition--;
             }
-            $(`#elem-${i}`).attr('id', `elem-${i-1}`);
         }
 
         remote.getGlobal('webbyData').projectInfos = projectInfos;
 
         if (update) { // Mettre à jour la liste des éléments dans la sidebar
-            updateElements();
+            updateElements(true);
         }
     }
 
@@ -576,6 +568,38 @@ class BlockElement extends Element {
         this._linkedPosition = linkedPosition;
     }
 
+    delete(update = true) {
+        // Retirer l'instance du tableau projectInfos.elements
+        projectInfos.elements.splice(this._position, 1);
+        projectInfos.elements.splice(this._linkedPosition-1, 1);
+
+        // Mettre à jour toutes les positions des éléments situés après celui-ci
+        for (let i = this._linkedPosition - 1; i < projectInfos.elements.length; i++) {
+            let instance = projectInfos.elements[i];
+            instance.position--;
+            if (instance instanceof SpecialElement) {
+                projectInfos.elements[instance.oldPosition - 1].linkedPosition--;
+            } else if (instance instanceof BlockElement) {
+                projectInfos.elements[instance.linkedPosition - 2].oldPosition--;
+            }
+        }
+        for (let i = this._position; i < projectInfos.elements.length; i++) {
+            let instance = projectInfos.elements[i];
+            instance.position--;
+            if (instance instanceof SpecialElement) {
+                projectInfos.elements[instance.oldPosition].linkedPosition--;
+            } else if (instance instanceof BlockElement) {
+                projectInfos.elements[instance.linkedPosition - 1].oldPosition--;
+            }
+        }
+
+        remote.getGlobal('webbyData').projectInfos = projectInfos;
+
+        if (update) {
+            updateElements(true);
+        }
+    }
+
     get type() {
         return super.type;
     }
@@ -590,14 +614,6 @@ class BlockElement extends Element {
     set name(name) {
         super.name = name;
         projectInfos.elements[this._linkedPosition].name = name;
-    }
-
-    get position() {
-        return super.position;
-    }
-    set position(position) {
-        super.position = position;
-        projectInfos.elements[this._linkedPosition].position = position;
     }
 
     get properties() {
@@ -646,19 +662,16 @@ class BlockElement extends Element {
     }
 }
 
-alog = (data) => {
-    console.log(JSON.parse(JSON.stringify(data)));
-}
-
 class SpecialElement extends Element {
     constructor(linkedInstance) {
         super(
-            linkedInstance.type,
-            linkedInstance.name,
-            linkedInstance.properties,
-            linkedInstance.showElementProperties,
-            linkedInstance.js
+            linkedInstance._type,
+            linkedInstance._name,
+            linkedInstance._properties,
+            linkedInstance._showElementProperties,
+            linkedInstance._js
         );
+        this._class = 'SpecialElement';
         this._oldPosition = linkedInstance._position;
         linkedInstance.linkedPosition = this._position;
     }
@@ -802,9 +815,6 @@ showBodyProperties = () => {
     // Mise à jour des champs dynamiquement
     $.each(projectInfos.bodyProperties, (i, v) => {
         let element = $bpModal.find(`[name="project-bodyProperties-${i}"]`);
-        console.log(`[name="project-bodyProperties-${i}"]`);
-        console.log(element.length);
-        console.log(v);
         if (element != null && element.length > 0) {
             switch (element.tagName()) {
                 case 'input':
@@ -914,7 +924,7 @@ $npModal.children('form').submit(ev => { // Nouveau projet
     $npModal.foundation('close');
 
     // Suppression forcée de tous les éléments
-    clearElements(true);
+    clearElements();
 
     // Réinitialisation des informations
     projectInfos = {
@@ -1096,7 +1106,7 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 // Lors de l'importation d'un projet
 ipcRenderer.on('project-loaded', (ev, elements) => {
     // Effacement des éléments, sans changer la variable globale (sa valeur est déjà correcte)
-    clearElements(true, false);
+    clearElements(false);
 
     // Remplacement du JSON par des vraies instances d'Element
     projectInfos =  JSON.parse(JSON.stringify(remote.getGlobal('webbyData').projectInfos));
@@ -1112,10 +1122,15 @@ ipcRenderer.on('project-loaded', (ev, elements) => {
             case 'DataElement':
                 instance = new DataElement(v._type, v._name, v._data, v._properties, false, v._js);
                 break;
+            case 'SpecialElement':
+                instance = new SpecialElement(elements[v._oldPosition]);
+                break;
         }
 
         projectInfos.elements[projectInfos.elements.length] = instance;
-        addElement(instance);
+    });
+    $.each(projectInfos.elements, (i,v) => {
+        addElement(v);
     });
     remote.getGlobal('webbyData').projectInfos = projectInfos;
 
@@ -1366,19 +1381,15 @@ $(() => {
                     let curInstance = projectInfos.elements[i];
                     curInstance.position--;
                     if (curInstance instanceof SpecialElement) {
-                        projectInfos.elements[curInstance.oldPosition].linkedPosition--;
+                        if (curInstance.oldPosition < ev.oldIndex || curInstance.oldPosition > ev.newIndex - 1) {
+                            projectInfos.elements[curInstance.oldPosition].linkedPosition--;
+                        } else {
+                            projectInfos.elements[curInstance.oldPosition-1].linkedPosition--;
+                        }
                     } else if (curInstance instanceof BlockElement) {
                         projectInfos.elements[curInstance.linkedPosition].oldPosition--;
                     }
                 }
-
-                /*
-                let $movedElem = $(`#elem-${ev.oldIndex}`).insertAfter(`#elem-${ev.newIndex}`).attr('id', `elem-${ev.newIndex}-a`);
-                for (let i = ev.oldIndex + 1; i <= ev.newIndex; i++) {
-                    $(`#elem-${i}`).attr('id', `elem-${i-1}`);
-                }
-                $movedElem.attr('id', `elem-${ev.newIndex}`);
-                */
             } else {
                 for (let i = ev.newIndex + 1; i <= ev.oldIndex; i++) {
                     let curInstance = projectInfos.elements[i];
@@ -1386,17 +1397,13 @@ $(() => {
                     if (curInstance instanceof SpecialElement) {
                         projectInfos.elements[curInstance.oldPosition].linkedPosition++;
                     } else if (curInstance instanceof BlockElement) {
-                        projectInfos.elements[curInstance.linkedPosition].oldPosition++;
+                        if (curInstance.linkedPosition < ev.newIndex + 1 || curInstance.linkedPosition > ev.oldIndex) {
+                            projectInfos.elements[curInstance.linkedPosition].oldPosition++;
+                        } else {
+                            projectInfos.elements[curInstance.linkedPosition+1].oldPosition++;
+                        }
                     }
                 }
-
-                /*
-                let $movedElem = $(`#elem-${ev.oldIndex}`).insertBefore(`#elem-${ev.newIndex}`).attr('id', `elem-${ev.newIndex}-a`);
-                for (let i = ev.oldIndex - 1; i >= ev.newIndex; i--) {
-                    $(`#elem-${i}`).attr('id', `elem-${i+1}`);
-                }
-                $movedElem.attr('id', `elem-${ev.newIndex}`);
-                */
             }
 
             remote.getGlobal('webbyData').projectInfos = projectInfos;
