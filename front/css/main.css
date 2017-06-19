@@ -204,6 +204,7 @@ main {
     overflow: auto;
     padding: 0 15px;
     margin: 0;
+    align-items: flex-start;
 }
 
 #overlay {
