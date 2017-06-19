@@ -1360,6 +1360,14 @@ $('#import-project').click(() => {
         $o.css('display', 'none');
     }
 });
+$('#import-image').click(() => {
+    let result = ipcRenderer.sendSync('load-image', 'hey');
+    if (result) {
+        $('[name="element-data-src"]').val(result);
+    } else {
+        alert("L'image n'a pas pu être chargée !");
+    }
+});
 
 // Lorsque la page est prête
 $(() => {

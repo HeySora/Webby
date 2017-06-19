@@ -189,7 +189,7 @@ ul.accordion {
     display: inline-flex;
 }
 
-#data-ul .input-group-field, #data-ol .input-group-field {
+[id^="data-"] .input-group-field {
     height: 2.4375rem;
 }
 
@@ -214,6 +214,7 @@ main {
     left: 0;
     background: url('../img/1.png') no-repeat center center fixed;
     background-size: cover;
+    z-index: 2;
 }
 
 /* Page d'accueil */

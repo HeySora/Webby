@@ -32,8 +32,57 @@ function loadProject() {
     return false;
 }
 
+function loadImage(ev) {
+    let fileNames = dialog.showOpenDialog(mainWindow, {
+        title: 'Ouvrir une image',
+        filters: [
+            {
+                name: 'Fichier Image',
+                extensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tif', 'tiff']
+            }
+        ],
+        properties: ['openFile']
+    });
+
+    if (fileNames != null && fileNames.length > 0) {
+        let uri;
+        fs.readFile(fileNames[0], (err, data) => {
+            if (err) throw err;
+            let splittedName = fileNames[0].split('.');
+
+            let extension;
+            switch (splittedName[splittedName.length-1].toLowerCase()) {
+                case 'png':
+                case 'jpeg':
+                case 'gif':
+                case 'bmp':
+                case 'tiff':
+                    extension = splittedName[splittedName.length-1].toLowerCase();
+                    break;
+
+                case 'jpg':
+                    extension = 'jpeg';
+                    break;
+
+                case 'tif':
+                    extension = 'tiff';
+                    break;
+            }
+
+            ev.returnValue = `data:image/${extension};base64,` + data.toString('base64');
+        });
+        return;
+    }
+
+    ev.returnValue = false;
+}
+
 ipcMain.on('load-project', ev => {
     ev.returnValue = loadProject();
+});
+
+ipcMain.on('load-image', ev => {
+    loadImage(ev);
 });
 
 // Variable globale partagée entre les deux processus
