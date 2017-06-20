@@ -198,18 +198,6 @@ const template = [
                         console.log(error);
                     });
                 }
-            },
-            {
-                type: 'separator',
-                click() {
-
-                }
-            },
-            {
-                label: "Préférences de l'application",
-                click() {
-
-                }
             }
         ]
     },
@@ -217,15 +205,9 @@ const template = [
         label: 'Aide',
         submenu: [
             {
-                label: 'Site Web',
+                label: 'Site Web / À propos...',
                 click() {
-
-                }
-            },
-            {
-                label: 'À propos...',
-                click() {
-
+                    require('electron').shell.openExternal('https://webby.heysora.net')
                 }
             }
         ]
