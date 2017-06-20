@@ -233,7 +233,6 @@ function createWindow () {
 
     // Enregistrement de mwContents
     mwContents = mainWindow.webContents;
-    mwContents.openDevTools();
 
     // Affichage de la page lorsque tout est prêt
     mainWindow.once('ready-to-show', () => {
