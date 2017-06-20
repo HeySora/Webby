@@ -24,6 +24,9 @@
       "uninstallerIcon": "build/icon.ico",
       "installerHeaderIcon": "build/icon.ico",
       "language": "4108"
+    },
+    "linux": {
+      "icon": "build/icon 32x32.png"
     }
   },
   "repository": {
