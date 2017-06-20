@@ -16,6 +16,10 @@ body {
     overflow: hidden;
 }
 
+a, .fa-cogs, .fa-arrows-v, [data-toggle] {
+    cursor: pointer;
+}
+
 textarea {
     max-height: 224px;
 }
