@@ -26,7 +26,7 @@
       "language": "4108"
     },
     "linux": {
-      "icon": "build/icon 32x32.png"
+      "icon": "build/linux-icons"
     }
   },
   "repository": {
