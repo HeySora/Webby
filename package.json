@@ -2,9 +2,29 @@
   "name": "webby",
   "version": "1.0.0",
   "description": "Un assistant de création de Sites Web.",
-  "main": "main.js",
+  "main": "back/main.js",
   "scripts": {
-    "start": "electron back/main.js"
+    "start": "electron back/main.js",
+    "pack": "build --dir",
+    "dist": "build"
+  },
+  "build": {
+    "appId": "net.heysora.webby",
+    "productName": "Webby",
+    "compression": "maximum",
+    "copyright": "Copyright © 2017 Tiago de Sousa Pereira & Louis Zwahlen",
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "win": {
+      "target": "portable"
+    },
+    "nsis": {
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "language": "4108"
+    }
   },
   "repository": {
     "type": "git",
@@ -17,7 +37,8 @@
   "author": "Tiago de Sousa Pereira & Louis Zwahlen",
   "license": "AGPL-3.0+",
   "devDependencies": {
-    "electron": "~1.6.2"
+    "electron": "~1.6.2",
+    "electron-builder": "next"
   },
   "homepage": "https://webby.heysora.net",
   "dependencies": {
