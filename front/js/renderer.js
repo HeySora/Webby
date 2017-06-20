@@ -813,26 +813,6 @@ showProjectProperties = () => { // Assistant propriétés du projet
     $ppModal.foundation('open');
 }
 
-showBodyProperties = () => {
-    // Mise à jour des champs dynamiquement
-    $.each(projectInfos.bodyProperties, (i, v) => {
-        let element = $bpModal.find(`[name="project-bodyProperties-${i}"]`);
-        if (element != null && element.length > 0) {
-            switch (element.tagName()) {
-                case 'input':
-                case 'textarea':
-                    element.val(v);
-                    break;
-                case 'select':
-                    element.children(`[value="${v}"]`).prop('selected', true);
-                    break;
-            }
-        }
-    });
-
-    $bpModal.foundation('open')
-}
-
 $('.element-properties').click(function() { // Propriétés de l'élément
     // Définition d'un input caché, utilisé pour appliquer les propriétés au bon élément
     let id = $(this).closest('[id^="element-"]').attr('id').substr(8);
@@ -1216,6 +1196,26 @@ $('#button-link').click(ev => {
     pelle('[', '](http://url.com/)');
 
     ev.preventDefault();
+});
+
+$('.fa-cogs').click(() => {
+    // Mise à jour des champs dynamiquement
+    $.each(projectInfos.bodyProperties, (i, v) => {
+        let element = $bpModal.find(`[name="project-bodyProperties-${i}"]`);
+        if (element != null && element.length > 0) {
+            switch (element.tagName()) {
+                case 'input':
+                case 'textarea':
+                    element.val(v);
+                    break;
+                case 'select':
+                    element.children(`[value="${v}"]`).prop('selected', true);
+                    break;
+            }
+        }
+    });
+
+    $bpModal.foundation('open');
 });
 
 $('.element-js').click(function() {

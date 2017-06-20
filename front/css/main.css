@@ -96,8 +96,9 @@ ul.accordion {
 #sidebar h2 {
     font-size: 2rem;
 }
-#sidebar .fa-plus {
+#sidebar .fa-plus, #sidebar .fa-cogs {
     font-size: 1.75rem;
+    margin-left: 1rem;
 }
 
 #dropdown-elements ul, [id$='dropdown-properties'] ul {
