@@ -189,6 +189,7 @@ function updateElements(updateTags = false) {
     $.each(projectInfos.elements, (i,v) => {
         addElement(v, updateTags);
     });
+    scroll();
 }
 
 // Suppression des éléments HTML
@@ -1348,11 +1349,12 @@ $ejModal.children('form').submit(ev => {
 });
 
 // Lors du scroll sur la liste d'éléments, mise à jour de la position des fenêtres flottantes
-$elems.scroll(() => {
+let scroll = () => {
     $elems.find('[id$="dropdown-properties"]').css('margin-top', -$elems.scrollTop());
     let $lastDropdown = $elems.children(':last-child').find('[id$="dropdown-properties"]')
     $lastDropdown.css('margin-top', -($elems.scrollTop() + $lastDropdown.outerHeight() + 28));
-});
+};
+$elems.scroll(scroll);
 
 $('#create-project').click(newProject);
 $('#import-project').click(() => {
