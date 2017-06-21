@@ -1003,6 +1003,7 @@ $bpModal.children('form').submit(ev => { // Propriétés body
 
 $epModal.children('form').submit(ev => { // Modification des propriétés de l'élément
     $epModal.foundation('close');
+    $('#dropdown-elements').removeClass('visible').removeClass('is-open');
 
     $epModal.find('input[type="submit"]').val('Modifier !');
 
@@ -1088,6 +1089,8 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
 
 // Lors de l'importation d'un projet
 ipcRenderer.on('project-loaded', (ev, elements) => {
+    $o.css('display', 'none');
+
     // Effacement des éléments, sans changer la variable globale (sa valeur est déjà correcte)
     clearElements(true, false);
 
@@ -1351,8 +1354,11 @@ $ejModal.children('form').submit(ev => {
 // Lors du scroll sur la liste d'éléments, mise à jour de la position des fenêtres flottantes
 let scroll = () => {
     $elems.find('[id$="dropdown-properties"]').css('margin-top', -$elems.scrollTop());
-    let $lastDropdown = $elems.children(':last-child').find('[id$="dropdown-properties"]')
-    $lastDropdown.css('margin-top', -($elems.scrollTop() + $lastDropdown.outerHeight() + 28));
+    let $child = $elems.children(':last-child');
+    if (!$child.is(':first-child')) {
+        let $lastDropdown = $child.find('[id$="dropdown-properties"]');
+        $lastDropdown.css('margin-top', -($elems.scrollTop() + $lastDropdown.outerHeight() + 28));
+    }
 };
 $elems.scroll(scroll);
 
