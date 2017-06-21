@@ -1,6 +1,6 @@
 {
   "name": "webby",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Un assistant de création de Sites Web.",
   "main": "back/main.js",
   "scripts": {
