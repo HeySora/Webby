@@ -1,45 +1,36 @@
-# electron-quick-start
+# Webby
 
-**Clone and run for a quick way to see Electron in action.**
+Webby is an application that allows any user to easily create a website. It has been made to be usable by any beginner user.
 
-This is a minimal Electron application based on the [Quick Start Guide](http://electron.atom.io/docs/tutorial/quick-start) within the Electron documentation.
+It's made with [Electron](https://electron.atom.io).
 
-**Use this app along with the [Electron API Demos](http://electron.atom.io/#get-started) app for API code examples to help you get started.**
+### To-do
 
-A basic Electron application needs just these files:
+* More languages (Currently french only)
+* More elements (tables, forms, ...)
 
-- `package.json` - Points to the app's main file and lists its details and dependencies.
-- `main.js` - Starts the app and creates a browser window to render HTML. This is the app's **main process**.
-- `index.html` - A web page to render. This is the app's **renderer process**.
+### Download / Installation Instructions
 
-You can learn more about each of these components within the [Quick Start Guide](http://electron.atom.io/docs/tutorial/quick-start).
+1. Grab the latest release [here](https://github.com/HeySora/Webby/releases).
+2. Just run it!
 
-## To Use
+### Compilation Instructions
 
-To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
+1. `git clone https://github.com/HeySora/Webby.git && cd Webby` *(Clone the repository in a "Webby" folder, and go into it)*
+2. `npm i` *(Install dependencies)*
+3. `npm run dist` *(Run the build process)*
 
-```bash
-# Clone this repository
-git clone https://github.com/electron/electron-quick-start
-# Go into the repository
-cd electron-quick-start
-# Install dependencies
-npm install
-# Run the app
-npm start
-```
+Compiled program will go in the `dist/` folder. By default, on Windows, it will create a portable .exe. You can also create an installer by opening the [package.json](package.json) file and changing `"target": "portable"` to `"target": "nsis"`.
 
-Note: If you're using Linux Bash for Windows, [see this guide](https://www.howtogeek.com/261575/how-to-run-graphical-linux-desktop-applications-from-windows-10s-bash-shell/) or use `node` from the command prompt.
+### How to contribute
 
-## Resources for Learning Electron
+1. Fork this repo and clone it in your PC.
+2. `npm i` *(Install dependencies)*
+3. Edit/add whatever you want *(use `npm start` to run the program)*
+4. Submit a Pull Request
 
-- [electron.atom.io/docs](http://electron.atom.io/docs) - all of Electron's documentation
-- [electron.atom.io/community/#boilerplates](http://electron.atom.io/community/#boilerplates) - sample starter apps created by the community
-- [electron/electron-quick-start](https://github.com/electron/electron-quick-start) - a very basic starter Electron app
-- [electron/simple-samples](https://github.com/electron/simple-samples) - small applications with ideas for taking them further
-- [electron/electron-api-demos](https://github.com/electron/electron-api-demos) - an Electron app that teaches you how to use Electron
-- [hokein/electron-sample-apps](https://github.com/hokein/electron-sample-apps) - small demo apps for the various Electron APIs
+### License
 
-## License
+[GNU Affero General Public License v3 (AGPL-3.0)](LICENSE.md)
 
-[CC0 1.0 (Public Domain)](LICENSE.md)
+Copyright © 2017 HeySora & Zwahlenlo

@@ -12,7 +12,7 @@
     "appId": "net.heysora.webby",
     "productName": "Webby",
     "compression": "maximum",
-    "copyright": "Copyright © 2017 Tiago de Sousa Pereira & Louis Zwahlen",
+    "copyright": "Copyright © 2017 HeySora & Zwahlenlo",
     "mac": {
       "category": "public.app-category.developer-tools"
     },
@@ -37,7 +37,7 @@
     "Webby",
     "Web"
   ],
-  "author": "Tiago de Sousa Pereira & Louis Zwahlen",
+  "author": "HeySora & Zwahlenlo",
   "license": "AGPL-3.0+",
   "devDependencies": {
     "electron": "~1.6.2",
