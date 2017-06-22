@@ -6,6 +6,7 @@ It's made with [Electron](https://electron.atom.io).
 
 ### To-do
 
+* Fix macOS Version (The toolbar isn't shown / the dmg background is way too big)
 * More languages (Currently french only)
 * More elements (tables, forms, ...)
 
