@@ -338,6 +338,7 @@ const ElementType = {
     UL: 17,
     OL: 18,
     IMG: 19,
+    AUDIO: 20
 };
 
 const ElementClass = {
@@ -361,6 +362,7 @@ const ElementClass = {
     [ElementType.UL]: 'DataElement',
     [ElementType.OL]: 'DataElement',
     [ElementType.IMG]: 'DataElement',
+    [ElementType.AUDIO]: 'DataElement'
 };
 
 // Peuvent retourner un objet jQuery ou un string !
@@ -387,6 +389,11 @@ const DataFunctions = {
         .attr('id', `elem-${instance.position}`)
         .attr('src', instance.data.src)
         .attr('alt', instance.data.alt);
+    },
+    [ElementType.AUDIO]: (instance) => {
+        return $('<audio controls></audio>')
+        .attr('id', `elem-${instance.position}`)
+        .attr('src', instance.data.src)
     }
 };
 
@@ -410,7 +417,8 @@ const Tags = {
     [ElementType.SECTION]: 'section',
     [ElementType.UL]: 'ul',
     [ElementType.OL]: 'ol',
-    [ElementType.IMG]: 'img'
+    [ElementType.IMG]: 'img',
+    [ElementType.AUDIO]: 'audio'
 };
 
 const Locales = {
@@ -436,6 +444,7 @@ const Locales = {
             [ElementType.UL]: 'Liste non-ordonnée',
             [ElementType.OL]: 'Liste ordonnée',
             [ElementType.IMG]: 'Image',
+            [ElementType.AUDIO]: 'Audio',
         }
     }
 }
@@ -844,6 +853,9 @@ $('.element-properties').click(function() { // Propriétés de l'élément
                 }
                 break;
             case ElementType.IMG:
+                    $epModal.find('#style').css('display', 'none');
+                break;
+            case ElementType.AUDIO:
                     $epModal.find('#style').css('display', 'none');
                 break;
         }
@@ -1375,6 +1387,16 @@ $('#import-image').click(() => {
     } else {
         alert("L'image n'a pas pu être chargée !");
     }
+});
+$('#import-audio').click(() => {
+
+    let result = ipcRenderer.sendSync('load-audio', 'hey');
+    if (result) {
+        $('[name="element-data-src"]').val(result);
+    } else {
+       alert("L'audio n'a pas pu être chargée !");
+    }
+
 });
 
 // Lorsque la page est prête

@@ -77,12 +77,51 @@ function loadImage(ev) {
     ev.returnValue = false;
 }
 
+function loadAudio(ev) {
+    let fileNames = dialog.showOpenDialog(mainWindow, {
+        title: 'Ouvrir un audio',
+        filters: [
+            {
+                name: 'Fichier Audio',
+                extensions: ['mp3', 'wav', 'ogg']
+            }
+        ],
+        properties: ['openFile']
+    });
+
+    if (fileNames != null && fileNames.length > 0) {
+        let uri;
+        fs.readFile(fileNames[0], (err, data) => {
+            if (err) throw err;
+            let splittedName = fileNames[0].split('.');
+
+            let extension;
+            switch (splittedName[splittedName.length-1].toLowerCase()) {
+                case 'mp3':
+                case 'wav':
+                case 'ogg':
+                    extension = splittedName[splittedName.length-1].toLowerCase();
+                    break;
+                }
+
+            ev.returnValue = `data:audio/${extension};base64,` + data.toString('base64');
+        });
+        return;
+    }
+
+    ev.returnValue = false;
+}
+
 ipcMain.on('load-project', ev => {
     ev.returnValue = loadProject();
 });
 
 ipcMain.on('load-image', ev => {
     loadImage(ev);
+});
+
+ipcMain.on('load-audio', ev => {
+    loadAudio(ev);
 });
 
 // Variable globale partagée entre les deux processus
