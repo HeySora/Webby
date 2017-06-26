@@ -338,7 +338,8 @@ const ElementType = {
     UL: 17,
     OL: 18,
     IMG: 19,
-    AUDIO: 20
+    AUDIO: 20,
+    HR: 21,
 };
 
 const ElementClass = {
@@ -362,7 +363,8 @@ const ElementClass = {
     [ElementType.UL]: 'DataElement',
     [ElementType.OL]: 'DataElement',
     [ElementType.IMG]: 'DataElement',
-    [ElementType.AUDIO]: 'DataElement'
+    [ElementType.AUDIO]: 'DataElement',
+    [ElementType.HR]: 'DataElement'
 };
 
 // Peuvent retourner un objet jQuery ou un string !
@@ -394,7 +396,12 @@ const DataFunctions = {
         return $('<audio controls></audio>')
         .attr('id', `elem-${instance.position}`)
         .attr('src', instance.data.src)
+    },
+    [ElementType.HR]: (instance) => {
+        return $('<hr>')
+        .attr('id', `elem-${instance.position}`)
     }
+
 };
 
 const Tags = {
@@ -418,7 +425,8 @@ const Tags = {
     [ElementType.UL]: 'ul',
     [ElementType.OL]: 'ol',
     [ElementType.IMG]: 'img',
-    [ElementType.AUDIO]: 'audio'
+    [ElementType.AUDIO]: 'audio',
+    [ElementType.HR]: 'hr'
 };
 
 const Locales = {
@@ -445,6 +453,7 @@ const Locales = {
             [ElementType.OL]: 'Liste ordonnée',
             [ElementType.IMG]: 'Image',
             [ElementType.AUDIO]: 'Audio',
+            [ElementType.HR]: 'Séparateur'
         }
     }
 }
