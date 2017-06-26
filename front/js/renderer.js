@@ -340,6 +340,7 @@ const ElementType = {
     IMG: 19,
     AUDIO: 20,
     HR: 21,
+    VIDEO: 22
 };
 
 const ElementClass = {
@@ -364,7 +365,8 @@ const ElementClass = {
     [ElementType.OL]: 'DataElement',
     [ElementType.IMG]: 'DataElement',
     [ElementType.AUDIO]: 'DataElement',
-    [ElementType.HR]: 'DataElement'
+    [ElementType.HR]: 'DataElement',
+    [ElementType.VIDEO]: 'DataElement'
 };
 
 // Peuvent retourner un objet jQuery ou un string !
@@ -400,6 +402,13 @@ const DataFunctions = {
     [ElementType.HR]: (instance) => {
         return $('<hr>')
         .attr('id', `elem-${instance.position}`)
+    },
+    [ElementType.VIDEO]: (instance) => {
+        return $('<video controls></video>')
+        .attr('id', `elem-${instance.position}`)
+        .attr('src', instance.data.src)
+        .attr('width',instance.data.width)
+        .attr('height',instance.data.height)
     }
 
 };
@@ -426,7 +435,8 @@ const Tags = {
     [ElementType.OL]: 'ol',
     [ElementType.IMG]: 'img',
     [ElementType.AUDIO]: 'audio',
-    [ElementType.HR]: 'hr'
+    [ElementType.HR]: 'hr',
+    [ElementType.VIDEO]: 'video'
 };
 
 const Locales = {
@@ -453,7 +463,8 @@ const Locales = {
             [ElementType.OL]: 'Liste ordonnée',
             [ElementType.IMG]: 'Image',
             [ElementType.AUDIO]: 'Audio',
-            [ElementType.HR]: 'Séparateur'
+            [ElementType.HR]: 'Séparateur',
+            [ElementType.VIDEO]: 'Vidéo'
         }
     }
 }
@@ -1404,6 +1415,16 @@ $('#import-audio').click(() => {
         $('[name="element-data-src"]').val(result);
     } else {
        alert("L'audio n'a pas pu être chargée !");
+    }
+
+});
+$('#import-video').click(() => {
+
+    let result = ipcRenderer.sendSync('load-video', 'hey');
+    if (result) {
+        $('[name="element-data-src"]').val(result);
+    } else {
+       alert("La vidéo n'a pas pu être chargée !");
     }
 
 });

@@ -112,6 +112,41 @@ function loadAudio(ev) {
     ev.returnValue = false;
 }
 
+function loadVideo(ev) {
+    let fileNames = dialog.showOpenDialog(mainWindow, {
+        title: 'Ouvrir une vidéo',
+        filters: [
+            {
+                name: 'Fichier Video',
+                extensions: ['mp4', 'webM', 'ogg']
+            }
+        ],
+        properties: ['openFile']
+    });
+
+    if (fileNames != null && fileNames.length > 0) {
+        let uri;
+        fs.readFile(fileNames[0], (err, data) => {
+            if (err) throw err;
+            let splittedName = fileNames[0].split('.');
+
+            let extension;
+            switch (splittedName[splittedName.length-1].toLowerCase()) {
+                case 'mp4':
+                case 'webM':
+                case 'ogg':
+                    extension = splittedName[splittedName.length-1].toLowerCase();
+                    break;
+                }
+
+            ev.returnValue = `data:video/${extension};base64,` + data.toString('base64');
+        });
+        return;
+    }
+
+    ev.returnValue = false;
+}
+
 ipcMain.on('load-project', ev => {
     ev.returnValue = loadProject();
 });
@@ -124,6 +159,9 @@ ipcMain.on('load-audio', ev => {
     loadAudio(ev);
 });
 
+ipcMain.on('load-video', ev => {
+    loadVideo(ev);
+});
 // Variable globale partagée entre les deux processus
 global.webbyData = {projectInfos: null};
 

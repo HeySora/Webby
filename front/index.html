@@ -47,17 +47,19 @@
                                 <li><a href="#" class="button" id="add-address">Adresse</a></li>
                                 <li><a href="#" class="button" id="add-blockquote">Citation</a></li>
                                 <li><a href="#" class="button" id="add-p">Paragraphe</a></li>
-                                <li><a href="#" class="button" id="add-ul">Liste non-ordonnée</a></li>
-                                <li><a href="#" class="button" id="add-ol">Liste ordonnée</a></li>
-                                <li><a href="#" class="button" id="add-img">Image</a></li>
-                                <li><a href="#" class="button" id="add-audio">Audio</a></li>
-                                <li><a href="#" class="button" id="add-hr">Séparateur</a></li>
                                 <li><a href="#" class="button" id="add-h1">Titre</a></li>
                                 <li><a href="#" class="button" id="add-h2">Sous-titre</a></li>
                                 <li><a href="#" class="button" id="add-h3">Titre 3</a></li>
                                 <li><a href="#" class="button" id="add-h4">Titre 4</a></li>
                                 <li><a href="#" class="button" id="add-h5">Titre 5</a></li>
                                 <li><a href="#" class="button" id="add-h6">Titre 6</a></li>
+                                <li><a href="#" class="button" id="add-ul">Liste non-ordonnée</a></li>
+                                <li><a href="#" class="button" id="add-ol">Liste ordonnée</a></li>
+                                <li><a href="#" class="button" id="add-img">Image</a></li>
+                                <li><a href="#" class="button" id="add-audio">Audio</a></li>
+                                <li><a href="#" class="button" id="add-video">Vidéo</a></li>
+                                <li><a href="#" class="button" id="add-hr">Séparateur</a></li>
+
                                 <hr />
                                 <h4>Blocs</h4>
                                 <li><a href="#" class="button" id="add-article">Article</a></li>
@@ -552,6 +554,42 @@
                                                     <div class="input-group">
                                                         <input type="text" name="element-data-src" class="input-group-field" />
                                                         <a href="#" id="import-audio" class="input-group-button button">Parcourir...</a>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row" id="data-video">
+                        <div class="small-12 columns">
+                            <ul class="accordion" data-accordion data-allow-all-closed="true">
+                                <li class="accordion-item is-active" data-accordion-item>
+                                    <a href="#" class="accordion-title">Paramètres de la vidéo</a>
+                                    <div class="accordion-content" data-tab-content>
+                                        <div class="row">
+                                            <div class="small-12 columns">
+                                                <label>URL de la vidéo
+                                                    <div class="input-group">
+                                                        <input type="text" name="element-data-src" class="input-group-field" />
+                                                        <a href="#" id="import-video" class="input-group-button button">Parcourir...</a>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                            <div class="small-6 columns">
+                                                <label>Largeur de la vidéo
+                                                    <div class="input-group">
+                                                        <input type="text" name="element-data-width" class="input-group-field" />
+                                                    </div>
+                                                </label>
+                                            </div>
+                                            <div class="small-6 columns">
+                                                <label>Hauteur de la vidéo
+                                                    <div class="input-group">
+                                                        <input type="text" name="element-data-height" class="input-group-field" />
                                                     </div>
                                                 </label>
                                             </div>
