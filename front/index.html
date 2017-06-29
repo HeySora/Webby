@@ -39,8 +39,12 @@
                         <h2>Éléments</h2>
                     </div>
                     <div class="shrink columns">
+                        <!-- Boutons au dessus de la liste d'éléments
+                            =========================================== -->
                         <i class="fa fa-cogs"></i>
                         <i class="fa fa-plus" data-toggle="dropdown-elements"></i>
+                        <!-- Liste des éléments possible d'ajouter
+                                =========================================== -->
                         <div class="dropdown-pane" id="dropdown-elements" data-dropdown data-auto-focus="true">
                             <ul>
                                 <h4 style="text-align: center">Éléments</h4>
@@ -86,6 +90,8 @@
                     </div>
                 </div>
 
+                <!-- Liste des éléments actifs
+                    =========================================== -->
                 <div id="elements"></div>
 
             </aside>
@@ -112,7 +118,8 @@
 
             <!-- Reveals / Modals
                 =========================================== -->
-            <!-- Assistant "Créer un projet" -->
+            <!-- Assistant "Créer un projet" 
+                =========================================== -->
             <div class="large reveal" id="new-project-modal" data-reveal data-close-on-click="false" data-close-on-esc="false">
                 <h2>Créer un projet</h2>
                 <form>
@@ -123,6 +130,7 @@
                             </label>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="small-6 columns">
                             <label>Description
@@ -162,7 +170,8 @@
                 </form>
             </div>
 
-            <!-- Assistant "Propriétés du projet" -->
+            <!-- Assistant "Propriétés du projet" 
+                =========================================== -->
             <div class="large reveal" id="project-properties-modal" data-reveal data-close-on-click="false" data-close-on-esc="false">
                 <h2>Propriétés du projet</h2>
                 <form>
@@ -173,6 +182,7 @@
                             </label>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="small-6 columns">
                             <label>Description
@@ -217,6 +227,7 @@
                             </label>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="small-6 columns">
                             <label>Type de page
@@ -241,6 +252,7 @@
                             </label>
                         </div>
                     </div>
+
                     <div class="row align-center">
                         <div class="small-4 columns">
                             <input type="submit" class="button" value="Modifier !" />
@@ -249,7 +261,8 @@
                 </form>
             </div>
 
-            <!-- Assistant "Paramètres de la page" -->
+            <!-- Assistant "Paramètres de la page"
+                =========================================== -->
             <div class="large reveal" id="body-properties-modal" data-reveal data-close-on-click="false" data-close-on-esc="false">
                 <h2>Propriétés de la page</h2>
                 <form>
@@ -283,6 +296,7 @@
                             </label>
                         </div>
                     </div>
+
                     <div class="row align-center">
                         <div class="small-4 columns">
                             <input type="submit" class="button" value="Modifier !" />
@@ -291,11 +305,13 @@
                 </form>
             </div>
 
-            <!-- Assistant "Propriétés de l'élément" -->
+            <!-- Assistant "Propriétés de l'élément"
+                =========================================== -->
             <div class="large reveal" id="element-properties-modal" data-reveal data-close-on-click="false" data-close-on-esc="false">
                 <h2>Propriétés de l'élément</h2>
                 <form>
                     <input type="hidden" name="element-id" value="" />
+
                     <div class="row">
                         <div class="columns">
                             <label>Nom de l'élément
@@ -351,6 +367,7 @@
                             </label>
                         </div>
                     </div>
+
                     <div class="row">
                         <div id="style" class="small-12 columns">
                             <ul class="accordion" data-accordion data-allow-all-closed="true">
@@ -467,6 +484,9 @@
                             </ul>
                         </div>
                     </div>
+
+                    <!-- Assistant "Liste non-ordonnée"
+                        =========================================== -->
                     <div class="row" id="data-ul">
                         <div class="small-12 columns">
                             <ul class="accordion" data-accordion data-allow-all-closed="true">
@@ -496,6 +516,9 @@
                             </ul>
                         </div>
                     </div>
+
+                    <!-- Assistant "Liste ordonnée"
+                        =========================================== -->
                     <div class="row" id="data-ol">
                         <div class="small-12 columns">
                             <ul class="accordion" data-accordion data-allow-all-closed="true">
@@ -526,6 +549,9 @@
                         </div>
                     </div>
 
+
+                    <!-- Assistant "Image"
+                        =========================================== -->
                     <div class="row" id="data-img">
                         <div class="small-12 columns">
                             <ul class="accordion" data-accordion data-allow-all-closed="true">
@@ -553,6 +579,9 @@
                         </div>
                     </div>
 
+
+                    <!-- Assistant "Audio"
+                        =========================================== -->
                      <div class="row" id="data-audio">
                         <div class="small-12 columns">
                             <ul class="accordion" data-accordion data-allow-all-closed="true">
@@ -560,11 +589,31 @@
                                     <a href="#" class="accordion-title">Paramètres de l'audio</a>
                                     <div class="accordion-content" data-tab-content>
                                         <div class="row">
-                                            <div class="small-12 columns">
+                                            <div class="small-6 columns">
                                                 <label>URL de l'audio
                                                     <div class="input-group">
                                                         <input type="text" name="element-data-srcaudio" class="input-group-field" />
                                                         <a href="#" id="import-audio" class="input-group-button button">Parcourir...</a>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                            <div class="small-6 columns">
+                                                <label>Taille de l'audio
+                                                    <div class="input-group">
+                                                        <select name="element-data-sizeaud" class="input-group-field">
+                                                            <option value="1">8.3% (1/12)</option>
+                                                            <option value="2">16.7% (1/6)</option>
+                                                            <option value="3">25% (1/4)</option>
+                                                            <option value="4">33.3% (1/3)</option>
+                                                            <option value="5">41.7% (5/12)</option>
+                                                            <option value="6">50% (1/2)</option>
+                                                            <option value="7">58.3% (7/12)</option>
+                                                            <option value="8">66.7% (2/3)</option>
+                                                            <option value="9">75% (3/4)</option>
+                                                            <option value="10">83.3% (5/6)</option>
+                                                            <option value="11">91.7% (11/12)</option>
+                                                            <option value="12">100%</option>
+                                                        </select>
                                                     </div>
                                                 </label>
                                             </div>
@@ -575,6 +624,8 @@
                         </div>
                     </div>
 
+                    <!-- Assistant "Video"
+                        =========================================== -->
                     <div class="row" id="data-video">
                         <div class="small-12 columns">
                             <ul class="accordion" data-accordion data-allow-all-closed="true">
@@ -617,6 +668,8 @@
                         </div>
                     </div>
 
+                    <!-- Assistant "Barre de progression"
+                        =========================================== -->
                      <div class="row" id="data-meter">
                         <div class="small-12 columns">
                             <ul class="accordion" data-accordion data-allow-all-closed="true">
@@ -658,6 +711,8 @@
                         </div>
                     </div>
 
+                    <!-- ça fout quoi ici ? :O
+                        =========================================== -->
                     <div class="row" id="text">
                         <div class="small-12 columns">
                             <label>Contenu de l'élément
@@ -673,6 +728,7 @@
                             </label>
                         </div>
                     </div>
+
                     <div class="row align-center">
                         <div class="small-4 columns">
                             <input type="submit" class="button" value="Modifier !" />
@@ -710,17 +766,6 @@
                         </div>
                     </div>
 
-                    <!--
-                    <div class="small-12 column">
-                        <ul class="accordion" data-accordion data-allow-all-closed="true">
-                            <li class="accordion-item" data-accordion-item>
-                                <a href="#" class="accordion-title">Évènements actifs</a>
-                                <div class="accordion-content" data-tab-content>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    -->
                     <div class="row align-center">
                         <div class="small-4 columns">
                             <input type="submit" class="button" value="Valider !" />

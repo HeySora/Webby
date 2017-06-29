@@ -400,6 +400,7 @@ const DataFunctions = {
         return $('<audio controls></audio>')
         .attr('id', `elem-${instance.position}`)
         .attr('src', instance.data.srcaudio)
+        .addClass(`small-${instance.data.sizeaud}`)
     },
     [ElementType.HR]: (instance) => {
         return $('<hr />')
