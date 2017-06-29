@@ -909,6 +909,8 @@ $('.element-properties').click(function() { // Propriétés de l'élément
                         .replaceAll(/\*{2}(.+?)\*{2}/,'\\**$1**')
                         .replaceAll(/<strong>(.+?)<\/strong>/,'**$1**')
                         .replaceAll(/<a href="(.+?)" target="_blank">(.+?)<\/a>/, '[$2]($1)')
+                        .replaceAll(/\¦(.+?)\¦/,'\\¦$1¦')
+                        .replaceAll(/<mark>(.+?)<\/mark>/,'¦$1¦')
                     );
                     break;
                 case 'input':
@@ -1093,6 +1095,8 @@ $epModal.children('form').submit(ev => { // Modification des propriétés de l'�
                     .replaceAll(/~(.+?)~/,'<s>$1</s>')
                     .replaceAll(/\\<s>(.+?)<\/s>/,'~$1~')
                     .replaceAll(/(https?):§{2}/, '$1://')
+                    .replaceAll(/¦(.+?)¦/,'<mark>$1</mark>')
+                    .replaceAll(/\\<mark>(.+?)<\/mark>/,'¦$1¦')
                 );
                 // no break
             case 'input':
@@ -1241,6 +1245,13 @@ $('#button-link').click(ev => {
     ev.preventDefault();
 });
 
+$('#button-mark').click(ev => {
+    pelle('¦');
+
+    ev.preventDefault();
+});
+
+
 $('.fa-cogs').click(() => {
     // Mise à jour des champs dynamiquement
     $.each(projectInfos.bodyProperties, (i, v) => {
@@ -1283,6 +1294,8 @@ $('.element-js').click(function() {
                         .replaceAll(/\*{2}(.+?)\*{2}/,'\\**$1**')
                         .replaceAll(/<strong>(.+?)<\/strong>/,'**$1**')
                         .replaceAll(/<a href="(.+?)" target="_blank">(.+?)<\/a>/, '[$2]($1)')
+                        .replaceAll(/\¦(.+?)\¦/,'\\¦$1¦')
+                        .replaceAll(/<mark>(.+?)<\/mark>/,'¦$1¦')
                     );
                     break;
                 case 'input':
@@ -1370,6 +1383,8 @@ $ejModal.children('form').submit(ev => {
                     .replaceAll(/~(.+?)~/,'<s>$1</s>')
                     .replaceAll(/\\<s>(.+?)<\/s>/,'~$1~')
                     .replaceAll(/(https?):§{2}/, '$1://')
+                    .replaceAll(/¦(.+?)¦/,'<mark>$1</mark>')
+                    .replaceAll(/\\<mark>(.+?)<\/mark>/,'¦$1¦')
                 );
                 // no break
             case 'input':
