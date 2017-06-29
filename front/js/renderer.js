@@ -340,7 +340,8 @@ const ElementType = {
     IMG: 19,
     AUDIO: 20,
     HR: 21,
-    VIDEO: 22
+    VIDEO: 22,
+    METER: 23
 };
 
 const ElementClass = {
@@ -366,7 +367,8 @@ const ElementClass = {
     [ElementType.IMG]: 'DataElement',
     [ElementType.AUDIO]: 'DataElement',
     [ElementType.HR]: 'DataElement',
-    [ElementType.VIDEO]: 'DataElement'
+    [ElementType.VIDEO]: 'DataElement',
+    [ElementType.METER]: 'DataElement'
 };
 
 // Peuvent retourner un objet jQuery ou un string !
@@ -400,16 +402,22 @@ const DataFunctions = {
         .attr('src', instance.data.srcaudio)
     },
     [ElementType.HR]: (instance) => {
-        return $('<hr>')
+        return $('<hr />')
         .attr('id', `elem-${instance.position}`)
     },
     [ElementType.VIDEO]: (instance) => {
         return $('<video controls></video>')
         .attr('id', `elem-${instance.position}`)
         .attr('src', instance.data.srcvideo)
-        .addClass(`small-${instance.data.size}`)
+        .addClass(`small-${instance.data.sizevid}`)
+    },
+    [ElementType.METER]: (instance) => {
+        let met_value = instance.data.value/100;
+        return $('<meter></meter>')
+        .attr('id', `elem-${instance.position}`)
+        .attr('value', met_value)
+        .addClass(`small-${instance.data.sizemet}`)
     }
-
 };
 
 const Tags = {
@@ -435,7 +443,8 @@ const Tags = {
     [ElementType.IMG]: 'img',
     [ElementType.AUDIO]: 'audio',
     [ElementType.HR]: 'hr',
-    [ElementType.VIDEO]: 'video'
+    [ElementType.VIDEO]: 'video',
+    [ElementType.METER]: 'meter'
 };
 
 const Locales = {
@@ -463,7 +472,8 @@ const Locales = {
             [ElementType.IMG]: 'Image',
             [ElementType.AUDIO]: 'Audio',
             [ElementType.HR]: 'Séparateur',
-            [ElementType.VIDEO]: 'Vidéo'
+            [ElementType.VIDEO]: 'Vidéo',
+            [ElementType.METER]: 'Barre de progression'
         }
     }
 }
