@@ -391,13 +391,13 @@ const DataFunctions = {
     [ElementType.IMG]: (instance) => {
         return $('<img />')
         .attr('id', `elem-${instance.position}`)
-        .attr('src', instance.data.src)
+        .attr('src', instance.data.srcimg)
         .attr('alt', instance.data.alt);
     },
     [ElementType.AUDIO]: (instance) => {
         return $('<audio controls></audio>')
         .attr('id', `elem-${instance.position}`)
-        .attr('src', instance.data.src)
+        .attr('src', instance.data.srcaudio)
     },
     [ElementType.HR]: (instance) => {
         return $('<hr>')
@@ -406,9 +406,8 @@ const DataFunctions = {
     [ElementType.VIDEO]: (instance) => {
         return $('<video controls></video>')
         .attr('id', `elem-${instance.position}`)
-        .attr('src', instance.data.src)
-        .attr('width',instance.data.width)
-        .attr('height',instance.data.height)
+        .attr('src', instance.data.srcvideo)
+        .addClass(`small-${instance.data.size}`)
     }
 
 };
@@ -866,16 +865,24 @@ $('.element-properties').click(function() { // Propriétés de l'élément
                 for (let i = 0; i < getLength(instance.data) - 1; i++) {
                     $('#add-ul-element').click();
                 }
+                $epModal.find('#style').css('display', 'none');
                 break;
             case ElementType.OL:
                 for (let i = 0; i < getLength(instance.data) - 1; i++) {
                     $('#add-ol-element').click();
                 }
+                $epModal.find('#style').css('display', 'none');
                 break;
             case ElementType.IMG:
                     $epModal.find('#style').css('display', 'none');
                 break;
             case ElementType.AUDIO:
+                    $epModal.find('#style').css('display', 'none');
+                break;
+            case ElementType.VIDEO:
+                $epModal.find('#style').css('display', 'none');
+            break;
+            case ElementType.HR:
                     $epModal.find('#style').css('display', 'none');
                 break;
         }
@@ -1403,7 +1410,7 @@ $('#import-project').click(() => {
 $('#import-image').click(() => {
     let result = ipcRenderer.sendSync('load-image', 'hey');
     if (result) {
-        $('[name="element-data-src"]').val(result);
+        $('[name="element-data-srcimg"]').val(result);
     } else {
         alert("L'image n'a pas pu être chargée !");
     }
@@ -1412,7 +1419,7 @@ $('#import-audio').click(() => {
 
     let result = ipcRenderer.sendSync('load-audio', 'hey');
     if (result) {
-        $('[name="element-data-src"]').val(result);
+        $('[name="element-data-srcaudio"]').val(result);
     } else {
        alert("L'audio n'a pas pu être chargée !");
     }
@@ -1422,7 +1429,7 @@ $('#import-video').click(() => {
 
     let result = ipcRenderer.sendSync('load-video', 'hey');
     if (result) {
-        $('[name="element-data-src"]').val(result);
+        $('[name="element-data-srcvideo"]').val(result);
     } else {
        alert("La vidéo n'a pas pu être chargée !");
     }
