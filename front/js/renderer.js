@@ -341,7 +341,8 @@ const ElementType = {
     AUDIO: 20,
     HR: 21,
     VIDEO: 22,
-    METER: 23
+    METER: 23,
+    IFRAME: 24
 };
 
 const ElementClass = {
@@ -368,7 +369,8 @@ const ElementClass = {
     [ElementType.AUDIO]: 'DataElement',
     [ElementType.HR]: 'DataElement',
     [ElementType.VIDEO]: 'DataElement',
-    [ElementType.METER]: 'DataElement'
+    [ElementType.METER]: 'DataElement',
+    [ElementType.IFRAME]: 'DataElement'
 };
 
 // Peuvent retourner un objet jQuery ou un string !
@@ -418,6 +420,12 @@ const DataFunctions = {
         .attr('id', `elem-${instance.position}`)
         .attr('value', met_value)
         .addClass(`small-${instance.data.sizemet}`)
+    },
+    [ElementType.IFRAME]: (instance) => {
+        return $('<iframe></iframe>')
+        .attr('id', `elem-${instance.position}`)
+        .attr('src', instance.data.srciframe)
+        .addClass(`small-${instance.data.sizeifr}`)
     }
 };
 
@@ -445,7 +453,8 @@ const Tags = {
     [ElementType.AUDIO]: 'audio',
     [ElementType.HR]: 'hr',
     [ElementType.VIDEO]: 'video',
-    [ElementType.METER]: 'meter'
+    [ElementType.METER]: 'meter',
+    [ElementType.IFRAME]: 'iframe'
 };
 
 const Locales = {
@@ -474,7 +483,8 @@ const Locales = {
             [ElementType.AUDIO]: 'Audio',
             [ElementType.HR]: 'Séparateur',
             [ElementType.VIDEO]: 'Vidéo',
-            [ElementType.METER]: 'Barre de progression'
+            [ElementType.METER]: 'Barre de progression',
+            [ElementType.IFRAME]: 'Iframe'
         }
     }
 }
@@ -896,6 +906,12 @@ $('.element-properties').click(function() { // Propriétés de l'élément
             case ElementType.HR:
                     $epModal.find('#style').css('display', 'none');
                 break;
+            case ElementType.IFRAME:
+                $epModal.find('#style').css('display', 'none');
+            break;
+            case ElementType.METER:
+                $epModal.find('#style').css('display', 'none');
+            break;
         }
     } else if (instance instanceof InlineElement) {
         $epModal.find('#sizes').css('display', 'none');
