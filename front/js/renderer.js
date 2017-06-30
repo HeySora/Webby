@@ -1477,6 +1477,14 @@ $('#import-video').click(() => {
     }
 
 });
+$('#import-bodyimage').click(() => {
+    let result = ipcRenderer.sendSync('load-bodyimage', 'hey');
+    if (result) {
+        $('[name="project-bodyProperties-image"]').val(result);
+    } else {
+        alert("L'image n'a pas pu être chargée !");
+    }
+    });
 
 // Lorsque la page est prête
 $(() => {

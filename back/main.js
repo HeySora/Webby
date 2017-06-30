@@ -162,6 +162,10 @@ ipcMain.on('load-audio', ev => {
 ipcMain.on('load-video', ev => {
     loadVideo(ev);
 });
+
+ipcMain.on('load-bodyimage', ev => {
+    loadImage(ev);
+});
 // Variable globale partagée entre les deux processus
 global.webbyData = {projectInfos: null};
 
